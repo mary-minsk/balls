@@ -4,8 +4,9 @@ import pygame
 import random
 from math import sqrt, hypot, sin, cos, atan2
 
-import game_render
+
 from settings import Settings
+import game_render
 from ball import Ball
 from thing import Thing
 from deleted_things import Deleted_thing
@@ -365,7 +366,7 @@ def get_things_hit(): # Мяч сталкивается с предметами.
             deleted_balls.add(Deleted_thing(thing.x, thing.y, thing.image))
             things.remove(thing)
     
-def create_groups(balls, things, deleted_balls):  # Создание групп вещей и мячей вначале кажного нового уровня
+def create_groups(balls, things, deleted_balls, setting):  # Создание групп вещей и мячей вначале кажного нового уровня
     balls.empty()
     things.empty()
     deleted_balls.empty()
@@ -423,14 +424,22 @@ def draw_disappearing_path(): # Отображение исчезающего п
         settings.is_points_erasing = False
 
 pygame.init()
+import os
+print(os.getcwd())
+print(os.path.dirname(os.path.abspath(__file__)))
+# print(os.path.basename)
+print(print(os.path.join(os.path.dirname(__file__))) )
+print(os.path.dirname(os.path.realpath(__file__)))
+
 settings = Settings()
 sc = pygame.display.set_mode((settings.screen_width, settings.screen_height + settings.height_bottom_panel))
 sc.fill(settings.black)
 pygame.display.update()
 pygame.display.set_caption(settings.text_caption)
-import os
-print(os.getcwd())
-background_image = pygame.image.load(settings.background_image)
+namef = os.path.dirname(os.path.abspath(__file__)) + settings.background_image
+print(namef)
+# background_image = pygame.image.load(settings.background_image)
+background_image = pygame.image.load(namef)
 
 next_level_button = Button(settings.button_level, settings.button_level_text)
 ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
@@ -469,7 +478,7 @@ while not done:
                         ball.isPressed = True
                         ball.is_rotated = False
                 if next_level_button.isOver((mouse_x, mouse_y)):
-                    balls, things, deleted_balls = create_groups(balls, things, deleted_balls)
+                    balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
             
             elif event.button == 3:  # шарик начинает катиться по столу, собирая все предметы на своем пути
                 launch_ball()
