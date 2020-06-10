@@ -1,3 +1,4 @@
+
 class Settings():
     def __init__(self):
 
@@ -11,11 +12,10 @@ class Settings():
         self.w = self.height_up_panel + self.screen_height + self.height_bottom_panel
         
         self.text_caption = 'Balls' 
-        self.background_image = 'pict/background/sky_425_650.jpg'
-        
-        self.path_things = 'pict/things'   # изображения предметов
-        self.path_spirals = 'pict/spiralls' 
 
+        self.background_image = '/pict/background/sky_425_650.jpg'
+        self.path_things = '/pict/things'   # изображения предметов
+        self.path_spirals = '/pict/spiralls' 
 
         self.red = (255, 0, 0)
         self.yellow = (255, 255, 0)

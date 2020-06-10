@@ -31,6 +31,7 @@ def get_points_list(W, H):
 
 def get_images(n, path):
     path_f = []
+    path = os.path.dirname(os.path.abspath(__file__)) + path
     icons = [f for f in os.listdir(path) if f.endswith('.png')]
     index = 0
     if n<=len(icons):
