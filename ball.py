@@ -8,7 +8,12 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         
         self.x = x                      #координаты шара на панели шаров. 
                                         #Если шар не катится на поверхности, он возвращается вниз экрана к другим шарам
-        self.y = settings.screen_height + settings.height_bottom_panel-40
+        self.y = settings.screen_height - 40
+        self.balls_panel_x = x
+        self.balls_panel_y = self.y
+        self.prev_x = 0
+        self.prev_y = 0
+
         self.image = surf
         self.original_surf = surf # для корректировки ценра вращения мяча (в прямоугольм контуре)
         self.rect = self.image.get_rect(center=(x, self.y))
@@ -39,10 +44,17 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.current_distance = 0
         self.prev_point = (0, 0)
         self.last_path_distance = 0
+        self.isDisable = False
         
-        # pygame.draw.circle(self.image, settings.red, (x, y), self.radius, 1)
-         
+    def go_home(self):
+        self.rect.center = (self.balls_panel_x, self.balls_panel_y)
+
     def update(self, settings, sc):
+        pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
+        if self.isDisable:
+            pygame.draw.circle(sc, settings.red, (self.x, self.y), self.radius, 2)
+            pygame.draw.rect(sc, settings.red, self.rect, 1)
+ 
         if self.isRolling:               # когда шар каится по поверхности
             if len(settings.all_path_points) >0:
                 self.x1, self.y1 = settings.all_path_points.pop(0)
@@ -71,7 +83,9 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
                 settings.is_deleted_ball = True
         else:
             if self.isPressed:
-                self.rect.center = pygame.mouse.get_pos()
+                # self.rect.center = pygame.mouse.get_pos()
+                self.rect.center = (self.x, self.y)
+                pass
 
             if self.is_rotated:
                 self.rotate_ball(self)

@@ -4,7 +4,6 @@ import pygame
 import random
 from math import sqrt, hypot, sin, cos, atan2
 
-
 from settings import Settings
 import game_render
 from ball import Ball
@@ -296,13 +295,19 @@ def create_balls(): # создание трех шаров, определени
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
     list = []
+    balls_space = []
     
     for i in range(settings.number_balls):
         BALLS_SURF.append(pygame.image.load(BALLS[i]).convert_alpha()) # добавление изображения
         w  = BALLS_SURF[i].get_rect()[2] # ширина изображения
         balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, BALLS_SURF[i])) # добавляем в группу три шара
         shift = shift + w 
+        print(shift + settings.balls_offset*i + w//2)
         list.append((w, i)) 
+        if i == settings.number_balls - 1:
+            # print(shift + settings.balls_offset*i + w)
+            w1 = shift + settings.balls_offset*i + settings.left_offset
+            balls_space = [0, settings.screen_height - settings.height_bottom_panel,  w1, settings.height_bottom_panel-2]
     
     list = sorted(list)  #сортируем по размеру изображения шара
     distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
@@ -316,7 +321,7 @@ def create_balls(): # создание трех шаров, определени
         balls.sprites()[i].distance = distance_dictionary.get(i)*settings.unit  # длина пути последующего движения шара 
         balls.sprites()[i].speed = speed_dictionary.get(i) 
         # print(balls.sprites()[i].distance)
-    return balls
+    return balls, pygame.Rect(balls_space)
 
 def create_things(): # создание n (settings.number_things) предметов
 
@@ -424,160 +429,229 @@ def draw_disappearing_path(): # Отображение исчезающего п
         settings.is_points_erasing = False
 
 pygame.init()
-import os
-print(os.getcwd())
-print(os.path.dirname(os.path.abspath(__file__)))
-# print(os.path.basename)
-print(print(os.path.join(os.path.dirname(__file__))) )
-print(os.path.dirname(os.path.realpath(__file__)))
 
 settings = Settings()
-sc = pygame.display.set_mode((settings.screen_width, settings.screen_height + settings.height_bottom_panel))
+sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
 sc.fill(settings.black)
 pygame.display.update()
 pygame.display.set_caption(settings.text_caption)
-namef = os.path.dirname(os.path.abspath(__file__)) + settings.background_image
-print(namef)
-# background_image = pygame.image.load(settings.background_image)
-background_image = pygame.image.load(namef)
+clock = pygame.time.Clock()
 
-next_level_button = Button(settings.button_level, settings.button_level_text)
-ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
+settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
 
-things = create_things()
-balls = create_balls()
-deleted_balls = pygame.sprite.Group()
+# next_level_button = Button(settings.button_level, settings.button_level_text)
+# ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
+
+# things = create_things()
+balls, balls_panel = create_balls()
+print(balls_panel)
+# deleted_balls = pygame.sprite.Group()
  
 pos_center_ball = (0, 0)            # пигейм координаты центра выбранного шара в момент выбора направления удара
 (mouse_x, mouse_y) = (0, 0)         # тек пигейм координаты мыши
+
+game_panel = pygame.Rect((settings.left_margin, settings.up_margin, \
+        settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
                     
 done = False
-
+selected = None
+prev_x, prev_y = 0, 0
 while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             done = True
-        settings.is_draw_line = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            (mouse_x, mouse_y) = event.pos
-            if event.button == 1:     # нажатием мыши берем шар (ball)
-                
-                if settings.is_ball_pressed:  # опущен шар на игровую плоскость для последующего движения по ней
-                    pos_center_ball = mouse_x, mouse_y
-                    ball = balls.sprites()[settings.index_current_ball]
-                    ball.isPressed = False
-                    ball.isJump = True
-                    ball.x1, ball.y1 = mouse_x, mouse_y
-                    settings.is_ball_down = True  # при последующем выходе мыши за пределы шара появляется линия - направление последующего удара
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                # print("pygame.MOUSEBUTTONDOWN")
+                for i, ball in enumerate(balls):
+                    # Pythagoras a^2 + b^2 = c^2
+                    # print(ball.radius)
+                    dx = ball.x - event.pos[0] # a
+                    dy = ball.y - event.pos[1] # b
+                    distance_square = dx**2 + dy**2 # c^2
 
-                else:   # выбираем один из трех шаров на нижней панели
-                    index = get_index_current_ball((mouse_x, mouse_y))
-                    if index > -1:
-                        ball = balls.sprites()[index]
-                        settings.is_ball_pressed = True
+                    if distance_square <= ball.radius**2: # c^2 <= radius^2
+                        print(i)
                         ball.isPressed = True
-                        ball.is_rotated = False
-                if next_level_button.isOver((mouse_x, mouse_y)):
-                    balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+                        selected = i
+                        selected_offset_x = ball.x - event.pos[0]
+                        selected_offset_y = ball.y - event.pos[1]
+                        # print(ball.rect)
+                        
+               
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                pass
+                # print("pygame.MOUSEBUTTONUP:")
+                selected = None
+               
+               
+        elif event.type == pygame.MOUSEMOTION:
             
-            elif event.button == 3:  # шарик начинает катиться по столу, собирая все предметы на своем пути
-                launch_ball()
-                
-        else:  # отслеживаем все движения мыши
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            if not settings.is_ball_down:
-                if mouse_y > settings.screen_height:  # область трех шаров(ball) визу экрана
-                    index = get_index_current_ball((mouse_x, mouse_y))
-                    if index > -1:  # курсор мышки находится над одним из трех шаров внизу экрана, видна рамка
-                        settings.is_ball_selected = True
-                        settings.index_current_ball = index
-                        if settings.index_current_ball != settings.index_prev_ball:
-                            prev_ball = balls.sprites()[settings.index_prev_ball]
-                            prev_ball.is_rotated = False
-                        settings.index_prev_ball = index
-  
-            else:                           # область предметов, игровая поверхность
-                radius = ball.radius
-                if radius < round(sqrt((pos_center_ball[0] - mouse_x)*(pos_center_ball[0] - mouse_x)+(pos_center_ball[1] - mouse_y)*(pos_center_ball[1] - mouse_y))):  # растояние от центра шара до мыши
-                    settings.is_draw_line = True                 # курсор мыши находится за границей выбранного шара, рисуем линию
+            # print("pygame.MOUSEMOTION")
+            if selected is not None: # selected can be `0` so `is not None` is required
+                # move object
+                ball = balls.sprites()[selected]
+                ball.x = event.pos[0] + selected_offset_x
+                ball.y = event.pos[1] + selected_offset_y
+                settings.text1 = point_to_str(event.pos)
+                ball.isDisable = True
+                # flag =  ball.x in range (settings.left_margin + ball.radius, settings.screen_width - settings.left_margin-ball.radius) and\
+                #     ball.y in range (settings.up_margin + ball.radius, settings.screen_height - settings.height_bottom_panel-ball.radius)
+                    # ball.isDisable = False
+                if ball.y > settings.up_margin + ball.radius:
+                    ball.isDisable = False
                     
-                    if not ball.isRolling:      # задаем направление движения мяча (a, b) в декартовой системе координат
-                        settings.pos_center_ball = pos_center_ball
-                        settings.a, settings.b = get_new_coordinates(pos_center_ball[0], pos_center_ball[1], mouse_x, mouse_y)
-                settings.is_ball_selected = False
-                ball.is_rotated = False
                     
-            if settings.is_ball_down and mouse_y >= settings.screen_height and \
-                                    not ball.isRolling and not settings.is_points_erasing:  #  шар возвращается обратно на панель шаров
-                ball.move_balls_panel()
-                settings.reset()  # сброс параметров
+                else:
+                    ball.x, ball.y = ball.x, settings.up_margin + ball.radius
+                settings.text2 = str(ball.y)
+                    # ball.isPressed = False
+                # if pygame.Rect(game_panel).contains(ball.rect):
+                #     ball.isDisable = False
+                # elif event.pos[1] - ball.radius > settings.screen_height - settings.height_bottom_panel:
+                #     ball.isDisable = False
+                # else:
+                #     ball.isDisable = True  or pygame.Rect(balls_panel).contains(ball.rect)
 
-        if event.type == pygame.KEYDOWN: # при рисовании траектории движения можно поьзоваться стрелками
-            if settings.is_draw_line:
-                if event.key == pygame.K_SPACE:
-                    launch_ball()      
-                if event.key == pygame.K_RIGHT:
-                    mouse_x +=1
-                elif event.key == pygame.K_LEFT:
-                    mouse_x -=1
-                elif event.key == pygame.K_UP:
-                    mouse_y -= 1
-                elif event.key == pygame.K_DOWN:
-                    mouse_y +=1
-                pygame.mouse.set_pos(mouse_x, mouse_y)
-                    
-    sc.blit(background_image,(0, 0))
+                # if pygame.Rect(balls_panel).contains(ball.rect):
+                #     ball.isDisable =  False
+                # else:
+                #     ball.isDisable = True
 
-    pygame.draw.rect(sc, settings.bg_color, (0, 0, settings.screen_width, settings.screen_height), 2)
-    pygame.draw.rect(sc, settings.bg_color, (0, settings.screen_height, settings.screen_width, settings.screen_height + settings.height_bottom_panel), 2)
+
    
-    if settings.is_ball_selected and not settings.is_ball_pressed: # Выбор любого одного мяча на нижней панели
-        ball = balls.sprites()[settings.index_current_ball]
-        if not settings.is_draw_line and not settings.is_points_erasing: #  Во время движения мячи на панели выбрать нельзя
-            ball.is_rotated = True
-
-    if settings.is_ball_down:  # Мяч на игровой поверхности
-        if settings.is_draw_line and not ball.isRolling and not settings.is_points_erasing: # Момент прицеливания
-            build_path(ball.radius, ball.distance) # строим путь (ломаная кривая) и собираем информацию о движении мяча
-            draw_path_and_tips(pos_center_ball)
-            
-        elif ball.isRolling:   # продолжаем рисовать траекторию движения мяча и крайние точки этой линии 
-            draw_path_and_tips(settings.pos_center_ball)
-            get_things_hit()
-
-    if settings.is_points_erasing: # Мяч проделал весь путь, но не исчезнул. Ломаная линия исчезает
-        if settings.is_deleted_ball: 
-            deleted_balls.add(Deleted_thing(ball.x1, ball.y1, ball.image, ball.angle)) # Создание исчезающего вращающегося мяча
-            balls.remove(ball)
-            settings.is_deleted_ball = False
-            settings.reset() 
-            settings.edges.pop(0)  # Траектория мяча начинается не с позиции мыши, а с точки на окружности шара
-            
-        get_disappearing_path()
-        draw_disappearing_path()
+        # settings.is_draw_line = False
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     (mouse_x, mouse_y) = event.pos
+        #     if event.button == 1:     # нажатием мыши берем шар (ball)
                 
-    draw_text(sc, get_hints(), settings.white, 20, (130, settings.screen_height+ 5))
+        #         if settings.is_ball_pressed:  # опущен шар на игровую плоскость для последующего движения по ней
+        #             pos_center_ball = mouse_x, mouse_y
+        #             ball = balls.sprites()[settings.index_current_ball]
+        #             ball.isPressed = False
+        #             ball.isJump = True
+        #             ball.x1, ball.y1 = mouse_x, mouse_y
+        #             settings.is_ball_down = True  # при последующем выходе мыши за пределы шара появляется линия - направление последующего удара
+
+        #         else:   # выбираем один из трех шаров на нижней панели
+        #             index = get_index_current_ball((mouse_x, mouse_y))
+        #             if index > -1:
+        #                 ball = balls.sprites()[index]
+        #                 settings.is_ball_pressed = True
+        #                 ball.isPressed = True
+        #                 ball.is_rotated = False
+        #         if next_level_button.isOver((mouse_x, mouse_y)):
+        #             balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+            
+        #     elif event.button == 3:  # шарик начинает катиться по столу, собирая все предметы на своем пути
+        #         launch_ball()
+                
+        # else:  # отслеживаем все движения мыши
+        #     mouse_x, mouse_y = pygame.mouse.get_pos()
+        #     if not settings.is_ball_down:
+        #         if mouse_y > settings.screen_height:  # область трех шаров(ball) визу экрана
+        #             index = get_index_current_ball((mouse_x, mouse_y))
+        #             if index > -1:  # курсор мышки находится над одним из трех шаров внизу экрана, видна рамка
+        #                 settings.is_ball_selected = True
+        #                 settings.index_current_ball = index
+        #                 if settings.index_current_ball != settings.index_prev_ball:
+        #                     prev_ball = balls.sprites()[settings.index_prev_ball]
+        #                     prev_ball.is_rotated = False
+        #                 settings.index_prev_ball = index
+  
+        #     else:                           # область предметов, игровая поверхность
+        #         radius = ball.radius
+        #         if radius < round(sqrt((pos_center_ball[0] - mouse_x)*(pos_center_ball[0] - mouse_x)+(pos_center_ball[1] - mouse_y)*(pos_center_ball[1] - mouse_y))):  # растояние от центра шара до мыши
+        #             settings.is_draw_line = True                 # курсор мыши находится за границей выбранного шара, рисуем линию
+                    
+        #             if not ball.isRolling:      # задаем направление движения мяча (a, b) в декартовой системе координат
+        #                 settings.pos_center_ball = pos_center_ball
+        #                 settings.a, settings.b = get_new_coordinates(pos_center_ball[0], pos_center_ball[1], mouse_x, mouse_y)
+        #         settings.is_ball_selected = False
+        #         ball.is_rotated = False
+                    
+        #     if settings.is_ball_down and mouse_y >= settings.screen_height and \
+        #                             not ball.isRolling and not settings.is_points_erasing:  #  шар возвращается обратно на панель шаров
+        #         ball.move_balls_panel()
+        #         settings.reset()  # сброс параметров
+
+        # if event.type == pygame.KEYDOWN: # при рисовании траектории движения можно поьзоваться стрелками
+        #     if settings.is_draw_line:
+        #         if event.key == pygame.K_SPACE:
+        #             launch_ball()      
+        #         if event.key == pygame.K_RIGHT:
+        #             mouse_x +=1
+        #         elif event.key == pygame.K_LEFT:
+        #             mouse_x -=1
+        #         elif event.key == pygame.K_UP:
+        #             mouse_y -= 1
+        #         elif event.key == pygame.K_DOWN:
+        #             mouse_y +=1
+        #         pygame.mouse.set_pos(mouse_x, mouse_y)
+                    
+    sc.blit(settings.background_image,(0, 0))
+
+    # pygame.draw.rect(sc, settings.bg_color, (0, 0, settings.screen_width, settings.screen_height), 2)
+    # pygame.draw.rect(sc, settings.bg_color, (0, settings.screen_height, settings.screen_width, settings.screen_height + settings.height_bottom_panel), 2)
+    # pygame.draw.rect(sc, settings.bg_color, (settings.left_margin, settings.up_margin, \
+    #     settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin), 2)
+    pygame.draw.rect(sc, settings.bg_color, game_panel, 2)
+    pygame.draw.rect(sc, settings.bg_color, balls_panel, 1)
+      
+     
+      
+
+
+   
+
+    # if settings.is_ball_selected and not settings.is_ball_pressed: # Выбор любого одного мяча на нижней панели
+    #     ball = balls.sprites()[settings.index_current_ball]
+    #     if not settings.is_draw_line and not settings.is_points_erasing: #  Во время движения мячи на панели выбрать нельзя
+    #         ball.is_rotated = True
+
+    # if settings.is_ball_down:  # Мяч на игровой поверхности
+    #     if settings.is_draw_line and not ball.isRolling and not settings.is_points_erasing: # Момент прицеливания
+    #         build_path(ball.radius, ball.distance) # строим путь (ломаная кривая) и собираем информацию о движении мяча
+    #         draw_path_and_tips(pos_center_ball)
+            
+    #     elif ball.isRolling:   # продолжаем рисовать траекторию движения мяча и крайние точки этой линии 
+    #         draw_path_and_tips(settings.pos_center_ball)
+    #         get_things_hit()
+
+    # if settings.is_points_erasing: # Мяч проделал весь путь, но не исчезнул. Ломаная линия исчезает
+    #     if settings.is_deleted_ball: 
+    #         deleted_balls.add(Deleted_thing(ball.x1, ball.y1, ball.image, ball.angle)) # Создание исчезающего вращающегося мяча
+    #         balls.remove(ball)
+    #         settings.is_deleted_ball = False
+    #         settings.reset() 
+    #         settings.edges.pop(0)  # Траектория мяча начинается не с позиции мыши, а с точки на окружности шара
+            
+    #     get_disappearing_path()
+    #     draw_disappearing_path()
+                
+    # draw_text(sc, get_hints(), settings.white, 20, (130, settings.screen_height+ 5))
     
-    draw_text(sc, settings.text2, settings.white, 20, (30, settings.screen_height+ 5))
-    draw_text(sc, settings.text1, settings.white, 20, (230, settings.screen_height+ 5))
-    draw_text(sc, settings.text3, settings.white, 20, (330, settings.screen_height+ 15))
+    draw_text(sc, settings.text2, settings.white, 20, (130, 10))
+    draw_text(sc, settings.text1, settings.white, 20, (50,10))
+    # draw_text(sc, settings.text3, settings.white, 20, (330, settings.screen_height+ 15))
 
-    next_level_button.draw(sc, settings)
-    ruler_button.draw(sc, settings)
+    # next_level_button.draw(sc, settings)
+    # ruler_button.draw(sc, settings)
 
-    things.update(things)
-    things.draw(sc)
+    # things.update(things)
+    # things.draw(sc)
 
     balls.update(settings, sc)
     balls.draw(sc)
     
-    deleted_balls.draw(sc)
-    deleted_balls.update(settings)
+    # deleted_balls.draw(sc)
+    # deleted_balls.update(settings)
 
-    display_last_path_point() 
+    # display_last_path_point() 
 
     pygame.display.update()
-    pygame.time.delay(20)
+    # pygame.time.delay(20)
    
     # settings.text1 = str(len(balls))
     # settings.text2 = str(len(things))
@@ -587,6 +661,7 @@ while not done:
     # settings.text2 = str(len(things))
     # settings.text1 = str(settings.is_draw_line)
     # settings.text2 = "ball_down " + str(settings.is_ball_down)
+    clock.tick(25)
 
 pygame.quit()
 

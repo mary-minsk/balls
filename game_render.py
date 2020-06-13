@@ -55,3 +55,6 @@ def get_acceleration(n, speed):     # равномерное замедлени�
     # print(sifted_points)
     return sifted_points, sifted_points[::-1]  # на финише и старте одинаковое изменение (ускорение/замедление    скорости
 
+def get_image(path):
+   return os.path.dirname(os.path.abspath(__file__)) + path
+    

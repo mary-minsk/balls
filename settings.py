@@ -5,15 +5,21 @@ class Settings():
         self.number_balls = 3
         self.number_things = 10
 
-        self.screen_width = 400
-        self.height_up_panel = 30
-        self.screen_height = 550 - self.height_up_panel
-        self.height_bottom_panel = 100
-        self.w = self.height_up_panel + self.screen_height + self.height_bottom_panel
+        self.screen_width = 425
+        self.screen_height = 650
+
+        self.up_margin = 40
+        self.left_margin = 25
+        self.right_margin = 25 
+        self.height_bottom_panel = 90
+        
+        self.w = self.screen_height + self.up_margin + self.height_bottom_panel
+        # self.w = self.height_up_panel + self.screen_height + self.height_bottom_panel
         
         self.text_caption = 'Balls' 
 
-        self.background_image = '/pict/background/sky_425_650.jpg'
+        self.background_image_path = '/pict/background/sky_425_650.jpg'
+        self.background_image = ""
         self.path_things = '/pict/things'   # изображения предметов
         self.path_spirals = '/pict/spiralls' 
 
@@ -25,7 +31,7 @@ class Settings():
 
         # Мяч
         self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
-        self.balls_offset= 30   # растояние между шарами на панели шаров
+        self.balls_offset= 20   # растояние между шарами на панели шаров
         self.left_offset = 20   # слева отступ от трех шаров
 
         self.balls_speed = [6,5,4]  # маленький - самый быстрый (скорость 4), большой шар самый медленный (скорость 2)
