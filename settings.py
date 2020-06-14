@@ -77,8 +77,8 @@ class Settings():
         self.reset()   # Сброс основных параметров
         
     def reset(self):  
-        self.index_current_ball = 0  # индекс выбранного шара(мяча)
-        self.index_prev_ball = 0     # индекс предыдущего выбранного шара(мяча)
+        self.index_current_ball = None  # индекс выбранного шара(мяча)
+        self.index_prev_ball = None     # индекс предыдущего выбранного шара(мяча)
 
         self.is_ball_selected = False # шар на нижней панеле выбран мышкой
 

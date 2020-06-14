@@ -454,7 +454,7 @@ game_panel = pygame.Rect((settings.left_margin, settings.up_margin, \
         settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
                     
 done = False
-selected = None
+
 prev_x, prev_y = 0, 0
 while not done:
     for event in pygame.event.get():
@@ -462,64 +462,53 @@ while not done:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                # print("pygame.MOUSEBUTTONDOWN")
                 for i, ball in enumerate(balls):
-                    # Pythagoras a^2 + b^2 = c^2
-                    # print(ball.radius)
-                    dx = ball.x - event.pos[0] # a
-                    dy = ball.y - event.pos[1] # b
-                    distance_square = dx**2 + dy**2 # c^2
+                    dx = ball.x - event.pos[0] 
+                    dy = ball.y - event.pos[1] 
+                    distance_square = dx**2 + dy**2 
 
-                    if distance_square <= ball.radius**2: # c^2 <= radius^2
-                        print(i)
+                    if distance_square <= ball.radius**2:
                         ball.isPressed = True
-                        selected = i
+                        settings.index_current_ball = i
+                        if settings.index_prev_ball is not None and settings.index_prev_ball != settings.index_current_ball:
+                            balls.sprites()[settings.index_prev_ball].go_home()
                         selected_offset_x = ball.x - event.pos[0]
                         selected_offset_y = ball.y - event.pos[1]
                         # print(ball.rect)
-                        
-               
+                            
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                pass
-                # print("pygame.MOUSEBUTTONUP:")
-                selected = None
-               
+                if settings.index_current_ball is not None:
+                    ball = balls.sprites()[settings.index_current_ball]
+                    if settings.screen_height - settings.height_bottom_panel in range(ball.rect.top, ball.rect.bottom):
+                        if ball.y < settings.screen_height - settings.height_bottom_panel:
+                            ball.y = settings.screen_height - settings.height_bottom_panel - ball.radius
+                        else:
+                            ball.go_home()
+                    elif ball.y > settings.screen_height - settings.height_bottom_panel:
+                        ball.go_home()
+                    settings.index_prev_ball = settings.index_current_ball
+                    settings.index_current_ball = None
                
         elif event.type == pygame.MOUSEMOTION:
             
-            # print("pygame.MOUSEMOTION")
-            if selected is not None: # selected can be `0` so `is not None` is required
-                # move object
-                ball = balls.sprites()[selected]
+            if settings.index_current_ball is not None: # settings.index_current_ball can be `0` so `is not None` is required
+                ball = balls.sprites()[settings.index_current_ball]
                 ball.x = event.pos[0] + selected_offset_x
                 ball.y = event.pos[1] + selected_offset_y
-                settings.text1 = point_to_str(event.pos)
-                ball.isDisable = True
-                # flag =  ball.x in range (settings.left_margin + ball.radius, settings.screen_width - settings.left_margin-ball.radius) and\
-                #     ball.y in range (settings.up_margin + ball.radius, settings.screen_height - settings.height_bottom_panel-ball.radius)
-                    # ball.isDisable = False
-                if ball.y > settings.up_margin + ball.radius:
-                    ball.isDisable = False
-                    
-                    
-                else:
+                
+                if ball.y < settings.up_margin + ball.radius:
                     ball.x, ball.y = ball.x, settings.up_margin + ball.radius
+
+                if ball.x < settings.left_margin + ball.radius:
+                    ball.x = settings.left_margin + ball.radius
+
+                if ball.x > settings.screen_width - settings.right_margin - ball.radius:
+                     ball.x = settings.screen_width - settings.right_margin - ball.radius
+                
                 settings.text2 = str(ball.y)
-                    # ball.isPressed = False
-                # if pygame.Rect(game_panel).contains(ball.rect):
-                #     ball.isDisable = False
-                # elif event.pos[1] - ball.radius > settings.screen_height - settings.height_bottom_panel:
-                #     ball.isDisable = False
-                # else:
-                #     ball.isDisable = True  or pygame.Rect(balls_panel).contains(ball.rect)
 
-                # if pygame.Rect(balls_panel).contains(ball.rect):
-                #     ball.isDisable =  False
-                # else:
-                #     ball.isDisable = True
-
-
+            settings.text1 = point_to_str(event.pos)
    
         # settings.is_draw_line = False
         # if event.type == pygame.MOUSEBUTTONDOWN:
@@ -634,7 +623,7 @@ while not done:
     
     draw_text(sc, settings.text2, settings.white, 20, (130, 10))
     draw_text(sc, settings.text1, settings.white, 20, (50,10))
-    # draw_text(sc, settings.text3, settings.white, 20, (330, settings.screen_height+ 15))
+    draw_text(sc, settings.text3, settings.white, 20, (230, 10))
 
     # next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
