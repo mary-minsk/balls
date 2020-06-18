@@ -8,7 +8,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         
         self.x = x                      #координаты шара на панели шаров. 
                                         #Если шар не катится на поверхности, он возвращается вниз экрана к другим шарам
-        self.y = settings.screen_height - 40
+        self.y = settings.screen_height - settings.bottom_margin_center_ball
         self.balls_panel_x = x
         self.balls_panel_y = self.y
         self.prev_x = 0
@@ -44,13 +44,16 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.current_distance = 0
         self.prev_point = (0, 0)
         self.last_path_distance = 0
+        self.info = ""
         # self.isDisable = False
         
     def go_home(self):
         # self.rect.center = (self.balls_panel_x, self.balls_panel_y)
         self.x, self.y = self.balls_panel_x, self.balls_panel_y
+        print("go_home")
 
     def update(self, settings, sc):
+        # settings.text4 = str(self.rect.h)
         pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
         # if self.isDisable:
         #     # pygame.draw.circle(sc, settings.red, (self.x, self.y), self.radius, 2)
@@ -83,15 +86,16 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
                 settings.is_points_erasing = True
                 settings.is_deleted_ball = True
         else:
-            if self.isPressed:
+            # if self.isPressed:
                 # self.rect.center = pygame.mouse.get_pos()
-                self.rect.center = (self.x, self.y)
-                pass
+            # self.rect.center = (self.x, self.y)
+                # pass
 
             if self.is_rotated:
                 self.rotate_ball(self)
-                self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения
-            
+                self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения\
+            else:
+                self.rect.center = (self.x, self.y)
             if self.isJump:
                 # pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
                 self.delay +=1
@@ -112,12 +116,13 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.rotate_ball(self)
         self.rect = self.image.get_rect(center=(round(self.x1), round(self.y1)))
         pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
-
+        
     @staticmethod
     def rotate_ball(self):          # мяч на панеле шаров при приближении к нему мыши и на 
         self.angle +=1              # игровой поверхности во время прицеливания
         self.image = pygame.transform.rotate(self.original_surf, self.angle)
         self.rect = self.image.get_rect()
+        
         if self.angle ==360:
             self.angle = 0
 

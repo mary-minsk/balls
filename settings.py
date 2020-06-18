@@ -12,6 +12,9 @@ class Settings():
         self.left_margin = 25
         self.right_margin = 25 
         self.height_bottom_panel = 90
+        self.bottom_margin_center_ball = 40
+        self.additional_panel_width = 300
+        self.is_used_additional_panel = True
         
         self.w = self.screen_height + self.up_margin + self.height_bottom_panel
         # self.w = self.height_up_panel + self.screen_height + self.height_bottom_panel
@@ -39,6 +42,7 @@ class Settings():
                                 # самый маленикий катится растояние - 3*H, средний - 2*H,  большой шар - H
         # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
         self.balls_distance = [3, 2, 1]  # *settings.screen_height
+        self.balls_info = ["small", "medium", "large"]
         self.unit = self.screen_height
 
         self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!","Use mouse to aim",\
@@ -70,15 +74,50 @@ class Settings():
         self.a, self.b = (0, 0)  # направление последующего движения мяча (позиция курсора мыши 
                                  # относительно центра выбранного шара в декартовой систете координат
      
-        self.text1 = "" 
-        self.text2 = "" 
-        self.text3 = ""  
+        self.text0 = ["Game info", ""]
+        self.text_event = ["event.pos:", ""]
+        self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
+        self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
+        self.text_mousemotion = ["MOUSEMOTION: ", ""]
+        self.text_else = ["other event.pos: ", ""]
+        self.text_prev_selected_ball = ["prev selected ball: ", "None"]
+        self.text_selected_ball = ["selected ball: ", "None"]
+
+
+        self.text1 = [" ", ""]
+        self.text2 = ["ball: ", "None"]
+        self.text_not_equal = ["", ""]
+        self.text_rotated_ball = ["rotated ball: ", "None"]
+        self.text_prev_rotated_ball = ["prev rotated ball: ", "None"]
+        self.text_rotated_ball_not_equal = ["", ""]
+        # self.text1 = "" 
+        # self.text2 = "" 
+        # self.text3 = ""  
+        # self.text5 = "" 
+        # self.text4 = "" 
+        # self.text6 = "" 
         
         self.reset()   # Сброс основных параметров
+    def reset_text(self):
+        self.text0 = ["Game info", ""]
+        self.text_event = ["event.pos:", ""]
+        self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
+        self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
+        self.text_mousemotion = ["MOUSEMOTION: ", ""]
+        self.text_else = ["other event.pos: ", ""]
+        self.text_rotated_ball = ["rotated ball: ", "None"]
+        self.text_prev_rotated_ball = ["prev rotated ball: ", "None"]
+
+        self.text_not_equal = ["", ""]
+        self.text_rotated_ball_not_equal = ["", ""]
+        self.text1 = [" ", ""]
+        # self.text_prev_selected_ball = ["prev selected ball: ", "None"]
+        # self.text_selected_ball = ["selected ball: ", "None"]
         
     def reset(self):  
         self.index_current_ball = None  # индекс выбранного шара(мяча)
         self.index_prev_ball = None     # индекс предыдущего выбранного шара(мяча)
+        self.index_prev_selected_ball = None 
 
         self.is_ball_selected = False # шар на нижней панеле выбран мышкой
 
