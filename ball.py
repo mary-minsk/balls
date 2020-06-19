@@ -50,7 +50,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
     def go_home(self):
         # self.rect.center = (self.balls_panel_x, self.balls_panel_y)
         self.x, self.y = self.balls_panel_x, self.balls_panel_y
-        print("go_home")
+        # print("go_home")
 
     def update(self, settings, sc):
         # settings.text4 = str(self.rect.h)

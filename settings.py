@@ -88,8 +88,9 @@ class Settings():
         self.text2 = ["ball: ", "None"]
         self.text_not_equal = ["", ""]
         self.text_rotated_ball = ["rotated ball: ", "None"]
-        self.text_prev_rotated_ball = ["prev rotated ball: ", "None"]
+        # self.text_prev_rotated_ball = ["prev rotated ball: ", "None"]
         self.text_rotated_ball_not_equal = ["", ""]
+        self.text_mouse_xy = ["mouse: ", ""]
         # self.text1 = "" 
         # self.text2 = "" 
         # self.text3 = ""  
@@ -106,7 +107,7 @@ class Settings():
         self.text_mousemotion = ["MOUSEMOTION: ", ""]
         self.text_else = ["other event.pos: ", ""]
         self.text_rotated_ball = ["rotated ball: ", "None"]
-        self.text_prev_rotated_ball = ["prev rotated ball: ", "None"]
+        # self.text_prev_rotated_ball = ["prev rotated ball: ", "None"]
 
         self.text_not_equal = ["", ""]
         self.text_rotated_ball_not_equal = ["", ""]
