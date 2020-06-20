@@ -5,71 +5,12 @@ import random
 from math import sqrt, hypot, sin, cos, atan2
 
 from settings import Settings
-import game_render
+from info import Info
+import game_render, func
 from ball import Ball
 from thing import Thing
 from deleted_things import Deleted_thing
 from button import Button
-
-def draw_text(text, color, size, h, w = 0):  # вывод на экран текста
-    font = pygame.font.Font(None, size)
-    all_text = text[0]+ " " + text[1]
-    text_surface = font.render(all_text, True, color)
-    text_rect = text_surface.get_rect()
-    text_rect.x, text_rect.y = settings.screen_width + 3 + w, h
-    # pygame.draw.rect(sc, settings.bg_color, text_rect, 1)
-    sc.blit(text_surface, text_rect)   
-
-def render_n_things(n, things, THINGS_SURF): # генерация settings.number_thingsнепересекающихся спрайтов с изображениями предметов  на игровай панели
-    index_things = 0
-    attempt = 0
-    offset = 30
-    points_list = game_render.get_points_list(settings.screen_width - 2 * offset, settings.screen_height- 2 * offset)
-    while index_things < n and attempt < n*3:
-        if len(points_list)>0: # заранее подготовленный список точек в разных частях поля
-            point = points_list.pop()
-            new_thing = Thing(point[0] + offset, point[1] + offset, THINGS_SURF[index_things])
-        else:
-            new_thing = Thing(randint(offset, settings.screen_width - offset), randint(offset, settings.screen_height +
-                                                     settings.height_bottom_panel - settings.height_bottom_panel - offset), THINGS_SURF[index_things])
-        blocks_hit_list = pygame.sprite.spritecollide(
-            new_thing, things, False, pygame.sprite.collide_circle)
-        if len(blocks_hit_list) == 0:
-            things.add(new_thing)
-            index_things += 1
-        attempt += 1
-    # print(attempt)    
-    return things
-
-def get_ball(mouse_pos): # индекс выбранного шара с панели шаров
-    
-    active_ball = None
-
-    for i, ball in enumerate(balls):
-        dx = ball.x - mouse_pos[0] 
-        dy = ball.y - mouse_pos[1] 
-        distance_square = dx**2 + dy**2 
-
-        if distance_square <= ball.radius**2:
-            active_ball = ball
-    return active_ball
-
-# def get_index_rotating_ball(mouse_pos): # индекс выбранного шара с панели шаров
-
-#     active_ball = None
-    
-#     if not pygame.Rect(game_panel).collidepoint(mouse_pos):
-#         active_ball = get_ball(mouse_pos)
-
-#         # for i, ball in enumerate(balls):
-#         #     dx = ball.x - mouse_pos[0] 
-#         #     dy = ball.y - mouse_pos[1] 
-#         #     distance_square = dx**2 + dy**2 
-
-#         #     if distance_square <= ball.radius**2:
-#         #         active_ball = ball
-#     return active_ball
-
 
 def get_new_coordinates(x0, y0, x, y): #Перевод точки (x,y) в декартову систему координат, где (0, 0) - центр тек. шара
     (x2, y2) = (0, 0)
@@ -364,7 +305,7 @@ def create_things(): # создание n (settings.number_things) предме�
     
     things = pygame.sprite.Group()
     # генерация n непересекающихся предметов на поверхности
-    things = render_n_things(settings.number_things, things, THINGS_SURF)
+    things = game_render.get_things(settings, things, THINGS_SURF)
     return things
 
 def launch_ball():  # Пробел или двойное нажатие мыши запускает шар  (создает вихрь). Определение всех точек пути движения шаря
@@ -379,12 +320,12 @@ def launch_ball():  # Пробел или двойное нажатие мыши
        
 def get_hints(): # Подсказки
     
-    if not settings.is_ball_pressed: return settings.hints[0]
-    elif settings.is_ball_selected: return settings.hints[1]
-    elif not settings.is_draw_line and settings.is_ball_pressed and not ball.isRolling: return settings.hints[2]
-    elif settings.is_draw_line and not ball.isRolling: return settings.hints[3]
+    if not settings.is_ball_pressed: return info.hints[0]
+    elif settings.is_ball_selected: return info.hints[1]
+    elif not settings.is_draw_line and settings.is_ball_pressed and not ball.isRolling: return info.hints[2]
+    elif settings.is_draw_line and not ball.isRolling: return info.hints[3]
     # elif 
-    else: return settings.hints[4]
+    else: return info.hints[4]
 
 def draw_path_and_tips(pos_center_ball): # Конечные точки ломаной кривой - траектории движения мяча (наконечники)
                                             # и сам путь
@@ -459,27 +400,14 @@ def draw_disappearing_path(): # Отображение исчезающего п
     else:
         settings.is_points_erasing = False
 
-def rotation_balls_off():
-    for i, ball in enumerate(balls):
-        ball.is_rotated = False
-
-def rotation_ball_on():
-
-    for i, ball in enumerate(balls):
-        if ball != rotated_ball:
-            ball.is_rotated = False
-        else:
-            ball.is_rotated = True
-
-
 pygame.init()
 
 settings = Settings()
-if settings.is_used_additional_panel:
-    sc = pygame.display.set_mode((settings.screen_width + settings.additional_panel_width, settings.screen_height))
-else:
-    sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
+info = Info(settings.is_used_additional_panel)
+
+sc = func.get_screen(settings)
 sc.fill(settings.black)
+
 pygame.display.update()
 pygame.display.set_caption(settings.text_caption)
 clock = pygame.time.Clock()
@@ -489,7 +417,7 @@ settings.background_image = pygame.image.load(game_render.get_image(settings.bac
 # next_level_button = Button(settings.button_level, settings.button_level_text)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 # game_panel = pygame.Rect(balls_space)
-# things = create_things()
+things = create_things()
 balls, balls_panel = create_balls()
 # print max(node.y for node in path.nodes)
 # print (max(ball.radius for ball in balls))
@@ -505,40 +433,38 @@ game_panel = pygame.Rect((settings.left_margin, settings.up_margin, \
         settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
                     
 done = False
-prev_mouse = (0, 0)
 
-prev_rotated_ball = None
 rotated_ball = None
-is_ball_on_the_game_panel = False
 
 selected_ball = None
 prev_selected_ball = None
 while not done:
     for event in pygame.event.get():
-        settings.reset_text()
+        info.reset()
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                settings.text_mousebuttondown[1] = point_to_str((event.pos))
-                selected_ball = get_ball(event.pos)
-                rotation_balls_off()
+                info.display_mousebuttondown(point_to_str((event.pos)))
+
+                selected_ball = func.get_ball(event.pos, balls)
+                func.rotation_balls_off(balls)
             
                 if selected_ball is not None:
                     
                     if prev_selected_ball != selected_ball:
                         if prev_selected_ball is not None:
                             prev_selected_ball.go_home()
-                            settings.text_not_equal[0] = "prev_selected_ball!=selected_ball"
+                            info.display_not_equal_balls()
                         prev_selected_ball = selected_ball
         
                     selected_offset_x = selected_ball.x - event.pos[0]
                     selected_offset_y = selected_ball.y - event.pos[1]
-                   
-                     
+                    
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                settings.text_mousebuttonup[1] = point_to_str((event.pos)) 
+                info.display_mousebuttonup(point_to_str((event.pos))) 
+
                 if selected_ball is not None:
                     if settings.screen_height - settings.height_bottom_panel in range(selected_ball.rect.top, selected_ball.rect.bottom):
                         if selected_ball.y < settings.screen_height - settings.height_bottom_panel:
@@ -553,7 +479,7 @@ while not done:
                     prev_selected_ball.is_rotated = True  # После отпускания мышки шарик на панели шаров вновь вращается
 
         elif event.type == pygame.MOUSEMOTION:
-            settings.text_mousemotion[1] = point_to_str((event.pos)) 
+            info.display_text_mousemotion(point_to_str((event.pos)))
             
             if selected_ball is not None: 
                 selected_ball.x = event.pos[0] + selected_offset_x
@@ -569,32 +495,25 @@ while not done:
                         selected_ball.x = settings.screen_width - settings.right_margin - selected_ball.radius     
             
         else:
-            settings.text_else[1] = "Yes"
+            info.display_other()
 
         if  selected_ball is None:
             mouse_xy = pygame.mouse.get_pos()
-            settings.text_mouse_xy[1] = point_to_str(mouse_xy)
+            info.display_mouse_xy(point_to_str(mouse_xy))
            
             rotated_ball = None
             if not pygame.Rect(game_panel).collidepoint(mouse_xy):
-                rotated_ball = get_ball(mouse_xy)
+                rotated_ball = func.get_ball(mouse_xy, balls)
 
             if rotated_ball is None:        # курсор мыши не над мячиками
-                settings.text_rotated_ball[1] = "None"
-                rotation_balls_off()
+                info.display_rotated_ball("None")
+                func.rotation_balls_off(balls)
             else:                           # над мячиком мышка
-                settings.text_rotated_ball[1] = rotated_ball.info
-                rotation_ball_on()
+                info.display_rotated_ball(rotated_ball.info)
+                func.rotation_ball_on(balls, rotated_ball)
         
-        if selected_ball is not None:
-            settings.text_selected_ball[1] = selected_ball.info
-        else:
-            settings.text_selected_ball[1] = "None"
-
-        if prev_selected_ball is not None:
-            settings.text_prev_selected_ball[1] = prev_selected_ball.info  
-        else:
-            settings.text_prev_selected_ball[1] = "None"     
+        info.display_balls(selected_ball, prev_selected_ball)
+        
 
         # settings.is_draw_line = False
         # if event.type == pygame.MOUSEBUTTONDOWN:
@@ -676,11 +595,6 @@ while not done:
     
       
      
-      
-
-
-   
-
     # if settings.is_ball_selected and not settings.is_ball_pressed: # Выбор любого одного мяча на нижней панели
     #     ball = balls.sprites()[settings.index_current_ball]
     #     if not settings.is_draw_line and not settings.is_points_erasing: #  Во время движения мячи на панели выбрать нельзя
@@ -709,50 +623,13 @@ while not done:
     # draw_text(sc, get_hints(), settings.white, 20, (130, settings.screen_height+ 5))
     
     if settings.is_used_additional_panel:
-        draw_text(settings.text0, settings.white, 25, 10,100)
-
-        draw_text(settings.text_event, settings.white, 20, 30)
-        draw_text(settings.text_mousebuttondown, settings.white, 20, 50)
-        draw_text(settings.text_mousebuttonup, settings.white, 20, 70)
-        draw_text(settings.text_mousemotion, settings.white, 20, 90)
-        draw_text(settings.text_else, settings.white, 20, 110)
-        draw_text(settings.text_mouse_xy, settings.white, 20, 130)
-        
-        # draw_text(settings.text1, settings.white, 22, 120)
-
-        draw_text(settings.text_selected_ball, settings.white, 22, 160)
-        draw_text(settings.text_prev_selected_ball, settings.white, 22, 180) 
-        draw_text(settings.text_not_equal, settings.yellow, 22, 200)
-        draw_text(settings.text_rotated_ball, settings.white, 22, 220) 
-        # draw_text(settings.text_prev_rotated_ball, settings.white, 22, 240) 
-        # draw_text(settings.text_rotated_ball_not_equal, settings.yellow, 22, 260) 
-        
-        
-        # draw_text(sc, "event.pos:", settings.yellow, 20, (40,6))
-
-        # draw_text(sc, settings.text2, settings.white, 20, (130, 21)) 
-        # draw_text(sc, "selected ball", settings.white, 20, (130, 6))
-
-        # draw_text(sc, settings.text3, settings.white, 20, (250, 21)) 
-        # draw_text(sc, "prev_rotated_ball", settings.white, 20, (250, 6))
-
-    # settings.text4 = ""   
-    # for i, ball in enumerate(balls):
-    #     settings.text4 = settings.text4 + "  " + str(ball.rect.h)
-    # # settings.text1 = point_to_str(event.pos)
-
-        # draw_text(sc, settings.text4, settings.white, 20, (340, 580)) 
-        # draw_text(sc, settings.text6, settings.red, 20, (380, 21)) 
-
-        # #  self.text4 = "" 
-        # draw_text(sc, "index2", settings.white, 20, (340, 600))
-        # draw_text(sc, settings.text5, settings.red, 20, (370, 10))
+        func.display_additional_info(sc, settings, info)
 
     # next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
 
-    # things.update(things)
-    # things.draw(sc)
+    things.update(things)
+    things.draw(sc)
     # sc.blit(settings.background_image,(0, 0))
     balls.update(settings, sc)
     balls.draw(sc)
@@ -765,14 +642,6 @@ while not done:
     pygame.display.update()
     # pygame.time.delay(20)
    
-    # settings.text1 = str(len(balls))
-    # settings.text2 = str(len(things))
-    # settings.text1 = "mouse " + str((mouse_x, mouse_y))
-    # settings.text2 = str(settings.pos_center_ball)
-    # settings.text1 = str(settings.index_current_ball)
-    # settings.text2 = str(len(things))
-    # settings.text1 = str(settings.is_draw_line)
-    # settings.text2 = "ball_down " + str(settings.is_ball_down)
     clock.tick(25)
 
 pygame.quit()

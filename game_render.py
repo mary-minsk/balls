@@ -1,6 +1,8 @@
 
 from random import randint
 import os, random
+import pygame
+from thing import Thing
 
 def render(n, m, W, H):
     points = []
@@ -57,4 +59,27 @@ def get_acceleration(n, speed):     # равномерное замедлени�
 
 def get_image(path):
    return os.path.dirname(os.path.abspath(__file__)) + path
+
+def get_things(settings, things, THINGS_SURF): # генерация settings.number_things
+                                        # непересекающихся спрайтов с изображениями предметов  на игровай панели
+    index_things = 0
+    attempt = 0
+    offset = 30
+    n = settings.number_things
+    points_list = get_points_list(settings.screen_width - 2 * offset, settings.screen_height- 2 * offset)
+    while index_things < n and attempt < n*3:
+        if len(points_list)>0: # заранее подготовленный список точек в разных частях поля
+            point = points_list.pop()
+            new_thing = Thing(point[0] + offset, point[1] + offset, THINGS_SURF[index_things])
+        else:
+            new_thing = Thing(randint(offset, settings.screen_width - offset), randint(offset, settings.screen_height +
+                                                     settings.height_bottom_panel - settings.height_bottom_panel - offset), THINGS_SURF[index_things])
+        blocks_hit_list = pygame.sprite.spritecollide(new_thing, things, False, pygame.sprite.collide_circle)
+        if len(blocks_hit_list) == 0:
+            things.add(new_thing)
+            index_things += 1
+        attempt += 1
+    # print(attempt)    
+    return things
+
     
