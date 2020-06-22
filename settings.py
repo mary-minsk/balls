@@ -11,16 +11,20 @@ class Settings():
         self.number_balls = 3
         self.number_things = 10
 
-        self.screen_width = 425
-        self.screen_height = 650
+        self.screen_width = 425   #(25 + 375 + 25 = 425)
+        self.screen_height = 650  #(40 + 520 + 90 = 650)
 
         self.up_margin = 40
         self.left_margin = 25
         self.right_margin = 25 
         self.height_bottom_panel = 90
         self.bottom_margin_center_ball = 40
+
+        self.game_panel_rect = (self.left_margin, self.up_margin, \
+            self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin)
+           
         
-        self.w = self.screen_height + self.up_margin + self.height_bottom_panel
+        # self.w = self.screen_height + self.up_margin + self.height_bottom_panel
 
         self.background_image_path = '/pict/background/sky_425_650.jpg'
         self.background_image = ""
@@ -32,6 +36,8 @@ class Settings():
         self.black = (0, 0, 0)
         self.bg_color = (100, 100, 100)
         self.white = (255, 255, 255)
+        self.lime = (0, 255, 0)
+        self.aqua = (0,255,255)
 
         # Мяч
         self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
@@ -46,12 +52,19 @@ class Settings():
         self.balls_info = ["small", "medium", "large"]
         self.unit = self.screen_height
 
+        self.is_displayed_lines = True
+        self.m_lines = []
+        # self.n_m_lines = []
+        self.lines_2_3 = []
+        self.lines_2_2 = []
+        self.lines_1_5 = []
+
         
         # Кнопки
-        self.button_level = [300,  self.w - 70, 90, 30]
+        self.button_level = [310,  self.screen_height - self.height_bottom_panel +10, 90, 30]
         self.button_level_text = "Next level..."
-        self.button_ruler = [300, self.w - 115, 90, 30]
-        self.button_ruler_text = "Ruler"
+        # self.button_ruler = [300, self.w - 115, 90, 30]
+        # self.button_ruler_text = "Ruler"
 
         # Траектория движения
         self.disappearing_edges = []  # исчезающие вершины ломаной прямой

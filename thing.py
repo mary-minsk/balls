@@ -10,6 +10,8 @@ class Thing(pygame.sprite.Sprite):  # класс вещей/предметов. 
         self.y = y 
         # pygame.draw.circle(self.image, settings.red, (x, y), self.radius, 1)
 
-    def update(self,things):  # обновление /изменяем св-ва класса за его пределами
-        
-        self.rect = self.rect
+    def update(self,sc, settings, things):  # обновление /изменяем св-ва класса за его пределами
+        pass
+        # self.rect = self.rect
+        pygame.draw.circle(sc, settings.red, self.rect.center, self.radius, 1)
+        pygame.draw.rect(sc, settings.bg_color, self.rect, 1)

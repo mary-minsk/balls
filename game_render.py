@@ -3,33 +3,75 @@ from random import randint
 import os, random
 import pygame
 from thing import Thing
+# from info import Info
 
-def render(n, m, W, H):
+def render(n, m, W, H, settings, point_shift = 0): # игровое поле разбивается на m равных частей по вертикале в n столбцах. 
+                            #    по одной точке в каждом прямоугольнике
     points = []
     step_x = W//n
     step_y = H//m
+    print("step_y")
+    print(step_y)
+    lines = []
+    lines_last = []
+    m +=1
     for i in range(n):
+        if settings.is_displayed_lines:
+            lines.append([])
+            print(i)
         for j in range(m):
+
             x = randint(step_x*i, step_x*i+step_x)
             y = randint(step_y*j, step_y*j+step_y)
-            points.append((x, y))
-    return points
+            if j!=m-1:
+                points.append((x, y))
+          
+            if settings.is_displayed_lines:
+                point_a = (step_x*i + settings.left_margin + 4 , step_y*j + settings.up_margin + point_shift)
+                point_b = (step_x*i+step_x+ settings.left_margin - 4, step_y*j + settings.up_margin + point_shift)
+                lines[i].append((point_a, point_b))
 
-def render_m(m, W, H):
+    
+    # print((n, m))
+    # print(lines)
+    # lines.append(lines_last)      
+    # print(lines)
+    
+    
+    # print(lines_last)
+    # print("*****")
+    return points, lines
+
+def render_m(m, W, H, settings):# игровое поле разбивается на m равных частей по вертикале. В каждом прямоугольнике по одной точке
     points = []
+    lines = []
     step_y = H//m
+    m +=1
     for j in range(m):
         x = randint(0, W)
         y = randint(step_y*j, step_y*j+step_y)
-        points.append((x, y))
-    return points
+        if j != m-1:
+            points.append((x, y))
 
-def get_points_list(W, H):
-    points_2_3 = render(2, 3, W, H) 
-    points_2_2 = render(2, 2, W, H)  
-    points_1_4 = render_m(5, W, H)   
-    list = points_1_4 + points_2_2 + points_2_3  
-    return (list)
+        if settings.is_displayed_lines:
+            point_a = (0 + settings.left_margin, step_y*j + settings.up_margin)
+            point_b = (W + settings.left_margin, step_y*j + settings.up_margin)
+            lines.append((point_a, point_b))
+            # if j == m-1:
+            #     # point_a = (0 + settings.left_margin, step_y*j + step_y + settings.up_margin)
+            #     # point_b = (W + settings.left_margin, step_y*j + step_y + settings.up_margin)
+            #     lines.append((point_a, point_b))
+                
+
+    # print(m_lines)
+    return points, lines
+
+def get_points_list(W, H, settings):
+    points_2_3, settings.lines_2_3 = render(2, 3, W, H, settings, -1) 
+    points_2_2, settings.lines_2_2 = render(2, 2, W, H, settings, 1)  
+    points_1_5, settings.lines_1_5 = render_m(5, W, H, settings)   
+    list = points_1_5 + points_2_2 + points_2_3  
+    return list
 
 def get_images(n, path):
     path_f = []
@@ -60,13 +102,21 @@ def get_acceleration(n, speed):     # равномерное замедлени�
 def get_image(path):
    return os.path.dirname(os.path.abspath(__file__)) + path
 
-def get_things(settings, things, THINGS_SURF): # генерация settings.number_things
+def get_things(sc, settings, things, THINGS_SURF, game_panel, info): # генерация settings.number_things
                                         # непересекающихся спрайтов с изображениями предметов  на игровай панели
     index_things = 0
     attempt = 0
     offset = 30
     n = settings.number_things
-    points_list = get_points_list(settings.screen_width - 2 * offset, settings.screen_height- 2 * offset)
+    
+    # print(game_panel.w)
+    # print(game_panel.w)
+    
+    # //points_list = get_points_list(settings.screen_width - 2 * offset, settings.screen_height- 2 * offset)
+    points_list = get_points_list(game_panel.w, game_panel.h, settings)
+    
+        # settings.screen_height- 2 * offset)
+    
     while index_things < n and attempt < n*3:
         if len(points_list)>0: # заранее подготовленный список точек в разных частях поля
             point = points_list.pop()
@@ -80,6 +130,7 @@ def get_things(settings, things, THINGS_SURF): # генерация settings.num
             index_things += 1
         attempt += 1
     # print(attempt)    
+    info.display_things_attempts(attempt)
     return things
-
+   
     

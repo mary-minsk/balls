@@ -14,6 +14,8 @@ class Info():
             self.text_selected_ball = ["selected ball: ", "None"]
             self.text_mouse_xy = ["mouse: ", ""]
             self.text_line = ["______________________________", ""]
+            self.text_number_things = ["number of things: ",""]  
+            self.text_things_attempts = ["attempts to generate the things: ",""]
 
             self.reset()
 
@@ -64,7 +66,15 @@ class Info():
 
     def display_mousebuttonup(self, text):
         if self.is_active_panel:
-            self.text_mousebuttonup[1] = text
+            self.text_mousebuttonup[1] = text  
+
+    def display_number_things(self, n):
+        if self.is_active_panel:
+            self.text_number_things[1] = str(n)
+
+    def display_things_attempts(self, n):
+        if self.is_active_panel:
+            self.text_things_attempts[1] = str(n)
             
                 
           

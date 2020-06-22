@@ -15,7 +15,11 @@ def display_additional_info(sc, settings, info):
     display_text(sc, settings, info.text_selected_ball, settings.white, 22, 180)
     display_text(sc, settings, info.text_prev_selected_ball, settings.white, 22, 200) 
     display_text(sc, settings, info.text_not_equal, settings.yellow, 22, 220)
-    display_text(sc, settings, info.text_rotated_ball, settings.white, 22, 240) 
+    display_text(sc, settings, info.text_rotated_ball, settings.white, 22, 240)   
+    display_text(sc, settings, info.text_line, settings.white, 20, 250)
+
+    display_text(sc, settings, info.text_number_things, settings.white, 22, 290)  
+    display_text(sc, settings, info.text_things_attempts, settings.white, 22, 310)
     
 def display_text(sc, settings, text, color, size, h, w = 0):  # вывод на экран текста
     font = pygame.font.Font(None, size)
@@ -59,6 +63,11 @@ def rotation_ball_on(balls, rotated_ball):
             ball.is_rotated = False
         else:
             ball.is_rotated = True
+
+def get_game_panel(settings):
+    return pygame.Rect((settings.left_margin, settings.up_margin, \
+        settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
+           
 
 
     

@@ -52,7 +52,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
        
     def update(self, settings, sc):
         
-        pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
+        # pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
  
         if self.isRolling:               # когда шар каится по поверхности
             if len(settings.all_path_points) >0:
