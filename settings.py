@@ -36,8 +36,10 @@ class Settings():
         self.black = (0, 0, 0)
         self.bg_color = (100, 100, 100)
         self.white = (255, 255, 255)
-        self.lime = (0, 255, 0)
-        self.aqua = (0,255,255)
+        self.lime = (0, 200, 0)
+        self.aqua = (0,155,155)
+        self.blue = (0,0,255)
+        self.yellow2 = (255, 255, 0)
 
         # Мяч
         self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
@@ -58,6 +60,7 @@ class Settings():
         self.lines_2_3 = []
         self.lines_2_2 = []
         self.lines_1_5 = []
+        self.deleted_things_rect = []
 
         
         # Кнопки

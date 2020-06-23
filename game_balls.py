@@ -648,19 +648,21 @@ while not done:
 
 
     if settings.is_displayed_lines:
+        # for rect in settings.lines_1_5:
+        #     pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-        for i in range(len(settings.lines_2_3)):
-            for j in range(len(settings.lines_2_3[i])):
-                pygame.draw.aaline(sc, settings.yellow, settings.lines_2_3[i][j][0], settings.lines_2_3[i][j][1])
-  
-        for i in range(len(settings.lines_2_2)):
-            for j in range(len(settings.lines_2_2[i])):
-                pygame.draw.aaline(sc, settings.lime, settings.lines_2_2[i][j][0], settings.lines_2_2[i][j][1])
- 
-    
-        for i in range(len(settings.lines_1_5)):
-            pygame.draw.line(sc, settings.aqua, settings.lines_1_5[i][0], settings.lines_1_5[i][1])
- 
+        for rect in settings.lines_2_3:
+            pygame.draw.rect(sc, rect[1], rect[0], 1)
+            # pygame.draw.rect(sc, settings.bg_color, rect, 1)
+
+        for rect in settings.lines_2_2:
+            pygame.draw.rect(sc, rect[1], rect[0], 1)
+        #     pygame.draw.rect(sc, settings.bg_color, rect, 1)
+
+        if len(settings.deleted_things_rect) >0:
+            for rect in settings.deleted_things_rect:
+                pygame.draw.rect(sc, settings.yellow, rect,1)
+
 
     # deleted_balls.draw(sc)
     # deleted_balls.update(settings)
