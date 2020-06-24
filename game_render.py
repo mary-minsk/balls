@@ -3,49 +3,101 @@ from random import randint
 import os, random
 import pygame
 from thing import Thing
-# from info import Info
 
-def render(n, m, W, H, settings, color, shift): # игровое поле разбивается на m равных частей по вертикале в n столбцах. 
+def get_things(n, sc, settings, things, info): # генерация n
+                                        # непересекающихся спрайтов с изображениями предметов  на игровай панели
+    THINGS = get_images(30, settings.path_things)
+    THINGS_SURF = []
+    
+    for i in range(len(THINGS)): # добавление изображения 10 вещей
+        THINGS_SURF.append(pygame.image.load(THINGS[i]).convert_alpha())
+
+    settings.deleted_things_rect = []
+    settings.all_attempts = 0
+    thing_2_3, settings.lines_2_3 = render(2, 3, THINGS_SURF, settings, things, settings.lime, 2, info) 
+    thing_2_2, settings.lines_2_2 = render(2, 2, THINGS_SURF, settings, things, settings.yellow, 0, info)  
+    thungs_1_5, settings.lines_1_5 = render_m(5, THINGS_SURF, settings, things, settings.blue, 1, info)   
+    info.display_things_attempts(settings.all_attempts)
+
+        #     new_thing = Thing(randint(offset, settings.screen_width - offset), randint(offset, settings.screen_height +
+        #                                              settings.height_bottom_panel - settings.height_bottom_panel - offset), THINGS_SURF[index_things])
+   
+    return thungs_1_5
+
+def check_possible_place(settings, things, thing_surf, possible_point, rect_color):
+    
+    new_thing = Thing(possible_point[0] + settings.left_margin, possible_point[1] + settings.up_margin, thing_surf)
+     
+    if settings.is_displayed_lines:
+        new_thing.rect_color = rect_color
+
+    blocks_hit_list = pygame.sprite.spritecollide(new_thing, things, False, pygame.sprite.collide_circle)
+
+    if len(blocks_hit_list) == 0:
+        if pygame.Rect(settings.game_panel).contains(new_thing.rect):
+            return new_thing
+        else: 
+            settings.deleted_things_rect.append((new_thing.rect, rect_color))
+    else:
+        settings.deleted_things_rect.append((new_thing.rect, rect_color))
+    return None
+   
+def render(n, m, THINGS_SURF, settings, things, color, shift, info): # игровое поле разбивается на m равных частей по вертикале в n столбцах. 
                             #    по одной точке в каждом прямоугольнике
-    points = []
+    W, H = settings.game_panel.w, settings.game_panel.h
     step_x = W//n
     step_y = H//m
     lines = []
+    
     for i in range(n):
         for j in range(m):
+            current_attempt = 0
+            is_point_found = False
+            while not is_point_found and current_attempt < settings.attempts_place_thing: 
+                possible_point = randint(step_x*i, step_x*i+step_x), randint(step_y*j, step_y*j+step_y)
+                serf = THINGS_SURF.pop(0)
+                thing = check_possible_place(settings, things, serf, possible_point, color)
+                
+                if thing is not None:
+                    things.add(thing)
+                    is_point_found = True
+            
+                if settings.is_displayed_lines:
+                    rect = (step_x*i + settings.left_margin + shift, step_y*j + settings.up_margin + shift, step_x - 2*shift, step_y - 2*shift)
+                    lines.append((rect, color))
+                current_attempt += 1
+            settings.all_attempts += current_attempt
+    
+    return things, lines
 
-            x = randint(step_x*i, step_x*i+step_x)
-            y = randint(step_y*j, step_y*j+step_y)
-            points.append(((x, y), color))
-          
-            if settings.is_displayed_lines:
-                rect = (step_x*i + settings.left_margin + shift, step_y*j + settings.up_margin + shift, step_x - 2*shift, step_y - 2*shift)
-                lines.append((rect, color))
-
-    return points, lines
-
-def render_m(m, W, H, settings, color, shift = 0):# игровое поле разбивается на m равных частей по вертикале. В каждом прямоугольнике по одной точке
-    points = []
+def render_m(m, THINGS_SURF, settings, things, color, shift, info):# игровое поле разбивается на m равных частей по вертикале. В каждом прямоугольнике по одной точке
+    W, H = settings.game_panel.w, settings.game_panel.h
     lines = []
     step_y = H/m
-    for j in range(m):
-        x = randint(0, W)
-        y = randint(int(step_y*j), int(step_y*(j+1)))
-        # points.append((x, y))
-        points.append(((x, y), color))
-        if settings.is_displayed_lines:
-            rect = (settings.left_margin + shift, int(step_y*j) + shift+ settings.up_margin, W - 2*shift, int(step_y) - 2*shift)
-            lines.append((rect, color))
     
-    return points, lines
+    for j in range(m):
+        
+        is_point_found = False
+        current_attempt = 0
+        while not is_point_found and current_attempt < settings.attempts_place_thing: 
 
-def get_points_list(W, H, settings):
-    points_2_3, settings.lines_2_3 = render(2, 3, W, H, settings,settings.lime, 2) 
-    points_2_2, settings.lines_2_2 = render(2, 2, W, H, settings, settings.yellow, 0)  
+            possible_point = randint(0, W), randint(int(step_y*j), int(step_y*(j+1)))
+            serf = THINGS_SURF.pop(0)
+            thing = check_possible_place(settings, things, serf, possible_point, color)
+            current_attempt +=1
+            settings.all_attempts += 1
 
-    points_1_5, settings.lines_1_5 = render_m(5, W, H, settings, settings.blue, 1)   
-    list = points_2_3 + points_2_2 + points_1_5    # 5+4+6 = 15
-    return list
+            if thing is not None:
+                things.add(thing)
+                is_point_found = True
+        
+            if settings.is_displayed_lines:
+                rect = (settings.left_margin + shift, int(step_y*j) + shift+ settings.up_margin, W - 2*shift, int(step_y) - 2*shift)
+                lines.append((rect, color))
+                
+            current_attempt += 1
+    
+    return things, lines
 
 def get_images(n, path):
     path_f = []
@@ -76,42 +128,4 @@ def get_acceleration(n, speed):     # равномерное замедлени�
 def get_image(path):
    return os.path.dirname(os.path.abspath(__file__)) + path
 
-def get_things(sc, settings, things, THINGS_SURF, game_panel, info): # генерация settings.number_things
-                                        # непересекающихся спрайтов с изображениями предметов  на игровай панели
-    index_things = 0
-    attempt = 0
-    offset = 30
-    n = settings.number_things
-    
-    points_list = get_points_list(game_panel.w, game_panel.h, settings)
-    settings.deleted_things_rect = []
-    new_thing = None
-   
-    while index_things < n and attempt < n*3:
-        if len(points_list)>0: # заранее подготовленный список точек в разных частях поля
-            objects = points_list.pop(0)
-            point = objects[0]
-            color = objects[1]
-            new_thing = Thing(point[0] + settings.left_margin, point[1] + settings.up_margin, THINGS_SURF[index_things])
-        
-        if settings.is_displayed_lines:
-            new_thing.rect_color = color
-        # else:
-        #     new_thing = Thing(randint(offset, settings.screen_width - offset), randint(offset, settings.screen_height +
-        #                                              settings.height_bottom_panel - settings.height_bottom_panel - offset), THINGS_SURF[index_things])
-        blocks_hit_list = pygame.sprite.spritecollide(new_thing, things, False, pygame.sprite.collide_circle)
-        if len(blocks_hit_list) == 0:
-            things.add(new_thing)
-            index_things += 1
-        else:
-            # print(current_thing_rect)
-            # pygame.draw.circle(sc, settings.red, current_thing.rect.center, current_thing.radius, 1)
-            settings.deleted_things_rect.append(new_thing.rect)
-            # pygame.draw.rect(sc, settings.bg_color, new_thing.rect, 1)
-            # print(new_thing)
-        attempt += 1
-     
-    info.display_things_attempts(attempt)
-    return things
-   
-    
+

@@ -1,3 +1,4 @@
+import pygame
 
 class Settings():
     def __init__(self):
@@ -6,10 +7,22 @@ class Settings():
         # Использовать панель с доп. иформацией об основных параметрах игры
         self.is_used_additional_panel = True
         # self.is_used_additional_panel = False 
+        self.is_displayed_lines = True
+        # self.is_displayed_lines = False
         self.additional_panel_width = 300
 
         self.number_balls = 3
         self.number_things = 10
+
+        self.current_level = 1
+        self.start_things = 5
+        self.current_things = self.start_things
+        self.finish_things = 12
+        self.ç = self.start_things
+        self.last_level = self.finish_things - self.start_things
+
+        self.all_attempts = 0
+        self.attempts_place_thing = 3
 
         self.screen_width = 425   #(25 + 375 + 25 = 425)
         self.screen_height = 650  #(40 + 520 + 90 = 650)
@@ -22,7 +35,7 @@ class Settings():
 
         self.game_panel_rect = (self.left_margin, self.up_margin, \
             self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin)
-           
+        self.game_panel = pygame.Rect(self.game_panel_rect)
         
         # self.w = self.screen_height + self.up_margin + self.height_bottom_panel
 
@@ -31,15 +44,7 @@ class Settings():
         self.path_things = '/pict/things'   # изображения предметов
         self.path_spirals = '/pict/spiralls' 
 
-        self.red = (255, 0, 0)
-        self.yellow = (255, 255, 0)
-        self.black = (0, 0, 0)
-        self.bg_color = (100, 100, 100)
-        self.white = (255, 255, 255)
-        self.lime = (0, 200, 0)
-        self.aqua = (0,155,155)
-        self.blue = (0,0,255)
-        self.yellow2 = (255, 255, 0)
+        self.set_color()
 
         # Мяч
         self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
@@ -54,7 +59,7 @@ class Settings():
         self.balls_info = ["small", "medium", "large"]
         self.unit = self.screen_height
 
-        self.is_displayed_lines = True
+       
         self.m_lines = []
         # self.n_m_lines = []
         self.lines_2_3 = []
@@ -107,6 +112,16 @@ class Settings():
         self.is_draw_line = False     # 2. курсор выходит за границы шара (радус шара) => рисуем линию на игровой поверхности
         self.disappearance = 1 # Ускорение для стирания ломаной прямой. Увеличивающееся на единицу с каждым шагом
     
+    def set_color(self):
+        self.red = (255, 0, 0)
+        self.yellow = (255, 255, 0)
+        self.black = (0, 0, 0)
+        self.bg_color = (100, 100, 100)
+        self.white = (255, 255, 255)
+        self.lime = (0, 200, 0)
+        self.aqua = (0,155,155)
+        self.blue = (0,0,255)
+        self.yellow2 = (255, 255, 0)
 
        
 

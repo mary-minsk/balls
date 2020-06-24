@@ -296,19 +296,12 @@ def create_balls(): # создание трех шаров, определени
     # print(h1 + max_h)
     return balls
 
-def create_things(): # создание n (settings.number_things) предметов
-
-    THINGS = game_render.get_images(settings.number_things, settings.path_things)
-    THINGS_SURF = []
-
-    for i in range(settings.number_things): # добавление изображения 10 вещей
-        THINGS_SURF.append(pygame.image.load(THINGS[i]).convert_alpha())
+def create_things(n): # создание n (settings.number_things) предметов
     
     things = pygame.sprite.Group()
     # генерация n непересекающихся предметов на поверхности
-    things = game_render.get_things(sc, settings, things, THINGS_SURF, game_panel, info)
-    
-    info.display_number_things(settings.number_things)
+  
+    things = game_render.get_things(n, sc, settings, things, info)
     
     return things
 
@@ -353,7 +346,10 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     deleted_balls.empty()
     setting.reset()
 
-    things = create_things()
+    if settings.current_level < settings.last_level:
+        settings.current_things += 1
+        setting.current_level += 1
+    things = create_things(settings.current_things)
     balls = create_balls()
     deleted_balls = pygame.sprite.Group()
     
@@ -420,22 +416,15 @@ settings.background_image = pygame.image.load(game_render.get_image(settings.bac
 
 next_level_button = Button(settings.button_level, settings.button_level_text)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
-game_panel = pygame.Rect(settings.game_panel_rect)
 
-# print(game_panel)
-things = create_things()
+things = create_things(settings.current_things)
+
 balls = create_balls()
-# print max(node.y for node in path.nodes)
-# print (max(ball.radius for ball in balls))
-# index, value = max(enumerate(balls), key=operator.itemgetter(1))
-# print(balls_panel)
 deleted_balls = pygame.sprite.Group()
 
- 
 pos_center_ball = (0, 0)            # пигейм координаты центра выбранного шара в момент выбора направления удара
 (mouse_x, mouse_y) = (0, 0)         # тек пигейм координаты мыши
      
-
 done = False
 
 rotated_ball = None
@@ -512,7 +501,7 @@ while not done:
             info.display_mouse_xy(point_to_str(mouse_xy))
            
             rotated_ball = None
-            if not pygame.Rect(game_panel).collidepoint(mouse_xy):
+            if not pygame.Rect(settings.game_panel).collidepoint(mouse_xy):
                 rotated_ball = func.get_ball(mouse_xy, balls)
 
             if rotated_ball is None:        # курсор мыши не над мячиками
@@ -525,6 +514,7 @@ while not done:
             
         
         info.display_balls(selected_ball, prev_selected_ball)
+        info.display_number_things(settings.current_things)
         
 
         # settings.is_draw_line = False
@@ -602,7 +592,7 @@ while not done:
     # pygame.draw.rect(sc, settings.bg_color, (0, settings.screen_height, settings.screen_width, settings.screen_height + settings.height_bottom_panel), 2)
     # pygame.draw.rect(sc, settings.bg_color, (settings.left_margin, settings.up_margin, \
     #     settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin), 2)
-    pygame.draw.rect(sc, settings.bg_color, game_panel, 2)
+    pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
     
     
       
@@ -648,21 +638,21 @@ while not done:
 
 
     if settings.is_displayed_lines:
-        # for rect in settings.lines_1_5:
+        for rect in settings.lines_1_5:
+            pygame.draw.rect(sc, rect[1], rect[0], 1)
+
+        # for rect in settings.lines_2_3:
         #     pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-        for rect in settings.lines_2_3:
-            pygame.draw.rect(sc, rect[1], rect[0], 1)
-            # pygame.draw.rect(sc, settings.bg_color, rect, 1)
-
-        for rect in settings.lines_2_2:
-            pygame.draw.rect(sc, rect[1], rect[0], 1)
-        #     pygame.draw.rect(sc, settings.bg_color, rect, 1)
+        # for rect in settings.lines_2_2:
+        #     pygame.draw.rect(sc, rect[1], rect[0], 1)
 
         if len(settings.deleted_things_rect) >0:
             for rect in settings.deleted_things_rect:
-                pygame.draw.rect(sc, settings.yellow, rect,1)
-
+                pygame.draw.rect(sc, rect[1], rect[0], 1)  #topleft, bottomleft, topright, bottomright
+                pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
+                pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
+        
 
     # deleted_balls.draw(sc)
     # deleted_balls.update(settings)
