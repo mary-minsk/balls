@@ -291,14 +291,11 @@ def create_balls(): # создание трех шаров, определени
         # print(balls.sprites()[i].distance)
     max_h = (max(ball.radius for ball in balls))
     balls_space = [0, h1 - max_h,  w1, max_h * 2]
-    # , pygame.Rect(balls_space)
-    # print("###")
-    # print(h1 + max_h)
+    
     return balls
 
 def create_things(): # создание n (settings.number_things) предметов
     
-    # things = pygame.sprite.Group()
     # генерация n непересекающихся предметов на поверхности
   
     things = game_render.get_things(sc, settings, info)
@@ -417,7 +414,7 @@ settings.background_image = pygame.image.load(game_render.get_image(settings.bac
 next_level_button = Button(settings.button_level, settings.button_level_text)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
-show_lines_button = Button(info.show_lines, info.get_text_switch(), 22)
+# show_lines_button = Button(info.show_lines, info.get_text_switch(), 22)
 
 
 things = create_things()
@@ -461,24 +458,10 @@ while not done:
                 else:
                     if next_level_button.isOver(mouse_xy):
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
-
-                    if show_lines_button.isOver(mouse_xy):
-                        
-                        settings.is_displayed_lines = not settings.is_displayed_lines
-                        show_lines_button.text = info.switch()
-                        
-                        if not settings.generated_things_lines:
-                            print("Yes")
-                            show_lines_button.width = 100
-                        
-                        if not settings.generated_things_lines:
-                            settings.number_current_things -=1
-                            balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
-                        # if not settings.generated_things_lines and  not info.switch_lines:
-                        #     print("Yes")
-                        #     show_lines_button.width = 100
-                        
-            
+                    
+                    if info.check_click(mouse_xy, settings):
+                        settings.number_current_things -=1
+                        balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                     
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
@@ -530,12 +513,11 @@ while not done:
             else:                           # над мячиком мышка
                 info.display_rotated_ball(rotated_ball.info)
                 func.rotation_ball_on(balls, rotated_ball)
-
-            
         
-        info.display_balls(selected_ball, prev_selected_ball)
-        info.display_number_things(settings.number_current_things)
-        info.display_things_attempts(settings.all_attempts)
+
+        # info.display_balls(selected_ball, prev_selected_ball)
+        # info.display_number_things(settings.number_current_things)
+        # info.display_things_attempts(settings.all_attempts)
         
 
         # settings.is_draw_line = False
@@ -647,9 +629,10 @@ while not done:
     
     if settings.is_used_additional_panel:
         func.display_additional_info(sc, settings, info)
+    info.display_balls(selected_ball, prev_selected_ball)
+    
 
     next_level_button.draw(sc, settings)
-    show_lines_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
 
     things.update(sc, settings, things)

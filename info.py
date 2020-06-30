@@ -1,3 +1,4 @@
+from button import Button
 class Info():
     def __init__(self, is_active_panel, is_displayed_lines):
 
@@ -18,27 +19,35 @@ class Info():
             self.text_things_attempts = ["attempts to generate the things: ",""]
 
             self.text_generated_things = ["Generated things", ""]
-            # self.text_border = [" border",""]
             self.attempts_one_cell = ["attempts to place thing in one color cell < ", ""]
 
             self.reset()
             self.reset_len_things()
-
+            
             self.text_switch = ["Lines on", "Lines off"]
             self.show_lines = [427, 569, 90, 30]
             self.switch_lines = is_displayed_lines
             self.switch()
             self.message =["all things will be regenerated",""]
-            # print(self.switch_lines)
-
+            self.show_lines_button = Button(self.show_lines, self.get_text_switch(), 22)
+            
+    def check_click(self, mouse_xy, settings):
+        if self.is_active_panel:
+            if self.show_lines_button.isOver(mouse_xy):
+                        
+                settings.is_displayed_lines = not settings.is_displayed_lines
+                self.show_lines_button.text = self.switch()
+                             
+                if not settings.generated_things_lines:
+                    return True
+        return False
+                        
     def switch(self):
         if self.switch_lines == False:
             self.switch_lines = True
-            # print(self.text_switch[0])
             return self.text_switch[0]
         else:
             self.switch_lines = False
-            # print(self.text_switch[1])
             return self.text_switch[1]
 
     def get_text_switch(self):
@@ -48,35 +57,35 @@ class Info():
             return self.text_switch[1]
 
     def reset(self):
-        if self.is_active_panel:
-            self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
-            self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
-            self.text_mousemotion = ["MOUSEMOTION: ", ""]
-            self.text_else = ["other motion: ", ""]
-            self.text_rotated_ball = ["rotated ball: ", "None"]
-            self.text_not_equal = ["", ""]
+        
+        self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
+        self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
+        self.text_mousemotion = ["MOUSEMOTION: ", ""]
+        self.text_else = ["other motion: ", ""]
+        self.text_rotated_ball = ["rotated ball: ", "None"]
+        self.text_not_equal = ["", ""]
 
     def reset_len_things(self):
-        if self.is_active_panel:
-            self.text_len_things_2_3 = [" grid 2 x 3: ", ""]
-            self.text_len_things_2_2 = [" grid 2 x 2: ", ""]
-            self.text_len_things_1_5 = [" grid 1 x 5: ", ""]
-            self.len_things_2_3 = 0
-            self.len_things_2_2 = 0
-            self.len_things_1_5 = 0
-            self.del_things = 0
+        
+        self.text_len_things_2_3 = [" grid 2 x 3: ", ""]
+        self.text_len_things_2_2 = [" grid 2 x 2: ", ""]
+        self.text_len_things_1_5 = [" grid 1 x 5: ", ""]
+        self.len_things_2_3 = 0
+        self.len_things_2_2 = 0
+        self.len_things_1_5 = 0
+        self.del_things = 0
 
-            self.text_deleted = ["", ""]
+        self.text_deleted = ["", ""]
 
-            self.text_unsuitable_things_2_3 = [" unfit: ", ""]
-            self.text_unsuitable_things_2_2 = [" unfit: ", ""]
-            self.text_unsuitable_things_1_5 = [" unfit: ", ""]
-            
-            self.unfit_2_3 = 0
-            self.unfit_2_2 = 0
-            self.unfit_1_5 = 0
-            self.del_things_text_color = None
-            # unsuitable_things
+        self.text_unsuitable_things_2_3 = [" unfit: ", ""]
+        self.text_unsuitable_things_2_2 = [" unfit: ", ""]
+        self.text_unsuitable_things_1_5 = [" unfit: ", ""]
+        
+        self.unfit_2_3 = 0
+        self.unfit_2_2 = 0
+        self.unfit_1_5 = 0
+        self.del_things_text_color = None
+           
 
     def display_not_equal_balls(self):
         if self.is_active_panel:
@@ -119,12 +128,10 @@ class Info():
             self.text_mousebuttonup[1] = text  
 
     def display_number_things(self, n):
-        if self.is_active_panel:
-            self.text_number_things[1] = str(n)
+        self.text_number_things[1] = str(n)
 
     def display_things_attempts(self, n):
-        if self.is_active_panel:
-            self.text_things_attempts[1] = str(n)
+        self.text_things_attempts[1] = str(n)
 
     def display_len_things_2_3(self, n):
         if self.is_active_panel:

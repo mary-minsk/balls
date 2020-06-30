@@ -35,12 +35,16 @@ def display_additional_info(sc, settings, info):
     if info.len_things_1_5 > 0:
         display_text(sc, settings, info.text_len_things_1_5, settings.blue, 22, 400, 0, True)
 
+    
     if info.unfit_2_3 > 0:
         display_text(sc, settings, info.text_unsuitable_things_2_3, settings.green, 22, 360, 120, True)
+    
     if info.unfit_2_2 > 0:
         display_text(sc, settings, info.text_unsuitable_things_2_2, settings.yellow, 22, 380, 120, True)
+    
     if info.unfit_1_5 > 0:
         display_text(sc, settings, info.text_unsuitable_things_1_5, settings.blue, 22, 400, 120, True) 
+    
     
     display_text(sc, settings, info.text_things_attempts, settings.white, 21, 420)
 
@@ -49,6 +53,12 @@ def display_additional_info(sc, settings, info):
 
     if not settings.generated_things_lines:
         display_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
+
+    info.show_lines_button.draw(sc, settings)
+
+    info.display_number_things(settings.number_current_things)
+    info.display_things_attempts(settings.all_attempts)
+
     
 def display_text(sc, settings, text, color, size, h, w = 0, is_border = False, white_border_color = None):  # вывод на экран текста
     font = pygame.font.Font(None, size)
@@ -102,9 +112,9 @@ def rotation_ball_on(balls, rotated_ball):
         else:
             ball.is_rotated = True
 
-def get_game_panel(settings):
-    return pygame.Rect((settings.left_margin, settings.up_margin, \
-        settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
+# def get_game_panel(settings):
+#     return pygame.Rect((settings.left_margin, settings.up_margin, \
+#         settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
            
 
 
