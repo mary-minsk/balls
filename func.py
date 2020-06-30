@@ -2,7 +2,7 @@ import pygame
 
 def display_additional_info(sc, settings, info):
 
-    display_text(sc, settings, info.text_game_info, settings.white, 25, 10, 100)
+    display_text(sc, settings, info.text_game_info, settings.white, 25, 10, 90)
     display_text(sc, settings, info.text_event, settings.white, 20, 30)
     display_text(sc, settings, info.text_mousebuttondown, settings.white, 20, 50)
     display_text(sc, settings, info.text_mousebuttonup, settings.white, 20, 70)
@@ -12,22 +12,60 @@ def display_additional_info(sc, settings, info):
     display_text(sc, settings, info.text_line, settings.white, 20, 140)
     
 
-    display_text(sc, settings, info.text_selected_ball, settings.white, 22, 180)
-    display_text(sc, settings, info.text_prev_selected_ball, settings.white, 22, 200) 
-    display_text(sc, settings, info.text_not_equal, settings.yellow, 22, 220)
-    display_text(sc, settings, info.text_rotated_ball, settings.white, 22, 240)   
+    display_text(sc, settings, info.text_selected_ball, settings.white, 20, 180)
+    display_text(sc, settings, info.text_prev_selected_ball, settings.white, 20, 200) 
+    display_text(sc, settings, info.text_not_equal, settings.yellow, 20, 220)
+    display_text(sc, settings, info.text_rotated_ball, settings.white, 20, 240)   
     display_text(sc, settings, info.text_line, settings.white, 20, 250)
 
-    display_text(sc, settings, info.text_number_things, settings.white, 22, 290)  
-    display_text(sc, settings, info.text_things_attempts, settings.white, 22, 310)
+    # Generated things
+    display_text(sc, settings, info.text_generated_things, settings.white, 24, 280, 50)  
+
+    info.attempts_one_cell[1] = str(settings.attempts_place_thing)
+    display_text(sc, settings, info.attempts_one_cell, settings.white, 20, 310)
+
+    display_text(sc, settings, info.text_number_things, settings.white, 20, 330)  
+
+    if info.len_things_2_3 > 0:
+        display_text(sc, settings, info.text_len_things_2_3, settings.green, 22, 360, 0, True)
     
-def display_text(sc, settings, text, color, size, h, w = 0):  # вывод на экран текста
+    if info.len_things_2_2 > 0:
+        display_text(sc, settings, info.text_len_things_2_2, settings.yellow, 22, 380, 0, True)
+
+    if info.len_things_1_5 > 0:
+        display_text(sc, settings, info.text_len_things_1_5, settings.blue, 22, 400, 0, True)
+
+    if info.unfit_2_3 > 0:
+        display_text(sc, settings, info.text_unsuitable_things_2_3, settings.green, 22, 360, 120, True)
+    if info.unfit_2_2 > 0:
+        display_text(sc, settings, info.text_unsuitable_things_2_2, settings.yellow, 22, 380, 120, True)
+    if info.unfit_1_5 > 0:
+        display_text(sc, settings, info.text_unsuitable_things_1_5, settings.blue, 22, 400, 120, True) 
+    
+    display_text(sc, settings, info.text_things_attempts, settings.white, 21, 420)
+
+    if info.del_things > 0:
+        display_text(sc, settings, info.text_deleted, info.del_things_text_color, 22, 440, 0, True, settings.white)
+
+    if not settings.generated_things_lines:
+        display_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
+    
+def display_text(sc, settings, text, color, size, h, w = 0, is_border = False, white_border_color = None):  # вывод на экран текста
     font = pygame.font.Font(None, size)
-    all_text = text[0]+ " " + text[1]
+    str1, str2 = "", ""
+    if text[0] is not None:
+        str1 = text[0]
+    if text[1] is not None:
+        str2 = text[1]
+    all_text = str1+ " " + str2
     text_surface = font.render(all_text, True, color)
     text_rect = text_surface.get_rect()
     text_rect.x, text_rect.y = settings.screen_width + 3 + w, h
-    # pygame.draw.rect(sc, settings.bg_color, text_rect, 1)
+    if is_border:
+        if white_border_color is not None :
+            pygame.draw.rect(sc, white_border_color, text_rect, 1)
+        else:
+            pygame.draw.rect(sc, color, text_rect, 1)
     sc.blit(text_surface, text_rect)   
 
 def get_ball(mouse_pos, balls): # индекс выбранного шара с панели шаров

@@ -1,5 +1,5 @@
 class Info():
-    def __init__(self, is_active_panel):
+    def __init__(self, is_active_panel, is_displayed_lines):
 
         self.is_active_panel = is_active_panel
         self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!","Use mouse to aim",\
@@ -17,7 +17,35 @@ class Info():
             self.text_number_things = ["number of things: ",""]  
             self.text_things_attempts = ["attempts to generate the things: ",""]
 
+            self.text_generated_things = ["Generated things", ""]
+            # self.text_border = [" border",""]
+            self.attempts_one_cell = ["attempts to place thing in one color cell < ", ""]
+
             self.reset()
+            self.reset_len_things()
+
+            self.text_switch = ["Lines on", "Lines off"]
+            self.show_lines = [427, 569, 90, 30]
+            self.switch_lines = is_displayed_lines
+            self.switch()
+            self.message =["all things will be regenerated",""]
+            # print(self.switch_lines)
+
+    def switch(self):
+        if self.switch_lines == False:
+            self.switch_lines = True
+            # print(self.text_switch[0])
+            return self.text_switch[0]
+        else:
+            self.switch_lines = False
+            # print(self.text_switch[1])
+            return self.text_switch[1]
+
+    def get_text_switch(self):
+        if self.switch_lines: 
+            return self.text_switch[0]
+        else:
+            return self.text_switch[1]
 
     def reset(self):
         if self.is_active_panel:
@@ -27,6 +55,28 @@ class Info():
             self.text_else = ["other motion: ", ""]
             self.text_rotated_ball = ["rotated ball: ", "None"]
             self.text_not_equal = ["", ""]
+
+    def reset_len_things(self):
+        if self.is_active_panel:
+            self.text_len_things_2_3 = [" grid 2 x 3: ", ""]
+            self.text_len_things_2_2 = [" grid 2 x 2: ", ""]
+            self.text_len_things_1_5 = [" grid 1 x 5: ", ""]
+            self.len_things_2_3 = 0
+            self.len_things_2_2 = 0
+            self.len_things_1_5 = 0
+            self.del_things = 0
+
+            self.text_deleted = ["", ""]
+
+            self.text_unsuitable_things_2_3 = [" unfit: ", ""]
+            self.text_unsuitable_things_2_2 = [" unfit: ", ""]
+            self.text_unsuitable_things_1_5 = [" unfit: ", ""]
+            
+            self.unfit_2_3 = 0
+            self.unfit_2_2 = 0
+            self.unfit_1_5 = 0
+            self.del_things_text_color = None
+            # unsuitable_things
 
     def display_not_equal_balls(self):
         if self.is_active_panel:
@@ -75,6 +125,51 @@ class Info():
     def display_things_attempts(self, n):
         if self.is_active_panel:
             self.text_things_attempts[1] = str(n)
+
+    def display_len_things_2_3(self, n):
+        if self.is_active_panel:
+            self.len_things_2_3= n
+            self.text_len_things_2_3[1] = str(n) + "  "
+
+    def display_len_things_2_2(self, n):
+        if self.is_active_panel:
+            self.len_things_2_2 = n
+            self.text_len_things_2_2[1] = str(n)+ "  "
+
+    def display_len_things_1_5(self, n):
+        if self.is_active_panel:
+            self.len_things_1_5 = n
+            self.text_len_things_1_5[1] = str(n)+ "  "
+
+
+    def display_unsuitable_things_2_3(self, n):
+        if self.is_active_panel:
+            self.unfit_2_3 = n
+            self.text_unsuitable_things_2_3[1] = str(n) + " "
+
+    def display_unsuitable_things_2_2(self, n):
+        if self.is_active_panel:
+            self.unfit_2_2 = n
+            self.text_unsuitable_things_2_2[1] = str(n) + " "
+
+    def display_unsuitable_things_1_5(self, n):
+        if self.is_active_panel:
+            self.unfit_1_5 = n
+            self.text_unsuitable_things_1_5[1] = str(n) + " "
+
+    def display_del_things(self, n, text, color):
+        if self.is_active_panel:
+            self.del_things = n
+            if n >0: 
+                self.text_deleted[0] = " excess "+ text + " things, (deleted): " + str(n) 
+                self.text_deleted[1] = " "
+                self.del_things_text_color = color  
+            
+
+
+
+
+      
             
                 
           

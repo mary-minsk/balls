@@ -1,28 +1,97 @@
 
 from random import randint
 import os, random
-import pygame
+import pygame, func
 from thing import Thing
 
-def get_things(n, sc, settings, things, info): # генерация n
+def del_elements(settings, things, max_len):
+    while len(things) > max_len:
+        ind = random.randint(0, len(things)-1)
+        elem = things.sprites()[ind]
+        settings.deleted_things_rect.append((elem.rect, (255, 255, 255)))
+        # print("%d elem killed" % (ind))
+        elem.kill()
+   
+def get_things(sc, settings, info): # генерация n
                                         # непересекающихся спрайтов с изображениями предметов  на игровай панели
     THINGS = get_images(30, settings.path_things)
     THINGS_SURF = []
     
-    for i in range(len(THINGS)): # добавление изображения 10 вещей
+    for i in range(len(THINGS)): # изображения вещей
         THINGS_SURF.append(pygame.image.load(THINGS[i]).convert_alpha())
 
+    main_things = pygame.sprite.Group()
+    things = pygame.sprite.Group()
     settings.deleted_things_rect = []
     settings.all_attempts = 0
-    thing_2_3, settings.lines_2_3 = render(2, 3, THINGS_SURF, settings, things, settings.lime, 2, info) 
-    thing_2_2, settings.lines_2_2 = render(2, 2, THINGS_SURF, settings, things, settings.yellow, 0, info)  
-    thungs_1_5, settings.lines_1_5 = render_m(5, THINGS_SURF, settings, things, settings.blue, 1, info)   
-    info.display_things_attempts(settings.all_attempts)
 
-        #     new_thing = Thing(randint(offset, settings.screen_width - offset), randint(offset, settings.screen_height +
-        #                                              settings.height_bottom_panel - settings.height_bottom_panel - offset), THINGS_SURF[index_things])
+    settings.generated_things_lines = False
+    if settings.is_displayed_lines:
+        settings.generated_things_lines = True
+
+    things, additional_things_2_3, settings.lines_2_3, unsuitable_things_2_3 = render(2, 3, THINGS_SURF, settings, things, settings.green, 2, info) 
+    info.reset_len_things()
+    info.display_len_things_2_3(len(additional_things_2_3))
+    info.display_unsuitable_things_2_3(unsuitable_things_2_3)
    
-    return thungs_1_5
+    if settings.number_current_things == 5: # 2*3 -1 = 5 elements
+    
+        if  len(additional_things_2_3) == 6:
+            del_elements(settings, additional_things_2_3, 5)
+            info.display_del_things(1, "2 x 3", settings.green)
+        main_things = additional_things_2_3
+
+    elif settings.number_current_things == 6: # 2*3 = 6 elements
+        main_things = additional_things_2_3
+
+    elif settings.number_current_things in range(7,11):  # 2*3 + 2*2 = 10 elements
+        
+        things, additional_things_2_2, settings.lines_2_2, unsuitable_things_2_2 = render(2, 2, THINGS_SURF, settings, things, settings.yellow, 0, info)  
+        info.display_unsuitable_things_2_2(unsuitable_things_2_2)
+        number_del_elements = len(things) - settings.number_current_things  
+        max_len = len(additional_things_2_2) - number_del_elements
+        info.display_len_things_2_2(len(additional_things_2_2))
+       
+        if number_del_elements > 0:
+            del_elements(settings, additional_things_2_2, max_len)
+            info.display_del_things(number_del_elements, "2 x 2", settings.yellow)
+
+        for thing in additional_things_2_2:
+            additional_things_2_3.add(thing)
+
+        main_things = additional_things_2_3
+   
+    elif settings.number_current_things in range(11,16): # 2*3 + 2*2 + 1*5  = 15 elements
+        
+        things, additional_things_2_2, settings.lines_2_2, unsuitable_things_2_2 = render(2, 2, THINGS_SURF, settings, things, settings.yellow, 0, info)  
+        things, additional_things_1_5, settings.lines_1_5, unsuitable_things_1_5 = render_m(5, THINGS_SURF, settings, things, settings.blue, 1, info)  
+        
+        info.display_unsuitable_things_2_2(unsuitable_things_2_2)
+        info.display_unsuitable_things_1_5(unsuitable_things_1_5)
+        
+        number_del_elements = len(things) - settings.number_current_things  
+        max_len = len(additional_things_1_5) - number_del_elements
+        
+        info.display_len_things_2_2(len(additional_things_2_2))
+        info.display_len_things_1_5(len(additional_things_1_5))
+       
+        if number_del_elements > 0:
+            del_elements(settings, additional_things_1_5, max_len)
+            info.display_del_things(number_del_elements, "1 x 5", settings.blue)
+        
+        for thing in additional_things_2_2:
+            additional_things_2_3.add(thing)
+
+        for thing in additional_things_1_5:
+            additional_things_2_3.add(thing)
+
+        main_things = additional_things_2_3
+    else:
+        things, additional_things_1_5, settings.lines_1_5, unsuitable_things = render_m(5, THINGS_SURF, settings, things, settings.blue, 2, info)  
+        main_things = things
+    
+    # print(len(main_things))
+    return main_things
 
 def check_possible_place(settings, things, thing_surf, possible_point, rect_color):
     
@@ -48,7 +117,8 @@ def render(n, m, THINGS_SURF, settings, things, color, shift, info): # игро�
     step_x = W//n
     step_y = H//m
     lines = []
-    
+    additional_things = pygame.sprite.Group()
+    unsuitable_things = 0
     for i in range(n):
         for j in range(m):
             current_attempt = 0
@@ -58,23 +128,28 @@ def render(n, m, THINGS_SURF, settings, things, color, shift, info): # игро�
                 serf = THINGS_SURF.pop(0)
                 thing = check_possible_place(settings, things, serf, possible_point, color)
                 
+                
                 if thing is not None:
                     things.add(thing)
                     is_point_found = True
+                    additional_things.add(thing)
+                else:
+                    unsuitable_things +=1 
             
                 if settings.is_displayed_lines:
                     rect = (step_x*i + settings.left_margin + shift, step_y*j + settings.up_margin + shift, step_x - 2*shift, step_y - 2*shift)
                     lines.append((rect, color))
                 current_attempt += 1
             settings.all_attempts += current_attempt
-    
-    return things, lines
+    # print("unsuitable_things  = %d" % (unsuitable_things))
+    return things, additional_things, lines, unsuitable_things
 
 def render_m(m, THINGS_SURF, settings, things, color, shift, info):# игровое поле разбивается на m равных частей по вертикале. В каждом прямоугольнике по одной точке
     W, H = settings.game_panel.w, settings.game_panel.h
     lines = []
     step_y = H/m
-    
+    additional_things = pygame.sprite.Group()
+    unsuitable_things = 0
     for j in range(m):
         
         is_point_found = False
@@ -89,15 +164,18 @@ def render_m(m, THINGS_SURF, settings, things, color, shift, info):# игров�
 
             if thing is not None:
                 things.add(thing)
+                additional_things.add(thing)
                 is_point_found = True
+            else:
+                unsuitable_things +=1
         
             if settings.is_displayed_lines:
-                rect = (settings.left_margin + shift, int(step_y*j) + shift+ settings.up_margin, W - 2*shift, int(step_y) - 2*shift)
+                rect = (settings.left_margin + shift, int(step_y*j) + shift + settings.up_margin, W - 2*shift, int(step_y) - 2*shift)
                 lines.append((rect, color))
                 
             current_attempt += 1
-    
-    return things, lines
+    # print("unsuitable_things 1 5 = %d" % (unsuitable_things))
+    return things, additional_things, lines, unsuitable_things
 
 def get_images(n, path):
     path_f = []

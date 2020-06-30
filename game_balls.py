@@ -296,12 +296,12 @@ def create_balls(): # создание трех шаров, определени
     # print(h1 + max_h)
     return balls
 
-def create_things(n): # создание n (settings.number_things) предметов
+def create_things(): # создание n (settings.number_things) предметов
     
-    things = pygame.sprite.Group()
+    # things = pygame.sprite.Group()
     # генерация n непересекающихся предметов на поверхности
   
-    things = game_render.get_things(n, sc, settings, things, info)
+    things = game_render.get_things(sc, settings, info)
     
     return things
 
@@ -346,10 +346,10 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     deleted_balls.empty()
     setting.reset()
 
-    if settings.current_level < settings.last_level:
-        settings.current_things += 1
-        setting.current_level += 1
-    things = create_things(settings.current_things)
+    # if settings.current_level < settings.last_level:
+    settings.number_current_things += 1
+    setting.current_level += 1
+    things = create_things()
     balls = create_balls()
     deleted_balls = pygame.sprite.Group()
     
@@ -403,7 +403,7 @@ def draw_disappearing_path(): # Отображение исчезающего п
 pygame.init()
 
 settings = Settings()
-info = Info(settings.is_used_additional_panel)
+info = Info(settings.is_used_additional_panel, settings.is_displayed_lines)
 
 sc = func.get_screen(settings)
 sc.fill(settings.black)
@@ -417,7 +417,10 @@ settings.background_image = pygame.image.load(game_render.get_image(settings.bac
 next_level_button = Button(settings.button_level, settings.button_level_text)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
-things = create_things(settings.current_things)
+show_lines_button = Button(info.show_lines, info.get_text_switch(), 22)
+
+
+things = create_things()
 
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
@@ -458,6 +461,23 @@ while not done:
                 else:
                     if next_level_button.isOver(mouse_xy):
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+
+                    if show_lines_button.isOver(mouse_xy):
+                        
+                        settings.is_displayed_lines = not settings.is_displayed_lines
+                        show_lines_button.text = info.switch()
+                        
+                        if not settings.generated_things_lines:
+                            print("Yes")
+                            show_lines_button.width = 100
+                        
+                        if not settings.generated_things_lines:
+                            settings.number_current_things -=1
+                            balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+                        # if not settings.generated_things_lines and  not info.switch_lines:
+                        #     print("Yes")
+                        #     show_lines_button.width = 100
+                        
             
                     
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -514,7 +534,8 @@ while not done:
             
         
         info.display_balls(selected_ball, prev_selected_ball)
-        info.display_number_things(settings.current_things)
+        info.display_number_things(settings.number_current_things)
+        info.display_things_attempts(settings.all_attempts)
         
 
         # settings.is_draw_line = False
@@ -628,6 +649,7 @@ while not done:
         func.display_additional_info(sc, settings, info)
 
     next_level_button.draw(sc, settings)
+    show_lines_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
 
     things.update(sc, settings, things)
@@ -638,16 +660,19 @@ while not done:
 
 
     if settings.is_displayed_lines:
-        for rect in settings.lines_1_5:
+
+        for rect in settings.lines_2_3:
             pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-        # for rect in settings.lines_2_3:
-        #     pygame.draw.rect(sc, rect[1], rect[0], 1)
+        if settings.number_current_things > 6:
+            for rect in settings.lines_2_2:
+                pygame.draw.rect(sc, rect[1], rect[0], 1)
+                
+        if settings.number_current_things > 10:
+            for rect in settings.lines_1_5:
+                pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-        # for rect in settings.lines_2_2:
-        #     pygame.draw.rect(sc, rect[1], rect[0], 1)
-
-        if len(settings.deleted_things_rect) >0:
+        if len(settings.deleted_things_rect) > 0:
             for rect in settings.deleted_things_rect:
                 pygame.draw.rect(sc, rect[1], rect[0], 1)  #topleft, bottomleft, topright, bottomright
                 pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)

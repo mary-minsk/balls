@@ -2,7 +2,7 @@ import pygame
 
 class Settings():
     def __init__(self):
-        self.text_caption = 'Balls' 
+        self.text_caption = '12' 
 
         # Использовать панель с доп. иформацией об основных параметрах игры
         self.is_used_additional_panel = True
@@ -16,7 +16,7 @@ class Settings():
 
         self.current_level = 1
         self.start_things = 5
-        self.current_things = self.start_things
+        self.number_current_things = self.start_things
         self.finish_things = 12
         self.ç = self.start_things
         self.last_level = self.finish_things - self.start_things
@@ -74,6 +74,11 @@ class Settings():
         # self.button_ruler = [300, self.w - 115, 90, 30]
         # self.button_ruler_text = "Ruler"
 
+        # self.show_lines = [300, self.w - 115, 90, 30]
+        # self.show_lines_text = "Ruler"
+
+
+
         # Траектория движения
         self.disappearing_edges = []  # исчезающие вершины ломаной прямой
         self.is_points_erasing = False # Удаление траектории движения шара. 
@@ -92,6 +97,7 @@ class Settings():
         self.last_path_point = (0, 0) # последняя точка ломаной кривой = settings.all_path_points[-1] 
         self.a, self.b = (0, 0)  # направление последующего движения мяча (позиция курсора мыши 
                                  # относительно центра выбранного шара в декартовой систете координат
+        self.generated_things_lines = False
 
 
         # self.text1 = "" 
@@ -118,9 +124,9 @@ class Settings():
         self.black = (0, 0, 0)
         self.bg_color = (100, 100, 100)
         self.white = (255, 255, 255)
-        self.lime = (0, 200, 0)
+        self.green = (0, 200, 0)
         self.aqua = (0,155,155)
-        self.blue = (0,0,255)
+        self.blue =  (0, 191, 255)
         self.yellow2 = (255, 255, 0)
 
        
