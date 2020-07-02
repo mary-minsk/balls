@@ -3,13 +3,13 @@ import pygame
 class Settings():
     def __init__(self):
         self.text_caption = '12' 
-        self.text_additional_panel_caption = " Flight control center "
+        self.text_additional_panel_caption = "Flights control center"
 
         # Использовать панель с доп. иформацией об основных параметрах игры
-        # self.is_used_additional_panel = True
-        self.is_used_additional_panel = False 
-        # self.is_displayed_lines = True
-        self.is_displayed_lines = False
+        self.is_used_additional_panel = True
+        # self.is_used_additional_panel = False 
+        self.is_displayed_lines = True
+        # self.is_displayed_lines = False
         self.additional_panel_width = 300
 
         self.number_balls = 3

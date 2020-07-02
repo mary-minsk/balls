@@ -504,10 +504,6 @@ while not done:
                 info.display_rotated_ball(settings.rotated_ball.info)
                 func.rotation_ball_on(balls, settings.rotated_ball)
         
-
-        # info.display_balls(selected_ball, prev_selected_ball)
-        # info.display_number_things(settings.number_current_things)
-        # info.display_things_attempts(settings.all_attempts)
         
 
         # settings.is_draw_line = False
@@ -617,44 +613,24 @@ while not done:
                 
     # draw_text(sc, get_hints(), settings.white, 20, (130, settings.screen_height+ 5))
     
-    if settings.is_used_additional_panel:
-        func.display_additional_info(sc, settings, info)
-
+    
+    func.display_info(sc, settings, info)
+    
     next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
+    
 
     things.update(sc, settings, things)
     things.draw(sc)
+
+   
     # sc.blit(settings.background_image,(0, 0))
     balls.update(settings, sc)
     balls.draw(sc)
 
 
-    if settings.is_displayed_lines:
-        
-        for rect in info.lines_2_3:
-            pygame.draw.rect(sc, rect[1], rect[0], 1)
-
-        if settings.current_number_things > 6: 
-            for rect in info.lines_2_2:
-                pygame.draw.rect(sc, rect[1], rect[0], 1)
-                
-        if settings.current_number_things > 10:
-            for rect in info.lines_1_5:
-                pygame.draw.rect(sc, rect[1], rect[0], 1)
-
-        if len(info.deleted_things_rect) > 0:
-            for rect in info.deleted_things_rect:
-                # pygame.draw.rect(sc, settings.white, rect[0], 2)  
-                pygame.draw.rect(sc, rect[1], rect[0], 1)  
-                pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
-                pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
-
-        if len(info.random_deleted_things_rect) > 0:
-            for rect in info.random_deleted_things_rect:
-                pygame.draw.rect(sc, settings.white, rect[0], 2)   
-                pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
-                pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
+    # if settings.is_displayed_lines:
+    #     func.draw_cells(sc, settings, info)
         
 
     # deleted_balls.draw(sc)

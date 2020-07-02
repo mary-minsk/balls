@@ -127,10 +127,39 @@ def set_caption(settings):
     else:
         pygame.display.set_caption(settings.text_caption)
 
-       
+def draw_cells(sc, settings, info):
+    for rect in info.lines_2_3:
+        pygame.draw.rect(sc, rect[1], rect[0], 1)
 
+    if settings.current_number_things > 6: 
+        for rect in info.lines_2_2:
+            pygame.draw.rect(sc, rect[1], rect[0], 1)
+            
+    if settings.current_number_things > 10:
+        for rect in info.lines_1_5:
+            pygame.draw.rect(sc, rect[1], rect[0], 1)
 
+    if len(info.deleted_things_rect) > 0:
+        for rect in info.deleted_things_rect:
+            # pygame.draw.rect(sc, settings.white, rect[0], 2)  
+            pygame.draw.rect(sc, rect[1], rect[0], 1)  
+            pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
+            pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
+
+    if len(info.random_deleted_things_rect) > 0:
+        for rect in info.random_deleted_things_rect:
+            pygame.draw.rect(sc, settings.white, rect[0], 2)   
+            pygame.draw.line(sc, rect[1], rect[0].topleft, rect[0].bottomright, 2)
+            pygame.draw.line(sc, rect[1], rect[0].bottomleft, rect[0].topright, 2)
     
 
+def display_info(sc, settings, info):
+    if settings.is_used_additional_panel:
+        display_additional_info(sc, settings, info)
+    if settings.is_displayed_lines:
+        draw_cells(sc, settings, info)
 
-  
+
+
+
+
