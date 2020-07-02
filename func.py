@@ -21,7 +21,7 @@ def display_additional_info(sc, settings, info):
     # Generated things
     display_text(sc, settings, info.text_generated_things, settings.white, 24, 280, 50)  
 
-    info.attempts_one_cell[1] = str(settings.attempts_place_thing)
+    info.attempts_one_cell[1] = str(info.attempts_place_thing)
     display_text(sc, settings, info.attempts_one_cell, settings.white, 20, 310)
 
     display_text(sc, settings, info.text_number_things, settings.white, 20, 330)  
@@ -34,6 +34,10 @@ def display_additional_info(sc, settings, info):
 
     if info.len_things_1_5 > 0:
         display_text(sc, settings, info.text_len_things_1_5, settings.blue, 22, 400, 0, True)
+        
+
+    if info.number_random_lines > 0:
+        display_text(sc, settings, info.text_random_lines, settings.fuchsia, 22, 420, 0, True)
 
     
     if info.unfit_2_3 > 0:
@@ -44,20 +48,25 @@ def display_additional_info(sc, settings, info):
     
     if info.unfit_1_5 > 0:
         display_text(sc, settings, info.text_unsuitable_things_1_5, settings.blue, 22, 400, 120, True) 
+
+    if info.random_unfit >0:
+        display_text(sc, settings, info.text_random_unfit, settings.fuchsia, 22, 420, 120, True) 
+
     
     
-    display_text(sc, settings, info.text_things_attempts, settings.white, 21, 420)
+    display_text(sc, settings, info.text_things_attempts, settings.white, 21, 440)
 
     if info.del_things > 0:
-        display_text(sc, settings, info.text_deleted, info.del_things_text_color, 22, 440, 0, True, settings.white)
+        display_text(sc, settings, info.text_deleted, info.del_things_text_color, 22, 460, 0, True, settings.white)
 
-    if not settings.generated_things_lines:
+    if not info.generated_things_lines:
         display_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
 
     info.show_lines_button.draw(sc, settings)
 
-    info.display_number_things(settings.number_current_things)
-    info.display_things_attempts(settings.all_attempts)
+    info.display_number_things(settings.current_number_things)
+    info.display_things_attempts()
+    info.display_balls(settings.selected_ball, settings.prev_selected_ball)
 
     
 def display_text(sc, settings, text, color, size, h, w = 0, is_border = False, white_border_color = None):  # вывод на экран текста
@@ -112,10 +121,13 @@ def rotation_ball_on(balls, rotated_ball):
         else:
             ball.is_rotated = True
 
-# def get_game_panel(settings):
-#     return pygame.Rect((settings.left_margin, settings.up_margin, \
-#         settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin))
-           
+def set_caption(settings):
+    if settings.is_used_additional_panel:
+        pygame.display.set_caption(settings.text_additional_panel_caption)
+    else:
+        pygame.display.set_caption(settings.text_caption)
+
+       
 
 
     

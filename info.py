@@ -16,7 +16,7 @@ class Info():
             self.text_mouse_xy = ["mouse: ", ""]
             self.text_line = ["______________________________", ""]
             self.text_number_things = ["number of things: ",""]  
-            self.text_things_attempts = ["attempts to generate the things: ",""]
+            self.text_things_attempts = ["all attempts to generate the things: ",""]
 
             self.text_generated_things = ["Generated things", ""]
             self.attempts_one_cell = ["attempts to place thing in one color cell < ", ""]
@@ -30,6 +30,16 @@ class Info():
             self.switch()
             self.message =["all things will be regenerated",""]
             self.show_lines_button = Button(self.show_lines, self.get_text_switch(), 22)
+
+            self.generated_things_lines = False
+            # self.all_attempts = 0
+            # self.attempts_place_thing = 3 #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
+            # self.random_placement_attempts = 0 #
+            # self.lines_2_3 = []
+            # self.lines_2_2 = []
+            # self.lines_1_5 = []
+            # self.random_lines = []
+            # self.deleted_things_rect = []  
             
     def check_click(self, mouse_xy, settings):
         if self.is_active_panel:
@@ -38,7 +48,7 @@ class Info():
                 settings.is_displayed_lines = not settings.is_displayed_lines
                 self.show_lines_button.text = self.switch()
                              
-                if not settings.generated_things_lines:
+                if not self.generated_things_lines:
                     return True
         return False
                         
@@ -79,29 +89,41 @@ class Info():
 
         self.text_unsuitable_things_2_3 = [" unfit: ", ""]
         self.text_unsuitable_things_2_2 = [" unfit: ", ""]
-        self.text_unsuitable_things_1_5 = [" unfit: ", ""]
+        self.text_unsuitable_things_1_5 = [" unfit: ", ""] 
+        self.text_random_unfit = [" unfit: ", ""] 
         
         self.unfit_2_3 = 0
         self.unfit_2_2 = 0
         self.unfit_1_5 = 0
+        self.random_unfit = 0
         self.del_things_text_color = None
-           
+
+        self.all_attempts = 0
+        self.attempts_place_thing = 3 #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
+        self.random_placement_attempts = 0 #
+        self.lines_2_3 = []
+        self.lines_2_2 = []
+        self.lines_1_5 = []
+        self.number_random_lines = 0
+        self.text_random_lines = [" random:    ", ""]
+        self.deleted_things_rect = []  
+        self.random_deleted_things_rect = []  
+        
 
     def display_not_equal_balls(self):
         if self.is_active_panel:
             self.text_not_equal = ["prev selected ball!=selected ball", ""]
 
     def display_balls(self, selected_ball, prev_selected_ball):
-        if self.is_active_panel:
-            if selected_ball is not None:
-                self.text_selected_ball[1] = selected_ball.info
-            else:
-                self.text_selected_ball[1] = "None"
+        if selected_ball is not None:
+            self.text_selected_ball[1] = selected_ball.info
+        else:
+            self.text_selected_ball[1] = "None"
 
-            if prev_selected_ball is not None:
-                self.text_prev_selected_ball[1] = prev_selected_ball.info  
-            else:
-                self.text_prev_selected_ball[1] = "None"   
+        if prev_selected_ball is not None:
+            self.text_prev_selected_ball[1] = prev_selected_ball.info  
+        else:
+            self.text_prev_selected_ball[1] = "None"   
 
     def display_mousebuttondown(self, text):
         if self.is_active_panel:
@@ -130,8 +152,8 @@ class Info():
     def display_number_things(self, n):
         self.text_number_things[1] = str(n)
 
-    def display_things_attempts(self, n):
-        self.text_things_attempts[1] = str(n)
+    def display_things_attempts(self):
+        self.text_things_attempts[1] = str(self.all_attempts)
 
     def display_len_things_2_3(self, n):
         if self.is_active_panel:
@@ -159,10 +181,12 @@ class Info():
             self.unfit_2_2 = n
             self.text_unsuitable_things_2_2[1] = str(n) + " "
 
-    def display_unsuitable_things_1_5(self, n):
+    def display_unsuitable_things_1_5(self, n): 
         if self.is_active_panel:
             self.unfit_1_5 = n
             self.text_unsuitable_things_1_5[1] = str(n) + " "
+
+    
 
     def display_del_things(self, n, text, color):
         if self.is_active_panel:
@@ -171,6 +195,18 @@ class Info():
                 self.text_deleted[0] = " excess "+ text + " things, (deleted): " + str(n) 
                 self.text_deleted[1] = " "
                 self.del_things_text_color = color  
+
+    def display_number_random_lines(self, n):
+        self.number_random_lines = n
+        print(n)
+        self.text_random_lines[1] = str(n) + " "
+
+    def display_random_unfit(self): #random_unfit
+        # self.random_unfit = n
+        # if self.is_active_panel:
+        self.text_random_unfit[1] = str(self.random_unfit) + " "
+
+              
             
 
 

@@ -294,7 +294,7 @@ def create_balls(): # создание трех шаров, определени
     
     return balls
 
-def create_things(): # создание n (settings.number_things) предметов
+def create_things(): # создание n предметов
     
     # генерация n непересекающихся предметов на поверхности
   
@@ -344,7 +344,7 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     setting.reset()
 
     # if settings.current_level < settings.last_level:
-    settings.number_current_things += 1
+    settings.current_number_things += 1
     setting.current_level += 1
     things = create_things()
     balls = create_balls()
@@ -406,19 +406,14 @@ sc = func.get_screen(settings)
 sc.fill(settings.black)
 
 pygame.display.update()
-pygame.display.set_caption(settings.text_caption)
+func.set_caption(settings)
 clock = pygame.time.Clock()
-
 settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
 
 next_level_button = Button(settings.button_level, settings.button_level_text)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
-# show_lines_button = Button(info.show_lines, info.get_text_switch(), 22)
-
-
 things = create_things()
-
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
 
@@ -427,10 +422,6 @@ pos_center_ball = (0, 0)            # пигейм координаты цент
      
 done = False
 
-rotated_ball = None
-
-selected_ball = None
-prev_selected_ball = None
 while not done:
     for event in pygame.event.get():
         info.reset()
@@ -439,80 +430,79 @@ while not done:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 info.display_mousebuttondown(point_to_str((event.pos)))
-
                 
-                selected_ball = func.get_ball(event.pos, balls)
+                settings.selected_ball = func.get_ball(event.pos, balls)
                 func.rotation_balls_off(balls)
             
-                if selected_ball is not None:
+                if settings.selected_ball is not None:
                     
-                    if prev_selected_ball != selected_ball:
-                        if prev_selected_ball is not None:
-                            prev_selected_ball.go_home()
+                    if settings.prev_selected_ball != settings.selected_ball:
+                        if settings.prev_selected_ball is not None:
+                            settings.prev_selected_ball.go_home()
                             info.display_not_equal_balls()
-                        prev_selected_ball = selected_ball
+                        settings.prev_selected_ball = settings.selected_ball
         
-                    selected_offset_x = selected_ball.x - event.pos[0]
-                    selected_offset_y = selected_ball.y - event.pos[1]
+                    selected_offset_x = settings.selected_ball.x - event.pos[0]
+                    selected_offset_y = settings.selected_ball.y - event.pos[1]
 
                 else:
                     if next_level_button.isOver(mouse_xy):
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                     
                     if info.check_click(mouse_xy, settings):
-                        settings.number_current_things -=1
+                        settings.current_number_things -=1
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                     
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 info.display_mousebuttonup(point_to_str((event.pos))) 
 
-                if selected_ball is not None:
-                    if settings.screen_height - settings.height_bottom_panel in range(selected_ball.rect.top, selected_ball.rect.bottom):
-                        if selected_ball.y < settings.screen_height - settings.height_bottom_panel:
-                            selected_ball.y = settings.screen_height - settings.height_bottom_panel - selected_ball.radius
+                if settings.selected_ball is not None:
+                    if settings.screen_height - settings.height_bottom_panel in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
+                        if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel:
+                            settings.selected_ball.y = settings.screen_height - settings.height_bottom_panel - settings.selected_ball.radius
                         else:
-                            selected_ball.go_home()
-                    elif selected_ball.y > settings.screen_height - settings.height_bottom_panel:
-                        selected_ball.go_home()
+                            settings.selected_ball.go_home()
+                    elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel:
+                        settings.selected_ball.go_home()
 
-                    prev_selected_ball = selected_ball
-                    selected_ball = None
-                    prev_selected_ball.is_rotated = True  # После отпускания мышки шарик на панели шаров вновь вращается
+                    settings.prev_selected_ball = settings.selected_ball
+                    settings.selected_ball = None
+                    settings.prev_selected_ball.is_rotated = True  # После отпускания мышки шарик на панели шаров вновь вращается
 
         elif event.type == pygame.MOUSEMOTION:
             info.display_text_mousemotion(point_to_str((event.pos)))
             
-            if selected_ball is not None: 
-                selected_ball.x = event.pos[0] + selected_offset_x
-                selected_ball.y = event.pos[1] + selected_offset_y
+            if settings.selected_ball is not None: 
+                settings.selected_ball.x = event.pos[0] + selected_offset_x
+                settings.selected_ball.y = event.pos[1] + selected_offset_y
                 
-                if selected_ball.y < settings.up_margin + selected_ball.radius:
-                    selected_ball.y = settings.up_margin + selected_ball.radius
+                if settings.selected_ball.y < settings.up_margin + settings.selected_ball.radius:
+                    settings.selected_ball.y = settings.up_margin + settings.selected_ball.radius
 
-                if selected_ball.x < settings.left_margin + selected_ball.radius:
-                    selected_ball.x = settings.left_margin + selected_ball.radius
+                if settings.selected_ball.x < settings.left_margin + settings.selected_ball.radius:
+                    settings.selected_ball.x = settings.left_margin + settings.selected_ball.radius
 
-                if selected_ball.x > settings.screen_width - settings.right_margin - selected_ball.radius:
-                        selected_ball.x = settings.screen_width - settings.right_margin - selected_ball.radius     
+                if settings.selected_ball.x > settings.screen_width - settings.right_margin - settings.selected_ball.radius:
+                        settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius     
             
         else:
             info.display_other()
 
-        if  selected_ball is None:
+        if  settings.selected_ball is None:
             mouse_xy = pygame.mouse.get_pos()
             info.display_mouse_xy(point_to_str(mouse_xy))
            
-            rotated_ball = None
+            settings.rotated_ball = None
             if not pygame.Rect(settings.game_panel).collidepoint(mouse_xy):
-                rotated_ball = func.get_ball(mouse_xy, balls)
+                settings.rotated_ball = func.get_ball(mouse_xy, balls)
 
-            if rotated_ball is None:        # курсор мыши не над мячиками
+            if settings.rotated_ball is None:        # курсор мыши не над мячиками
                 info.display_rotated_ball("None")
                 func.rotation_balls_off(balls)
             else:                           # над мячиком мышка
-                info.display_rotated_ball(rotated_ball.info)
-                func.rotation_ball_on(balls, rotated_ball)
+                info.display_rotated_ball(settings.rotated_ball.info)
+                func.rotation_ball_on(balls, settings.rotated_ball)
         
 
         # info.display_balls(selected_ball, prev_selected_ball)
@@ -629,8 +619,6 @@ while not done:
     
     if settings.is_used_additional_panel:
         func.display_additional_info(sc, settings, info)
-    info.display_balls(selected_ball, prev_selected_ball)
-    
 
     next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
@@ -643,21 +631,28 @@ while not done:
 
 
     if settings.is_displayed_lines:
-
-        for rect in settings.lines_2_3:
+        
+        for rect in info.lines_2_3:
             pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-        if settings.number_current_things > 6:
-            for rect in settings.lines_2_2:
+        if settings.current_number_things > 6: 
+            for rect in info.lines_2_2:
                 pygame.draw.rect(sc, rect[1], rect[0], 1)
                 
-        if settings.number_current_things > 10:
-            for rect in settings.lines_1_5:
+        if settings.current_number_things > 10:
+            for rect in info.lines_1_5:
                 pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-        if len(settings.deleted_things_rect) > 0:
-            for rect in settings.deleted_things_rect:
-                pygame.draw.rect(sc, rect[1], rect[0], 1)  #topleft, bottomleft, topright, bottomright
+        if len(info.deleted_things_rect) > 0:
+            for rect in info.deleted_things_rect:
+                # pygame.draw.rect(sc, settings.white, rect[0], 2)  
+                pygame.draw.rect(sc, rect[1], rect[0], 1)  
+                pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
+                pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
+
+        if len(info.random_deleted_things_rect) > 0:
+            for rect in info.random_deleted_things_rect:
+                pygame.draw.rect(sc, settings.white, rect[0], 2)   
                 pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
                 pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
         
@@ -668,8 +663,6 @@ while not done:
     # display_last_path_point() 
 
     pygame.display.update()
-    # pygame.time.delay(20)
-   
     clock.tick(25)
 
 pygame.quit()

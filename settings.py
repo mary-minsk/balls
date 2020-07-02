@@ -3,26 +3,23 @@ import pygame
 class Settings():
     def __init__(self):
         self.text_caption = '12' 
+        self.text_additional_panel_caption = " Flight control center "
 
         # Использовать панель с доп. иформацией об основных параметрах игры
-        self.is_used_additional_panel = True
-        # self.is_used_additional_panel = False 
-        self.is_displayed_lines = True
-        # self.is_displayed_lines = False
+        # self.is_used_additional_panel = True
+        self.is_used_additional_panel = False 
+        # self.is_displayed_lines = True
+        self.is_displayed_lines = False
         self.additional_panel_width = 300
 
         self.number_balls = 3
-        self.number_things = 10
 
-        self.current_level = 1
+        self.start_level = 1
+        self.current_level = self.start_level
         self.start_things = 5
-        self.number_current_things = self.start_things
+        self.current_number_things = self.start_things
         self.finish_things = 12
-        self.ç = self.start_things
         self.last_level = self.finish_things - self.start_things
-
-        self.all_attempts = 0
-        self.attempts_place_thing = 3
 
         self.screen_width = 425   #(25 + 375 + 25 = 425)
         self.screen_height = 650  #(40 + 520 + 90 = 650)
@@ -37,11 +34,10 @@ class Settings():
             self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin)
         self.game_panel = pygame.Rect(self.game_panel_rect)
         
-        # self.w = self.screen_height + self.up_margin + self.height_bottom_panel
-
+         # изображения предметов
         self.background_image_path = '/pict/background/sky_425_650.jpg'
         self.background_image = ""
-        self.path_things = '/pict/things'   # изображения предметов
+        self.path_things = '/pict/things'  
         self.path_spirals = '/pict/spiralls' 
 
         self.set_color()
@@ -59,24 +55,12 @@ class Settings():
         self.balls_info = ["small", "medium", "large"]
         self.unit = self.screen_height
 
-       
-        self.m_lines = []
-        # self.n_m_lines = []
-        self.lines_2_3 = []
-        self.lines_2_2 = []
-        self.lines_1_5 = []
-        self.deleted_things_rect = []
-
         
         # Кнопки
         self.button_level = [310,  self.screen_height - self.height_bottom_panel +10, 90, 30]
         self.button_level_text = "Next level..."
         # self.button_ruler = [300, self.w - 115, 90, 30]
         # self.button_ruler_text = "Ruler"
-
-        # self.show_lines = [300, self.w - 115, 90, 30]
-        # self.show_lines_text = "Ruler"
-
 
 
         # Траектория движения
@@ -97,16 +81,15 @@ class Settings():
         self.last_path_point = (0, 0) # последняя точка ломаной кривой = settings.all_path_points[-1] 
         self.a, self.b = (0, 0)  # направление последующего движения мяча (позиция курсора мыши 
                                  # относительно центра выбранного шара в декартовой систете координат
-        self.generated_things_lines = False
-
 
         # self.text1 = "" 
-        # self.text2 = "" 
-        # self.text3 = ""  
         
         self.reset()   # Сброс основных параметров
         
     def reset(self):  
+        self.selected_ball = None
+        self.prev_selected_ball = None
+        self.rotated_ball = None
         # self.index_current_ball = None  # индекс выбранного шара(мяча)
         # self.index_prev_ball = None     # индекс предыдущего выбранного шара(мяча)
         # self.index_prev_selected_ball = None 
@@ -126,8 +109,10 @@ class Settings():
         self.white = (255, 255, 255)
         self.green = (0, 200, 0)
         self.aqua = (0,155,155)
-        self.blue =  (0, 191, 255)
-        self.yellow2 = (255, 255, 0)
+        self.blue = (0, 191, 255)
+        # Fuchsia	#FF00FF	255, 0, 255
+        self.fuchsia = (255, 0, 255)
+       
 
        
 
