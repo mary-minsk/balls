@@ -429,17 +429,16 @@ while not done:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                info.display_mousebuttondown(point_to_str((event.pos)))
-                
+
                 settings.selected_ball = func.get_ball(event.pos, balls)
                 func.rotation_balls_off(balls)
-            
+                
                 if settings.selected_ball is not None:
                     
                     if settings.prev_selected_ball != settings.selected_ball:
                         if settings.prev_selected_ball is not None:
                             settings.prev_selected_ball.go_home()
-                            info.display_not_equal_balls()
+                            info.set_text_not_equal_balls()
                         settings.prev_selected_ball = settings.selected_ball
         
                     selected_offset_x = settings.selected_ball.x - event.pos[0]
@@ -452,10 +451,11 @@ while not done:
                     if info.check_click(mouse_xy, settings):
                         settings.current_number_things -=1
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+
+                info.set_text_mousebuttondown(point_to_str((event.pos)))
                     
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                info.display_mousebuttonup(point_to_str((event.pos))) 
 
                 if settings.selected_ball is not None:
                     if settings.screen_height - settings.height_bottom_panel in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
@@ -469,9 +469,10 @@ while not done:
                     settings.prev_selected_ball = settings.selected_ball
                     settings.selected_ball = None
                     settings.prev_selected_ball.is_rotated = True  # После отпускания мышки шарик на панели шаров вновь вращается
+            
+            info.set_text_mousebuttonup(point_to_str((event.pos))) 
 
         elif event.type == pygame.MOUSEMOTION:
-            info.display_text_mousemotion(point_to_str((event.pos)))
             
             if settings.selected_ball is not None: 
                 settings.selected_ball.x = event.pos[0] + selected_offset_x
@@ -486,26 +487,28 @@ while not done:
                 if settings.selected_ball.x > settings.screen_width - settings.right_margin - settings.selected_ball.radius:
                         settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius     
             
+            info.set_text_mousemotion(point_to_str((event.pos)))
+
         else:
-            info.display_other()
+            info.set_text_other_events()
 
         if  settings.selected_ball is None:
             mouse_xy = pygame.mouse.get_pos()
-            info.display_mouse_xy(point_to_str(mouse_xy))
            
             settings.rotated_ball = None
             if not pygame.Rect(settings.game_panel).collidepoint(mouse_xy):
                 settings.rotated_ball = func.get_ball(mouse_xy, balls)
 
             if settings.rotated_ball is None:        # курсор мыши не над мячиками
-                info.display_rotated_ball("None")
                 func.rotation_balls_off(balls)
+                info.set_text_rotated_ball("None")
             else:                           # над мячиком мышка
-                info.display_rotated_ball(settings.rotated_ball.info)
                 func.rotation_ball_on(balls, settings.rotated_ball)
-        
-        
+                info.set_text_rotated_ball(settings.rotated_ball.info)
 
+            info.set_text_mouse_xy(point_to_str(mouse_xy))
+        
+        
         # settings.is_draw_line = False
         # if event.type == pygame.MOUSEBUTTONDOWN:
         #     (mouse_x, mouse_y) = event.pos
@@ -619,19 +622,13 @@ while not done:
     next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
     
-
     things.update(sc, settings, things)
     things.draw(sc)
 
-   
+
     # sc.blit(settings.background_image,(0, 0))
     balls.update(settings, sc)
     balls.draw(sc)
-
-
-    # if settings.is_displayed_lines:
-    #     func.draw_cells(sc, settings, info)
-        
 
     # deleted_balls.draw(sc)
     # deleted_balls.update(settings)

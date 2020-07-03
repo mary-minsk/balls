@@ -22,7 +22,7 @@ class Info():
             self.attempts_one_cell = ["attempts to place thing in one color cell < ", ""]
 
             self.reset()
-            self.reset_len_things()
+            self.reset_things_text()
             
             self.text_switch = ["Lines on", "Lines off"]
             self.show_lines = [427, 569, 90, 30]
@@ -75,7 +75,7 @@ class Info():
         self.text_rotated_ball = ["rotated ball: ", "None"]
         self.text_not_equal = ["", ""]
 
-    def reset_len_things(self):
+    def reset_things_text(self):
         
         self.text_len_things_2_3 = [" grid 2 x 3: ", ""]
         self.text_len_things_2_2 = [" grid 2 x 2: ", ""]
@@ -110,7 +110,7 @@ class Info():
         self.random_deleted_things_rect = []  
         
 
-    def display_not_equal_balls(self):
+    def set_text_not_equal_balls(self):
         if self.is_active_panel:
             self.text_not_equal = ["prev selected ball!=selected ball", ""]
 
@@ -125,70 +125,69 @@ class Info():
         else:
             self.text_prev_selected_ball[1] = "None"   
 
-    def display_mousebuttondown(self, text):
+    def set_text_mousebuttondown(self, text):
         if self.is_active_panel:
             self.text_mousebuttondown[1] = text
 
-    def display_other(self):
+    def set_text_other_events(self):
         if self.is_active_panel:
             self.text_else[1] = "Yes"
 
-    def display_mouse_xy(self, text):
+    def set_text_mouse_xy(self, text):
         if self.is_active_panel:
             self.text_mouse_xy[1] = text
 
-    def display_rotated_ball(self, text):
+    def set_text_rotated_ball(self, text):
         if self.is_active_panel:
             self.text_rotated_ball[1] = text
 
-    def display_text_mousemotion(self, text):
+    def set_text_mousemotion(self, text):
         if self.is_active_panel:
             self.text_mousemotion[1] = text
 
-    def display_mousebuttonup(self, text):
+    def set_text_mousebuttonup(self, text):
         if self.is_active_panel:
             self.text_mousebuttonup[1] = text  
 
     def display_number_things(self, n):
-        self.text_number_things[1] = str(n)
+        if self.is_active_panel:
+            self.text_number_things[1] = str(n)
 
     def display_things_attempts(self):
-        self.text_things_attempts[1] = str(self.all_attempts)
+        if self.is_active_panel:
+            self.text_things_attempts[1] = str(self.all_attempts)
 
-    def display_len_things_2_3(self, n):
+    def set_text_len_things_2_3(self, n):
         if self.is_active_panel:
             self.len_things_2_3= n
             self.text_len_things_2_3[1] = str(n) + "  "
 
-    def display_len_things_2_2(self, n):
+    def set_text_len_things_2_2(self, n):
         if self.is_active_panel:
             self.len_things_2_2 = n
             self.text_len_things_2_2[1] = str(n)+ "  "
 
-    def display_len_things_1_5(self, n):
+    def set_text_len_things_1_5(self, n):
         if self.is_active_panel:
             self.len_things_1_5 = n
             self.text_len_things_1_5[1] = str(n)+ "  "
 
-
-    def display_unsuitable_things_2_3(self, n):
+    def set_text_unsuitable_things_2_3(self, n):
         if self.is_active_panel:
             self.unfit_2_3 = n
             self.text_unsuitable_things_2_3[1] = str(n) + " "
 
-    def display_unsuitable_things_2_2(self, n):
+    def set_text_unsuitable_things_2_2(self, n):
         if self.is_active_panel:
             self.unfit_2_2 = n
             self.text_unsuitable_things_2_2[1] = str(n) + " "
 
-    def display_unsuitable_things_1_5(self, n): 
+    def set_text_unsuitable_things_1_5(self, n): 
         if self.is_active_panel:
             self.unfit_1_5 = n
             self.text_unsuitable_things_1_5[1] = str(n) + " "
 
-    
-
-    def display_del_things(self, n, text, color):
+    def set_text_del_things(self, n, text, color):
         if self.is_active_panel:
             self.del_things = n
             if n >0: 
@@ -196,15 +195,14 @@ class Info():
                 self.text_deleted[1] = " "
                 self.del_things_text_color = color  
 
-    def display_number_random_lines(self, n):
-        self.number_random_lines = n
-        print(n)
-        self.text_random_lines[1] = str(n) + " "
+    def set_text_number_random_lines(self, n):
+        if self.is_active_panel:
+            self.number_random_lines = n
+            self.text_random_lines[1] = str(n) + " "
 
     def display_random_unfit(self): #random_unfit
-        # self.random_unfit = n
-        # if self.is_active_panel:
-        self.text_random_unfit[1] = str(self.random_unfit) + " "
+        if self.is_active_panel:
+            self.text_random_unfit[1] = str(self.random_unfit) + " "
 
               
             

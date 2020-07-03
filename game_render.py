@@ -14,7 +14,7 @@ def del_elements(info, things, max_len, color):
    
 def get_things(sc, settings, info): # генерация n = settings.current_number_things
                                     # непересекающихся спрайтов с изображениями предметов  на игровай панели
-    THINGS = get_images(30, settings.path_things) # 30 случайных изображений и максимум 20 предметов на игровом поле
+    THINGS = get_images(settings.max_things_images, settings.path_things) # 30 случайных изображений и максимум 20 предметов на игровом поле
     THINGS_SURF = []
     
     for i in range(len(THINGS)): # изображения вещей
@@ -23,7 +23,7 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
     main_things = pygame.sprite.Group()
     things = pygame.sprite.Group()
    
-    info.reset_len_things()
+    info.reset_things_text()
 
     info.generated_things_lines = False #  Флаг, сгенерированы ли все рамки у предметов, текст за кнопкой на    доп. панели. Если нет, то после нажатия кнопки все предметы будут перегенерированы
     if settings.is_displayed_lines:
@@ -38,8 +38,8 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
 
     things, additional_things_2_3, info.lines_2_3, unsuitable_things_2_3 = render(2, 3, THINGS_SURF, settings, things, settings.green, 2, info) 
 
-    info.display_len_things_2_3(len(additional_things_2_3))
-    info.display_unsuitable_things_2_3(unsuitable_things_2_3)
+    info.set_text_len_things_2_3(len(additional_things_2_3))
+    info.set_text_unsuitable_things_2_3(unsuitable_things_2_3)
     # print(" len(additional_things_2_3) = %d elem" % (len(additional_things_2_3)))
     # print(" settings.current_number_things = %d elem" % settings.current_number_things)
     
@@ -47,7 +47,7 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
     
         if  len(additional_things_2_3) == 6: # Один предмет случайным образом удаляется
             del_elements(info, additional_things_2_3, 5, settings.green)
-            info.display_del_things(1, "2 x 3", settings.green)
+            info.set_text_del_things(1, "2 x 3", settings.green)
         main_things = additional_things_2_3
 
     elif settings.current_number_things == 6: # 2*3 = 6 elements. Возможно, все 6 элементов уже сгенерированы
@@ -57,15 +57,15 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
         # Вторая решетка 2*2 = 4. Накладывается еще одна решетка. Максимум еще 4 предмета. Не более трех попыток разместить предмет в одну ячейку
         things, additional_things_2_2, info.lines_2_2, unsuitable_things_2_2 = render(2, 2, THINGS_SURF, settings, things, settings.yellow, 0, info)  
         
-        info.display_len_things_2_2(len(additional_things_2_2))
-        info.display_unsuitable_things_2_2(unsuitable_things_2_2)
+        info.set_text_len_things_2_2(len(additional_things_2_2))
+        info.set_text_unsuitable_things_2_2(unsuitable_things_2_2)
 
         number_del_elements = len(things) - settings.current_number_things  
         max_len = len(additional_things_2_2) - number_del_elements
        
         if number_del_elements > 0:  # Лишние предметы удаляются из группы
             del_elements(info, additional_things_2_2, max_len, settings.yellow)
-            info.display_del_things(number_del_elements, "2 x 2", settings.yellow)
+            info.set_text_del_things(number_del_elements, "2 x 2", settings.yellow)
 
         for thing in additional_things_2_2:   # Объединяем 2 группы
             additional_things_2_3.add(thing)
@@ -79,18 +79,18 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
         # Третья решетка 1*5 = 5. Максимум 5 предметов
         things, additional_things_1_5, info.lines_1_5, unsuitable_things_1_5 = render_m(5, THINGS_SURF, settings, things, settings.blue, 1, info)  
         
-        info.display_unsuitable_things_2_2(unsuitable_things_2_2)
-        info.display_unsuitable_things_1_5(unsuitable_things_1_5)
+        info.set_text_unsuitable_things_2_2(unsuitable_things_2_2)
+        info.set_text_unsuitable_things_1_5(unsuitable_things_1_5)
         
         number_del_elements = len(things) - settings.current_number_things  
         max_len = len(additional_things_1_5) - number_del_elements
         
-        info.display_len_things_2_2(len(additional_things_2_2))
-        info.display_len_things_1_5(len(additional_things_1_5))
+        info.set_text_len_things_2_2(len(additional_things_2_2))
+        info.set_text_len_things_1_5(len(additional_things_1_5))
        
         if number_del_elements > 0:
             del_elements(info, additional_things_1_5, max_len, settings.blue)
-            info.display_del_things(number_del_elements, "1 x 5", settings.blue)
+            info.set_text_del_things(number_del_elements, "1 x 5", settings.blue)
         
         for thing in additional_things_2_2:
             additional_things_2_3.add(thing)
@@ -109,16 +109,22 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
             main_things = render_thing(settings, info, main_things, THINGS_SURF, 10)
 
         if settings.current_number_things == len(main_things):
-            info.display_number_random_lines(delta)
+            info.set_text_number_random_lines(delta)
             info.display_random_unfit()
-        
+    
     return main_things
 
 def render_thing(settings, info, main_things, THINGS_SURF, max_attemps): # Случайное размещение предметов
     is_point_found = False
     W, H = settings.game_panel.w, settings.game_panel.h
     current_attempt = 0
-    serf = THINGS_SURF.pop(0)
+    
+    if len(THINGS_SURF) == 0:
+        print("There will be no new generated images! They are over.") # settings.max_things_images = 35
+        return  main_things
+    else:
+        serf = THINGS_SURF.pop(0)
+       
     while not is_point_found and current_attempt < max_attemps: 
                 
         possible_point = randint(0, W), randint(0, H)
@@ -241,7 +247,6 @@ def get_acceleration(n, speed):     # равномерное замедлени�
     for i in range(speed):
         for _ in range(remainder+1):
             sifted_points.append(i+1)
-    # print(sifted_points)
     return sifted_points, sifted_points[::-1]  # на финише и старте одинаковое изменение (ускорение/замедление    скорости
 
 def get_image(path):

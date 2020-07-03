@@ -6,10 +6,10 @@ class Settings():
         self.text_additional_panel_caption = "Flights control center"
 
         # Использовать панель с доп. иформацией об основных параметрах игры
-        self.is_used_additional_panel = True
-        # self.is_used_additional_panel = False 
-        self.is_displayed_lines = True
-        # self.is_displayed_lines = False
+        # self.is_used_additional_panel = True
+        self.is_used_additional_panel = False 
+        # self.is_displayed_lines = True
+        self.is_displayed_lines = False
         self.additional_panel_width = 300
 
         self.number_balls = 3
@@ -38,6 +38,7 @@ class Settings():
         self.background_image_path = '/pict/background/sky_425_650.jpg'
         self.background_image = ""
         self.path_things = '/pict/things'  
+        self.max_things_images = 35
         self.path_spirals = '/pict/spiralls' 
 
         self.set_color()
