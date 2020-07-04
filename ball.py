@@ -3,7 +3,7 @@ from math import sqrt, hypot
 
 # класс Мяч или Шар (при сталкновении с 10 предметами шар их лопает (уничтожает))
 class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, средний и большой мяч (шар)
-    def __init__(self, settings, x, surf):
+    def __init__(self, settings, x, surf, index):
         pygame.sprite.Sprite.__init__(self)
         
         self.x = x                      #координаты шара на панели шаров. 
@@ -11,8 +11,10 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.y = settings.screen_height - settings.bottom_margin_center_ball
         self.balls_panel_x = x
         self.balls_panel_y = self.y
+        self.index = index
         self.prev_x = 0
         self.prev_y = 0
+
 
         self.image = surf
         self.original_surf = surf # для корректировки ценра вращения мяча (в прямоугольм контуре)
@@ -44,7 +46,13 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.prev_point = (0, 0)
         self.last_path_distance = 0
         self.info = ""
+        # self.new_x = 0
+        # self.new.y = 0
         # self.isDisable = False
+    def set_ball_xy(self):
+        self.x = 200
+        self.y = 200
+        self.rect.center = (self.x, self.y)
         
     def go_home(self,settings):
         # self.rect.center = (self.balls_panel_x, self.balls_panel_y)

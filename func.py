@@ -23,13 +23,13 @@ def display_additional_info(sc, settings, info):
     show_add_text(sc, settings, info.text_prev_selected_ball, settings.white, 20, 200) 
     show_add_text(sc, settings, info.text_not_equal, settings.yellow, 20, 220)
     show_add_text(sc, settings, info.text_rotated_ball, settings.white, 20, 240)   
-    # show_add_text(sc, settings, info.text_line, settings.white, 20, 250)
+   
     show_add_text(sc, settings, info.text_ball_in_game, settings.white, 20, 260)
 
     
-    
     # Generated things:
     h = 370
+    show_add_text(sc, settings, info.text_line, settings.white, 20, h -20)
     show_generatet_things(sc, settings, info, h)
     
     # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
@@ -202,6 +202,16 @@ def show_generatet_things(sc, settings, info, h):
     # перегенерировать заданное количество предметов
     if not info.generated_things_lines:
         show_add_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
+
+
+def get_next_ball(current_ball, balls):
+    if len(balls)>1:
+        if current_ball.index != 2:
+            return balls.sprites()[current_ball.index + 1]
+        else:
+            return balls.sprites()[0]
+    else:
+        return None
 
 
 

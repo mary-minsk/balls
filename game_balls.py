@@ -262,7 +262,7 @@ def create_balls(): # создание трех шаров, определени
     for i in range(settings.number_balls):
         BALLS_SURF.append(pygame.image.load(BALLS[i]).convert_alpha()) # добавление изображения
         w  = BALLS_SURF[i].get_rect()[2] # ширина изображения
-        balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, BALLS_SURF[i])) # добавляем в группу три шара
+        balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, BALLS_SURF[i],i)) # добавляем в группу три шара
         shift = shift + w 
         # print(shift + settings.balls_offset*i + w//2)
         list.append((w, i)) 
@@ -278,6 +278,7 @@ def create_balls(): # создание трех шаров, определени
     distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
     speed_dictionary = {}      # большое растояние
     additional_info = {}
+
     
     for i in range(settings.number_balls):
         distance_dictionary[list[i][1]] = settings.balls_distance[i]
@@ -493,7 +494,19 @@ while not done:
                         settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius     
             
             info.set_text_mousemotion(point_to_str((event.pos)))
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_TAB:
+                if settings.ball_in_game is not None:
+                    print("K_TAB")
+                    next_ball = func.get_next_ball(settings.ball_in_game, balls)
+                    if next_ball is not None:
+                        print(next_ball.info)
+                        settings.ball_in_game.go_home(settings)
+                        next_ball.set_ball_xy()
+                        settings.ball_in_game = next_ball
+                        settings.prev_selected_ball = next_ball
 
+            
         else:
             info.set_text_other_events()
 
@@ -512,6 +525,7 @@ while not done:
                 info.set_text_rotated_ball(settings.rotated_ball.info)
 
             info.set_text_mouse_xy(point_to_str(mouse_xy))
+
         
         
         # settings.is_draw_line = False
