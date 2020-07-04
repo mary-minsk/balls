@@ -98,6 +98,7 @@ class Settings():
         self.selected_ball = None
         self.prev_selected_ball = None
         self.rotated_ball = None
+        self.ball_in_game = None
         # self.index_current_ball = None  # индекс выбранного шара(мяча)
         # self.index_prev_ball = None     # индекс предыдущего выбранного шара(мяча)
         # self.index_prev_selected_ball = None 

@@ -2,9 +2,11 @@ import pygame
 
 def display_additional_info(sc, settings, info):
 
-    info.display_number_things(settings.current_number_things)
-    info.display_things_attempts()
-    info.display_balls(settings.selected_ball, settings.prev_selected_ball)
+    info.set_number_things(settings.current_number_things)
+    info.set_things_attempts()
+    info.set_selected_ball(settings.selected_ball, settings.prev_selected_ball)
+    info.set_ball_in_game(settings.ball_in_game)
+    
 
     # pygame.event:
     show_add_text(sc, settings, info.text_game_info, settings.white, 25, 10, 90)
@@ -21,10 +23,13 @@ def display_additional_info(sc, settings, info):
     show_add_text(sc, settings, info.text_prev_selected_ball, settings.white, 20, 200) 
     show_add_text(sc, settings, info.text_not_equal, settings.yellow, 20, 220)
     show_add_text(sc, settings, info.text_rotated_ball, settings.white, 20, 240)   
-    show_add_text(sc, settings, info.text_line, settings.white, 20, 250)
+    # show_add_text(sc, settings, info.text_line, settings.white, 20, 250)
+    show_add_text(sc, settings, info.text_ball_in_game, settings.white, 20, 260)
+
+    
     
     # Generated things:
-    h = 280
+    h = 370
     show_generatet_things(sc, settings, info, h)
     
     # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)

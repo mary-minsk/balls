@@ -16,6 +16,9 @@ class Info():
             self.text_event = ["event.pos:", ""]
             self.text_prev_selected_ball = ["prev selected ball: ", "None"]
             self.text_selected_ball = ["selected ball: ", "None"]
+            self.text_ball_in_game = ["ball in the game:" , "None"]
+
+
             self.text_mouse_xy = ["mouse: ", ""]
             self.text_line = ["______________________________", ""]
             self.text_number_things = ["number of things: ",""]  
@@ -35,16 +38,6 @@ class Info():
             self.show_lines_button = Button(self.show_lines, self.get_text_switch(), 22)
 
             self.generated_things_lines = False
-
-            
-            # self.all_attempts = 0
-            # self.attempts_place_thing = 3 #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
-            # self.random_placement_attempts = 0 #
-            # self.lines_2_3 = []
-            # self.lines_2_2 = []
-            # self.lines_1_5 = []
-            # self.random_lines = []
-            # self.deleted_things_rect = []  
             
     def check_click(self, mouse_xy, settings):
         if self.is_active_panel:
@@ -115,11 +108,12 @@ class Info():
         self.random_deleted_things_rect = []  
         
 
+    # Balls
     def set_text_not_equal_balls(self):
         if self.is_active_panel:
             self.text_not_equal = ["prev selected ball!=selected ball", ""]
 
-    def display_balls(self, selected_ball, prev_selected_ball):
+    def set_selected_ball(self, selected_ball, prev_selected_ball):
         if selected_ball is not None:
             self.text_selected_ball[1] = selected_ball.info
         else:
@@ -128,8 +122,16 @@ class Info():
         if prev_selected_ball is not None:
             self.text_prev_selected_ball[1] = prev_selected_ball.info  
         else:
-            self.text_prev_selected_ball[1] = "None"   
+            self.text_prev_selected_ball[1] = "None"
+            
+    def set_ball_in_game(self, ball_in_game):
+        if ball_in_game is not None:
+            self.text_ball_in_game[1] = ball_in_game.info
+        else:
+            self.text_ball_in_game[1] = "None"
 
+    
+    # Events
     def set_text_mousebuttondown(self, text):
         if self.is_active_panel:
             self.text_mousebuttondown[1] = text
@@ -154,11 +156,13 @@ class Info():
         if self.is_active_panel:
             self.text_mousebuttonup[1] = text  
 
-    def display_number_things(self, n):
+    
+    # Things
+    def set_number_things(self, n):
         if self.is_active_panel:
             self.text_number_things[1] = str(n)
 
-    def display_things_attempts(self):
+    def set_things_attempts(self):
         if self.is_active_panel:
             self.text_things_attempts[1] = str(self.all_attempts)
 
@@ -209,8 +213,8 @@ class Info():
         if self.is_active_panel:
             self.text_random_unfit[1] = str(self.random_unfit) + " "
 
-    # def set_text_level(self, settings)
-    #     settings.text_level[1] = settings.current_level
+    
+    
 
               
             

@@ -46,9 +46,10 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.info = ""
         # self.isDisable = False
         
-    def go_home(self):
+    def go_home(self,settings):
         # self.rect.center = (self.balls_panel_x, self.balls_panel_y)
         self.x, self.y = self.balls_panel_x, self.balls_panel_y
+        settings.ball_in_game = None
        
     def update(self, settings, sc):
         

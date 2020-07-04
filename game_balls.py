@@ -434,7 +434,6 @@ while not done:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-
                 settings.selected_ball = func.get_ball(event.pos, balls)
                 func.rotation_balls_off(balls)
                 
@@ -442,7 +441,7 @@ while not done:
                     
                     if settings.prev_selected_ball != settings.selected_ball:
                         if settings.prev_selected_ball is not None:
-                            settings.prev_selected_ball.go_home()
+                            settings.prev_selected_ball.go_home(settings)
                             info.set_text_not_equal_balls()
                         settings.prev_selected_ball = settings.selected_ball
         
@@ -463,13 +462,14 @@ while not done:
             if event.button == 1:
 
                 if settings.selected_ball is not None:
+                    settings.ball_in_game = settings.selected_ball
                     if settings.screen_height - settings.height_bottom_panel in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
                         if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel:
                             settings.selected_ball.y = settings.screen_height - settings.height_bottom_panel - settings.selected_ball.radius
                         else:
-                            settings.selected_ball.go_home()
+                            settings.selected_ball.go_home(settings)
                     elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel:
-                        settings.selected_ball.go_home()
+                        settings.selected_ball.go_home(settings)
 
                     settings.prev_selected_ball = settings.selected_ball
                     settings.selected_ball = None
