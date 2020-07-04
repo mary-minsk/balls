@@ -6,8 +6,8 @@ class Settings():
         self.text_additional_panel_caption = "Flights control center"
 
         # Использовать панель с доп. иформацией об основных параметрах игры
-        # self.is_used_additional_panel = True
-        self.is_used_additional_panel = False 
+        self.is_used_additional_panel = True
+        # self.is_used_additional_panel = False 
         # self.is_displayed_lines = True
         self.is_displayed_lines = False
         self.additional_panel_width = 300
@@ -18,7 +18,7 @@ class Settings():
         self.current_level = self.start_level
         self.start_things = 5
         self.current_number_things = self.start_things
-        self.finish_things = 12
+        self.finish_things = 20
         self.last_level = self.finish_things - self.start_things
 
         self.screen_width = 425   #(25 + 375 + 25 = 425)

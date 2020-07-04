@@ -342,7 +342,7 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     things.empty()
     deleted_balls.empty()
     setting.reset()
-
+    
     if settings.current_level <= settings.last_level:
         settings.current_number_things += 1
         setting.current_level += 1

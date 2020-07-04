@@ -2,6 +2,11 @@ import pygame
 
 def display_additional_info(sc, settings, info):
 
+    info.display_number_things(settings.current_number_things)
+    info.display_things_attempts()
+    info.display_balls(settings.selected_ball, settings.prev_selected_ball)
+
+    # pygame.event:
     show_add_text(sc, settings, info.text_game_info, settings.white, 25, 10, 90)
     show_add_text(sc, settings, info.text_event, settings.white, 20, 30)
     show_add_text(sc, settings, info.text_mousebuttondown, settings.white, 20, 50)
@@ -11,62 +16,21 @@ def display_additional_info(sc, settings, info):
     show_add_text(sc, settings, info.text_mouse_xy, settings.white, 20, 130)
     show_add_text(sc, settings, info.text_line, settings.white, 20, 140)
     
-
+    # Основные параметры: выбранный мяч, вращающийся, предыдущий выбранный мяч и т. д.
     show_add_text(sc, settings, info.text_selected_ball, settings.white, 20, 180)
     show_add_text(sc, settings, info.text_prev_selected_ball, settings.white, 20, 200) 
     show_add_text(sc, settings, info.text_not_equal, settings.yellow, 20, 220)
     show_add_text(sc, settings, info.text_rotated_ball, settings.white, 20, 240)   
     show_add_text(sc, settings, info.text_line, settings.white, 20, 250)
-
-    # Generated things
-    show_add_text(sc, settings, info.text_generated_things, settings.white, 24, 280, 50)  
-
-    info.attempts_one_cell[1] = str(info.attempts_place_thing)
-    show_add_text(sc, settings, info.attempts_one_cell, settings.white, 20, 310)
-
-    show_add_text(sc, settings, info.text_number_things, settings.white, 20, 330)  
-
-    if info.len_things_2_3 > 0:
-        show_add_text(sc, settings, info.text_len_things_2_3, settings.green, 22, 360, 0, True)
     
-    if info.len_things_2_2 > 0:
-        show_add_text(sc, settings, info.text_len_things_2_2, settings.yellow, 22, 380, 0, True)
-
-    if info.len_things_1_5 > 0:
-        show_add_text(sc, settings, info.text_len_things_1_5, settings.blue, 22, 400, 0, True)
-        
-
-    if info.number_random_lines > 0:
-        show_add_text(sc, settings, info.text_random_lines, settings.fuchsia, 22, 420, 0, True)
-
+    # Generated things:
+    h = 280
+    show_generatet_things(sc, settings, info, h)
     
-    if info.unfit_2_3 > 0:
-        show_add_text(sc, settings, info.text_unsuitable_things_2_3, settings.green, 22, 360, 120, True)
-    
-    if info.unfit_2_2 > 0:
-        show_add_text(sc, settings, info.text_unsuitable_things_2_2, settings.yellow, 22, 380, 120, True)
-    
-    if info.unfit_1_5 > 0:
-        show_add_text(sc, settings, info.text_unsuitable_things_1_5, settings.blue, 22, 400, 120, True) 
-
-    if info.random_unfit >0:
-        show_add_text(sc, settings, info.text_random_unfit, settings.fuchsia, 22, 420, 120, True) 
-
-    
-    
-    show_add_text(sc, settings, info.text_things_attempts, settings.white, 21, 440)
-
-    if info.del_things > 0:
-        show_add_text(sc, settings, info.text_deleted, info.del_things_text_color, 22, 460, 0, True, settings.white)
-
-    if not info.generated_things_lines:
-        show_add_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
-
+    # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
     info.show_lines_button.draw(sc, settings)
 
-    info.display_number_things(settings.current_number_things)
-    info.display_things_attempts()
-    info.display_balls(settings.selected_ball, settings.prev_selected_ball)
+    
     
 def show_add_text(sc, settings, text, color, size, h, w = 0, is_border = False, white_border_color = None):  # вывод на экран текста
     # point = h, w
@@ -180,6 +144,60 @@ def display_level(sc, settings):
    
     show_text(sc, settings, settings.text_level, settings.white, 28, settings.level_point_xy)
    
+
+def show_generatet_things(sc, settings, info, h):
+
+    show_add_text(sc, settings, info.text_generated_things, settings.white, 24, h, 50)
+
+    info.attempts_one_cell[1] = str(info.attempts_place_thing)
+    # макс. количество попыток разместить предмет в одну выбранную ячейку решетки
+    show_add_text(sc, settings, info.attempts_one_cell, settings.white, 20, h + 30)
+                    
+    # кол-во всех предметов на игровом поле
+    show_add_text(sc, settings, info.text_number_things, settings.white, 20, h+50)
+    
+    
+    h1 = h+50
+    # решетка 2*3 предметов сгенерировано
+    if info.len_things_2_3 > 0:
+            show_add_text(sc, settings, info.text_len_things_2_3, settings.green, 22, h1 + 20, 0, True)
+    # решетка 2*2 предметов сгенерировано
+    if info.len_things_2_2 > 0:
+        show_add_text(sc, settings, info.text_len_things_2_2, settings.yellow, 22,  h1 + 40, 0, True)
+    # решетка 1*5
+    if info.len_things_1_5 > 0:
+        show_add_text(sc, settings, info.text_len_things_1_5, settings.blue, 22, h1 + 60, 0, True)
+    # случайно сгенерированные предметы, общее количество
+    if info.number_random_lines > 0:
+        show_add_text(sc, settings, info.text_random_lines, settings.fuchsia, 22, h1 + 80, 0, True)
+
+    # Отброшеные предметы (вышедшие за рамки игрового поля или наложенные на другие предметы)
+    if info.unfit_2_3 > 0:
+        show_add_text(sc, settings, info.text_unsuitable_things_2_3, settings.green, 22, h1 + 20, 120, True)
+
+    if info.unfit_2_2 > 0:
+        show_add_text(sc, settings, info.text_unsuitable_things_2_2, settings.yellow, 22, h1 + 40, 120, True)
+
+    if info.unfit_1_5 > 0:
+        show_add_text(sc, settings, info.text_unsuitable_things_1_5, settings.blue, 22, h1+ 60, 120, True)
+
+    if info.random_unfit > 0:
+        show_add_text(sc, settings, info.text_random_unfit, settings.fuchsia, 22, h1 + 80, 120, True)
+
+    # сделанных попыток разместить все предметы
+    show_add_text(sc, settings, info.text_things_attempts,
+                  settings.white, 21, h1 + 100)
+
+    # Случайным образом удаленные лишние предметы с последней наложенной решетки
+    if info.del_things > 0:
+        show_add_text(sc, settings, info.text_deleted,
+                      info.del_things_text_color, 22, h1 + 120, 0, True, settings.white)
+    
+    # Надпись.Если дополнительные данные о предметах не были сгенерированы для заданного количества предметов, то при нажатии кнопки
+    # перегенерировать заданное количество предметов
+    if not info.generated_things_lines:
+        show_add_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
+
 
 
 
