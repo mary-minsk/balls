@@ -34,6 +34,13 @@ class Settings():
             self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin)
         self.game_panel = pygame.Rect(self.game_panel_rect)
         
+        self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
+        self.text_level = ["Level:", ""]
+        self.set_text_level()
+        self.level_point_xy = 20,15
+
+        
+        
          # изображения предметов
         self.background_image_path = '/pict/background/sky_425_650.jpg'
         self.background_image = ""
@@ -113,6 +120,9 @@ class Settings():
         self.blue = (0, 191, 255)
         # Fuchsia	#FF00FF	255, 0, 255
         self.fuchsia = (255, 0, 255)
+
+    def set_text_level(self):
+        self.text_level[1] = str(self.current_level)
        
 
        

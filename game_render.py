@@ -1,7 +1,7 @@
 
 from random import randint
 import os, random
-import pygame, func
+import pygame
 from thing import Thing
 
 def del_elements(info, things, max_len, color):

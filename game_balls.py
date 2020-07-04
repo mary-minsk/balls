@@ -343,9 +343,11 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     deleted_balls.empty()
     setting.reset()
 
-    # if settings.current_level < settings.last_level:
-    settings.current_number_things += 1
-    setting.current_level += 1
+    if settings.current_level <= settings.last_level:
+        settings.current_number_things += 1
+        setting.current_level += 1
+        setting.set_text_level()
+
     things = create_things()
     balls = create_balls()
     deleted_balls = pygame.sprite.Group()
@@ -397,6 +399,8 @@ def draw_disappearing_path(): # Отображение исчезающего п
     else:
         settings.is_points_erasing = False
 
+
+
 pygame.init()
 
 settings = Settings()
@@ -425,6 +429,7 @@ done = False
 while not done:
     for event in pygame.event.get():
         info.reset()
+        settings.is_draw_line = False
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:

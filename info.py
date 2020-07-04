@@ -7,6 +7,9 @@ class Info():
             "Aim at things and press space!", \
             "Harvesting...", "Oops!...I did it again!"]
         
+
+            # self.text_level = ["Level:", ""]
+        
         if is_active_panel:
 
             self.text_game_info = ["Game info", ""]
@@ -32,6 +35,8 @@ class Info():
             self.show_lines_button = Button(self.show_lines, self.get_text_switch(), 22)
 
             self.generated_things_lines = False
+
+            
             # self.all_attempts = 0
             # self.attempts_place_thing = 3 #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
             # self.random_placement_attempts = 0 #
@@ -203,6 +208,9 @@ class Info():
     def display_random_unfit(self): #random_unfit
         if self.is_active_panel:
             self.text_random_unfit[1] = str(self.random_unfit) + " "
+
+    # def set_text_level(self, settings)
+    #     settings.text_level[1] = settings.current_level
 
               
             
