@@ -214,6 +214,28 @@ def get_next_ball(current_ball, balls):
         return None
 
 
+def check_ball_border(settings, next_ball):
+
+    # Если при нажатии Таб следующий по сету мяч выходит за границы игрового поля, то корректируем его центр
+    # Нижняя граница
+    if settings.screen_height - settings.height_bottom_panel in range(next_ball.rect.top, next_ball.rect.bottom):
+        if next_ball.y < settings.screen_height - settings.height_bottom_panel:
+            next_ball.y = settings.screen_height - \
+                settings.height_bottom_panel - next_ball.radius
+    # Верхняя граница
+    if next_ball.y < settings.up_margin + next_ball.radius:
+        next_ball.y = settings.up_margin + next_ball.radius
+
+    # Левая граница
+    if next_ball.x < settings.left_margin + next_ball.radius:
+        next_ball.x = settings.left_margin + next_ball.radius
+
+    # Правая граница
+    if next_ball.x > settings.screen_width - settings.right_margin - next_ball.radius:
+        next_ball.x = settings.screen_width - settings.right_margin - next_ball.radius
+
+
+
 
 
 

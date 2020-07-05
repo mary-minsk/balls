@@ -49,10 +49,10 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         # self.new_x = 0
         # self.new.y = 0
         # self.isDisable = False
-    def set_ball_xy(self):
-        self.x = 200
-        self.y = 200
+    def set_ball_xy(self, point):
+        self.x,self.y = point
         self.rect.center = (self.x, self.y)
+        # self.rect.center = (200, 200)
         
     def go_home(self,settings):
         # self.rect.center = (self.balls_panel_x, self.balls_panel_y)
@@ -61,7 +61,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
        
     def update(self, settings, sc):
         
-        # pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
+        pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
  
         if self.isRolling:               # когда шар каится по поверхности
             if len(settings.all_path_points) >0:

@@ -33,6 +33,10 @@ class Settings():
         self.game_panel_rect = (self.left_margin, self.up_margin, \
             self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin)
         self.game_panel = pygame.Rect(self.game_panel_rect)
+
+        self.game_panel_rect2 = (0, 0,
+                                self.screen_width, self.screen_height - self.height_bottom_panel)
+        self.game_panel2 = pygame.Rect(self.game_panel_rect2)
         
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
         self.text_level = ["Level:", ""]
