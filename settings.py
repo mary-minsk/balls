@@ -4,83 +4,18 @@ class Settings():
     def __init__(self):
         self.text_caption = '12' 
         self.text_additional_panel_caption = "Flights control center"
-
-        # Использовать панель с доп. иформацией об основных параметрах игры
-        self.is_used_additional_panel = True
-        # self.is_used_additional_panel = False 
-        # self.is_displayed_lines = True
-        self.is_displayed_lines = False
-        self.additional_panel_width = 300
-
-        self.number_balls = 3
-
-        self.start_level = 1
-        self.current_level = self.start_level
-        self.start_things = 5
-        self.current_number_things = self.start_things
-        self.finish_things = 20
-        self.last_level = self.finish_things - self.start_things
-
-        self.screen_width = 425   #(25 + 375 + 25 = 425)
-        self.screen_height = 675  #(40 + 520 + 90 = 650) +25
-
-        self.up_margin = 40
-        self.left_margin = 25
-        self.right_margin = 25
-        self.bottom_margine = 25
-
-        self.height_bottom_panel = 90
-        self.bottom_margin_center_ball = 40
-
-        self.game_panel_rect = (self.left_margin, self.up_margin, \
-                                self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin - self.bottom_margine)
-        self.game_panel = pygame.Rect(self.game_panel_rect)
-
-        self.game_panel_rect2 = (0, 0,
-                                 self.screen_width, self.screen_height - self.height_bottom_panel- self.bottom_margine)
-        self.game_panel2 = pygame.Rect(self.game_panel_rect2)
-
-        self.game_panel_rect3 = (0, 0,
-                                 self.screen_width, self.screen_height - self.height_bottom_panel)
-        self.game_panel3 = pygame.Rect(self.game_panel_rect3)
         
-        self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
-        self.text_level = ["Level:", ""]
-        self.set_text_level()
-        self.level_point_xy = 20,15
-
+        self.is_used_additional_panel = True  # Использовать панель с доп. иформацией об основных параметрах игры
+        # self.is_used_additional_panel = False
         
+        self.game_sizes()    # Размеры окна игры, игровой панели, отступы
+        self.levels_and_things() # Уровни и количество предметов на экране
         
-         # изображения предметов
-        # self.background_image_path = '/pict/background/sky_425_650.jpg' 
-        self.background_image_path = '/pict/background/sky_425_675.png'
-        self.background_image = ""
-        self.path_things = '/pict/things'  
-        self.max_things_images = 35
-        self.path_spirals = '/pict/spiralls' 
-
+        self.path_images()    # изображения предметов
         self.set_color()
 
-        # Мяч
-        self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
-        self.balls_offset= 20   # растояние между шарами на панели шаров
-        self.left_offset = 20   # слева отступ от трех шаров
-
-        self.balls_speed = [6,5,4]  # маленький - самый быстрый (скорость 4), большой шар самый медленный (скорость 2)
-
-                                # самый маленикий катится растояние - 3*H, средний - 2*H,  большой шар - H
-        # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
-        self.balls_distance = [3, 2, 1]  # *settings.screen_height
-        self.balls_info = ["small", "medium", "large"]
-        self.unit = self.screen_height
-
-        
-        # Кнопки
-        self.button_level = [310,  self.screen_height - self.height_bottom_panel +10, 90, 30]
-        self.button_level_text = "Next level..."
-        # self.button_ruler = [300, self.w - 115, 90, 30]
-        # self.button_ruler_text = "Ruler"
-
+        self.balls()   # Мяч
+        self.buttons()  # Кнопки
 
         # Траектория движения
         self.disappearing_edges = []  # исчезающие вершины ломаной прямой
@@ -133,13 +68,73 @@ class Settings():
 
     def set_text_level(self):
         self.text_level[1] = str(self.current_level)
-       
 
-       
+    def game_sizes(self):
 
-       
+        self.screen_width = 425  # (25 + 375 + 25 = 425)
+        self.screen_height = 675  # (40 + 520 + +25 + 90  = 675)
+
+        self.up_margin = 40
+        self.left_margin = 25
+        self.right_margin = 25
+        self.bottom_margine = 25
+
+        self.height_bottom_panel = 90
+        self.bottom_margin_center_ball = 40
+
+        self.game_panel_rect = (self.left_margin, self.up_margin,
+                                self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin - self.bottom_margine)
+        self.game_panel = pygame.Rect(self.game_panel_rect)
+
+        self.game_panel_rect2 = (0, 0,
+                                self.screen_width, self.screen_height - self.height_bottom_panel - self.bottom_margine)
+        self.game_panel2 = pygame.Rect(self.game_panel_rect2)
+
+        self.game_panel_rect3 = (0, 0,
+                                self.screen_width, self.screen_height - self.height_bottom_panel)
+        self.game_panel3 = pygame.Rect(self.game_panel_rect3)
+
+    def levels_and_things(self):
+
+        self.number_balls = 3
+
+        self.start_level = 1
+        self.current_level = self.start_level
+        self.start_things = 5
+        self.current_number_things = self.start_things
+        self.finish_things = 20
+        self.last_level = self.finish_things - self.start_things
+
+        self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
+        self.text_level = ["Level:", ""]
+        self.set_text_level()
+        self.level_point_xy = 20, 15
         
-
-
+    def path_images(self):
+        self.background_image_path = '/pict/background/sky_425_675.png'
+        self.background_image = ""
+        self.path_things = '/pict/things'
+        self.max_things_images = 35
+        self.path_spirals = '/pict/spiralls'
         
+    def balls(self):
+
+        self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
+        self.balls_offset = 20   # растояние между шарами на панели шаров
+        self.left_offset = 20   # слева отступ от трех шаров
+
+        self.balls_speed = [6, 5, 4]  # маленький - самый быстрый (скорость 4), большой шар самый медленный (скорость 2)
+
+        # самый маленикий катится растояние - 3*H, средний - 2*H,  большой шар - H
+        # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
+        self.balls_distance = [3, 2, 1]  # *settings.screen_height
+        self.balls_info = ["small", "medium", "large"]
+        self.unit = self.screen_height
+
+    def buttons(self):
+
+        self.button_level = [310,  self.screen_height - self.height_bottom_panel +10, 90, 30]
+        self.button_level_text = "Next level..."
+        # self.button_ruler = [300, self.w - 115, 90, 30]
+        # self.button_ruler_text = "Ruler"   
         

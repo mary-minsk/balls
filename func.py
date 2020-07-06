@@ -96,10 +96,10 @@ def mouse_inside_ball_in_game(settings, mouse_pos):
     return False
 
 
-def get_screen(settings):
+def get_screen(settings, info):
 
     if settings.is_used_additional_panel:
-        sc = pygame.display.set_mode((settings.screen_width + settings.additional_panel_width, settings.screen_height))
+        sc = pygame.display.set_mode((settings.screen_width + info.additional_panel_width, settings.screen_height))
     else:
         sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
     return sc
@@ -151,7 +151,7 @@ def display_info(sc, settings, info):
     if settings.is_used_additional_panel:
         display_additional_info(sc, settings, info)
 
-    if settings.is_displayed_lines:
+    if info.is_displayed_lines:
         draw_cells(sc, settings, info)
 
     display_level(sc, settings)

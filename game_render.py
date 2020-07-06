@@ -26,7 +26,7 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
     info.reset_things_text()
 
     info.generated_things_lines = False #  Флаг, сгенерированы ли все рамки у предметов, текст за кнопкой на    доп. панели. Если нет, то после нажатия кнопки все предметы будут перегенерированы
-    if settings.is_displayed_lines:
+    if info.is_displayed_lines:
         info.generated_things_lines = True
 
     # Решетка 2*3 = 6. Игровое поле делится на 6 частей (ячеек) и в каждой прямоугольной части находится центр с изображением предмета
@@ -145,7 +145,7 @@ def check_possible_place(settings, info, things, thing_surf, possible_point, rec
     
     new_thing = Thing(possible_point[0] + settings.left_margin, possible_point[1] + settings.up_margin, thing_surf)
      
-    if settings.is_displayed_lines:
+    if info.is_displayed_lines:
         new_thing.rect_color = rect_color
 
     blocks_hit_list = pygame.sprite.spritecollide(new_thing, things, False, pygame.sprite.collide_circle)
@@ -183,7 +183,7 @@ def render(n, m, THINGS_SURF, settings, things, color, shift, info): # игро�
                 else:
                     unsuitable_things +=1 
             
-                if settings.is_displayed_lines and current_attempt==0:
+                if info.is_displayed_lines and current_attempt==0:
                     rect = (step_x*i + settings.left_margin + shift, step_y*j + settings.up_margin + shift, step_x - 2*shift, step_y - 2*shift)
                     lines.append((rect, color))
                 current_attempt += 1
@@ -216,7 +216,7 @@ def render_m(m, THINGS_SURF, settings, things, color, shift, info):# игров�
             else:
                 unsuitable_things +=1
         
-            if settings.is_displayed_lines:
+            if info.is_displayed_lines:
                 rect = (settings.left_margin + shift, int(step_y*j) + shift + settings.up_margin, W - 2*shift, int(step_y) - 2*shift)
                 lines.append((rect, color))
                 

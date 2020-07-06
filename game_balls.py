@@ -405,9 +405,9 @@ def draw_disappearing_path(): # Отображение исчезающего п
 pygame.init()
 
 settings = Settings()
-info = Info(settings.is_used_additional_panel, settings.is_displayed_lines)
+info = Info(settings.is_used_additional_panel)
 
-sc = func.get_screen(settings)
+sc = func.get_screen(settings, info)
 sc.fill(settings.black)
 
 pygame.display.update()
@@ -431,8 +431,10 @@ while not done:
     for event in pygame.event.get():
         info.reset()
         settings.is_draw_line = False
+
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             done = True
+        
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
 
@@ -454,11 +456,11 @@ while not done:
                     if next_level_button.isOver(mouse_xy):
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                     
-                    if info.check_click(mouse_xy, settings):
-                        settings.current_number_things -=1
+                    if info.check_click(mouse_xy, settings): # Перегенерируются все объекты, если для них не было получено доп. информации
+                        settings.current_number_things -=  1    # Только если активна доп. панель информации 
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
 
-                info.set_text_mousebuttondown(point_to_str((event.pos)))
+                info.set_text_mousebuttondown(event.pos)
                     
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
@@ -466,13 +468,13 @@ while not done:
                 if settings.selected_ball is not None:
                     
                     settings.ball_in_game = settings.selected_ball
-                    func.check_correct_bottom_border(settings) # Если мяч находится на нижней линии, то корректируем его положение
+                    func.check_correct_bottom_border(settings) # Если мяч находится прямо на нижней линии, то корректируем его положение
 
                     settings.prev_selected_ball = settings.selected_ball
                     settings.selected_ball = None
                     settings.prev_selected_ball.is_rotated = True  # После отпускания мышки шарик на панели шаров вновь вращается
             
-            info.set_text_mousebuttonup(point_to_str((event.pos))) 
+            info.set_text_mousebuttonup(event.pos)
 
         elif event.type == pygame.MOUSEMOTION:
             
@@ -481,7 +483,7 @@ while not done:
                 settings.selected_ball.y = event.pos[1] + selected_offset_y
                 func.check_correct_up_left_right_border(settings)
                 
-            info.set_text_mousemotion(point_to_str((event.pos)))
+            info.set_text_mousemotion(event.pos)
 
         elif event.type == pygame.KEYDOWN:  # При нажатии Табуляции меняем на игровом поле мячи
             if event.key == pygame.K_TAB:
@@ -592,16 +594,12 @@ while not done:
     sc.fill(settings.black)               
     sc.blit(settings.background_image,(0, 0))
 
-    # pygame.draw.rect(sc, settings.bg_color, (0, 0, settings.screen_width, settings.screen_height), 2)
-    # pygame.draw.rect(sc, settings.bg_color, (0, settings.screen_height, settings.screen_width, settings.screen_height + settings.height_bottom_panel), 2)
-    # pygame.draw.rect(sc, settings.bg_color, (settings.left_margin, settings.up_margin, \
-    #     settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin), 2)
     pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
-    pygame.draw.rect(sc, settings.white, settings.game_panel2, 1)
-    pygame.draw.rect(sc, settings.yellow, settings.game_panel3, 1)
+    # pygame.draw.rect(sc, settings.white, settings.game_panel2, 1)
+    pygame.draw.rect(sc, settings.bg_color, settings.game_panel3, 2)
 
-    y1 = settings.screen_height - settings.height_bottom_panel - settings.bottom_margine
-    pygame.draw.line(sc, settings.red, (10, y1), (390, y1), 2)
+    # y1 = settings.screen_height - settings.height_bottom_panel - settings.bottom_margine
+    # pygame.draw.line(sc, settings.red, (10, y1), (390, y1), 2)
     
     
       
@@ -639,7 +637,7 @@ while not done:
     next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)
     
-    things.update(sc, settings, things)
+    things.update(sc, settings, info, things)
     things.draw(sc)
 
 

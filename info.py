@@ -1,6 +1,10 @@
 from button import Button
 class Info():
-    def __init__(self, is_active_panel, is_displayed_lines):
+    def __init__(self, is_active_panel):
+
+        self.additional_panel_width = 300
+        # self.is_displayed_lines = True
+        self.is_displayed_lines = False  # Вывести все ячейки, используемые при генерации предметов и отобразить цветами границы изображений
 
         self.is_active_panel = is_active_panel
         self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!","Use mouse to aim",\
@@ -33,7 +37,7 @@ class Info():
             
             self.text_switch = ["Lines on", "Lines off"]
             self.show_lines = [427, 569, 90, 30]
-            self.switch_lines = is_displayed_lines
+            self.switch_lines = self.is_displayed_lines
             self.switch()
             self.message =["all things will be regenerated",""]
             self.show_lines_button = Button(self.show_lines, self.get_text_switch(), 22)
@@ -44,7 +48,7 @@ class Info():
         if self.is_active_panel:
             if self.show_lines_button.isOver(mouse_xy):
                         
-                settings.is_displayed_lines = not settings.is_displayed_lines
+                self.is_displayed_lines = not self.is_displayed_lines
                 self.show_lines_button.text = self.switch()
                              
                 if not self.generated_things_lines:
@@ -133,9 +137,10 @@ class Info():
 
     
     # Events
-    def set_text_mousebuttondown(self, text):
+
+    def set_text_mousebuttondown(self, event_pos):
         if self.is_active_panel:
-            self.text_mousebuttondown[1] = text
+            self.text_mousebuttondown[1] = self.point_to_str((event_pos))
 
     def set_text_other_events(self):
         if self.is_active_panel:
@@ -158,7 +163,7 @@ class Info():
 
             if settings.ball_in_game is not None: 
                 center = settings.ball_in_game.rect.center
-                self.text_ball_in_game[1] = settings.ball_in_game.info + "  center = " + self.point_to_str(center)
+                self.text_ball_in_game[1] = settings.ball_in_game.info + ";  center = " + self.point_to_str(center)
             else:
                 self.text_ball_in_game[1] = "None"
 
@@ -172,14 +177,13 @@ class Info():
             else:
                 self.text_prev_selected_ball[1] = "None"
 
-
-    def set_text_mousemotion(self, text):
+    def set_text_mousemotion(self, event_pos):
         if self.is_active_panel:
-            self.text_mousemotion[1] = text
+            self.text_mousemotion[1] = self.point_to_str(event_pos)
 
-    def set_text_mousebuttonup(self, text):
+    def set_text_mousebuttonup(self, event_pos):
         if self.is_active_panel:
-            self.text_mousebuttonup[1] = text  
+            self.text_mousebuttonup[1] = self.point_to_str(event_pos)
 
     
     # Things
