@@ -435,10 +435,6 @@ while not done:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                # if settings.ball_in_game is not None:
-
-                    # settings.ball_in_game = settings.selected_ball
-                    # settings.ball_in_game.isJump = False
 
                 settings.selected_ball = func.get_ball(event.pos, balls)
                 func.rotation_balls_off(balls)
@@ -470,18 +466,7 @@ while not done:
                 if settings.selected_ball is not None:
                     
                     settings.ball_in_game = settings.selected_ball
-                    settings.ball_in_game.isJump = True
-                    settings.ball_in_game.x1, settings.ball_in_game.y1 = event.pos
-                    # мяч на нижней границе игрового поля. В зависимости от того к чему ближе центр шара, переносим его либо вверх на игровое поле, либо возвращаем к остальным мячам.
-                    if settings.screen_height - settings.height_bottom_panel in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
-                        if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel:
-                            settings.selected_ball.y = settings.screen_height - settings.height_bottom_panel - settings.selected_ball.radius
-                        else:
-                            settings.selected_ball.go_home(settings)
-                        
-                    elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel: # мяч оставлен снизу, нена панеле мячей
-                        settings.selected_ball.go_home(settings)
-                        
+                    func.check_correct_bottom_border(settings) # Если мяч находится на нижней линии, то корректируем его положение
 
                     settings.prev_selected_ball = settings.selected_ball
                     settings.selected_ball = None
@@ -494,16 +479,8 @@ while not done:
             if settings.selected_ball is not None: 
                 settings.selected_ball.x = event.pos[0] + selected_offset_x
                 settings.selected_ball.y = event.pos[1] + selected_offset_y
+                func.check_correct_up_left_right_border(settings)
                 
-                if settings.selected_ball.y < settings.up_margin + settings.selected_ball.radius:
-                    settings.selected_ball.y = settings.up_margin + settings.selected_ball.radius
-
-                if settings.selected_ball.x < settings.left_margin + settings.selected_ball.radius:
-                    settings.selected_ball.x = settings.left_margin + settings.selected_ball.radius
-
-                if settings.selected_ball.x > settings.screen_width - settings.right_margin - settings.selected_ball.radius:
-                        settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius     
-            
             info.set_text_mousemotion(point_to_str((event.pos)))
 
         elif event.type == pygame.KEYDOWN:  # При нажатии Табуляции меняем на игровом поле мячи
@@ -620,6 +597,11 @@ while not done:
     # pygame.draw.rect(sc, settings.bg_color, (settings.left_margin, settings.up_margin, \
     #     settings.screen_width - settings.right_margin - settings.left_margin, settings.screen_height - settings.height_bottom_panel - settings.up_margin), 2)
     pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
+    pygame.draw.rect(sc, settings.white, settings.game_panel2, 1)
+    pygame.draw.rect(sc, settings.yellow, settings.game_panel3, 1)
+
+    y1 = settings.screen_height - settings.height_bottom_panel - settings.bottom_margine
+    pygame.draw.line(sc, settings.red, (10, y1), (390, y1), 2)
     
     
       

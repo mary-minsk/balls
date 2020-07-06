@@ -22,22 +22,27 @@ class Settings():
         self.last_level = self.finish_things - self.start_things
 
         self.screen_width = 425   #(25 + 375 + 25 = 425)
-        self.screen_height = 650  #(40 + 520 + 90 = 650)
+        self.screen_height = 675  #(40 + 520 + 90 = 650) +25
 
         self.up_margin = 40
         self.left_margin = 25
         self.right_margin = 25
-        # self.bottom_margine = 25
+        self.bottom_margine = 25
+
         self.height_bottom_panel = 90
         self.bottom_margin_center_ball = 40
 
         self.game_panel_rect = (self.left_margin, self.up_margin, \
-            self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin)
+                                self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin - self.bottom_margine)
         self.game_panel = pygame.Rect(self.game_panel_rect)
 
         self.game_panel_rect2 = (0, 0,
-                                self.screen_width, self.screen_height - self.height_bottom_panel)
+                                 self.screen_width, self.screen_height - self.height_bottom_panel- self.bottom_margine)
         self.game_panel2 = pygame.Rect(self.game_panel_rect2)
+
+        self.game_panel_rect3 = (0, 0,
+                                 self.screen_width, self.screen_height - self.height_bottom_panel)
+        self.game_panel3 = pygame.Rect(self.game_panel_rect3)
         
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
         self.text_level = ["Level:", ""]
@@ -47,7 +52,8 @@ class Settings():
         
         
          # изображения предметов
-        self.background_image_path = '/pict/background/sky_425_650.jpg'
+        # self.background_image_path = '/pict/background/sky_425_650.jpg' 
+        self.background_image_path = '/pict/background/sky_425_675.png'
         self.background_image = ""
         self.path_things = '/pict/things'  
         self.max_things_images = 35

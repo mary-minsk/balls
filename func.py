@@ -4,9 +4,6 @@ def display_additional_info(sc, settings, info):
 
     info.set_number_things(settings.current_number_things)
     info.set_things_attempts()
-    info.set_selected_ball(settings.selected_ball, settings.prev_selected_ball)
-    info.set_ball_in_game(settings.ball_in_game)
-    
 
     # pygame.event:
     show_add_text(sc, settings, info.text_game_info, settings.white, 25, 10, 90)
@@ -232,10 +229,10 @@ def check_ball_border(settings):
 
     # Если при нажатии Таб следующий по сету мяч выходит за границы игрового поля, то корректируем его центр
     # Нижняя граница
-    if settings.screen_height - settings.height_bottom_panel in range(settings.next_ball.rect.top, settings.next_ball.rect.bottom):
-        if settings.next_ball.y < settings.screen_height - settings.height_bottom_panel:
+    if settings.screen_height - settings.height_bottom_panel - settings.bottom_margine in range(settings.next_ball.rect.top, settings.next_ball.rect.bottom):
+        if settings.next_ball.y < settings.screen_height - settings.height_bottom_panel - settings.bottom_margine:
             settings.next_ball.y = settings.screen_height - \
-                settings.height_bottom_panel - settings.next_ball.radius
+                settings.height_bottom_panel - settings.bottom_margine - settings.next_ball.radius
     # Верхняя граница
     if settings.next_ball.y < settings.up_margin + settings.next_ball.radius:
         settings.next_ball.y = settings.up_margin + settings.next_ball.radius
@@ -247,6 +244,33 @@ def check_ball_border(settings):
     # Правая граница
     if settings.next_ball.x > settings.screen_width - settings.right_margin - settings.next_ball.radius:
         settings.next_ball.x = settings.screen_width - settings.right_margin - settings.next_ball.radius
+
+
+def check_correct_bottom_border(settings):
+
+    if settings.screen_height - settings.height_bottom_panel - settings.bottom_margine in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
+        if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel - settings.bottom_margine:
+            settings.selected_ball.y = settings.screen_height - settings.height_bottom_panel - \
+                settings.bottom_margine - settings.selected_ball.radius
+        else:
+            settings.selected_ball.go_home(settings)
+
+    elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel - settings.bottom_margine:  # мяч оставлен снизу, не на панеле мячей
+        settings.selected_ball.go_home(settings)
+
+
+def check_correct_up_left_right_border(settings):
+
+    if settings.selected_ball.y < settings.up_margin + settings.selected_ball.radius:
+        settings.selected_ball.y = settings.up_margin + settings.selected_ball.radius
+
+    if settings.selected_ball.x < settings.left_margin + settings.selected_ball.radius:
+        settings.selected_ball.x = settings.left_margin + settings.selected_ball.radius
+
+    if settings.selected_ball.x > settings.screen_width - settings.right_margin - settings.selected_ball.radius:
+            settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius
+
+
 
 
 

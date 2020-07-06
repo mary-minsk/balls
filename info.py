@@ -114,22 +114,22 @@ class Info():
         if self.is_active_panel:
             self.text_not_equal = ["prev selected ball!=selected ball", ""]
 
-    def set_selected_ball(self, selected_ball, prev_selected_ball):
-        if selected_ball is not None:
-            self.text_selected_ball[1] = selected_ball.info
-        else:
-            self.text_selected_ball[1] = "None"
+    # def set_selected_ball(self, selected_ball, prev_selected_ball):
+    #     if selected_ball is not None:
+    #         self.text_selected_ball[1] = selected_ball.info
+    #     else:
+    #         self.text_selected_ball[1] = "None"
 
-        if prev_selected_ball is not None:
-            self.text_prev_selected_ball[1] = prev_selected_ball.info  
-        else:
-            self.text_prev_selected_ball[1] = "None"
+    #     if prev_selected_ball is not None:
+    #         self.text_prev_selected_ball[1] = prev_selected_ball.info  
+    #     else:
+    #         self.text_prev_selected_ball[1] = "None"
             
-    def set_ball_in_game(self, ball_in_game):
-        if ball_in_game is not None:
-            self.text_ball_in_game[1] = ball_in_game.info
-        else:
-            self.text_ball_in_game[1] = "None"
+    # def set_ball_in_game(self, ball_in_game):
+    #     if ball_in_game is not None:
+    #         self.text_ball_in_game[1] = ball_in_game.info
+    #     else:
+    #         self.text_ball_in_game[1] = "None"
 
     
     # Events
@@ -153,12 +153,25 @@ class Info():
                 self.text_rotated_ball[1] = "None"
             else:                          
                 self.text_rotated_ball[1] = settings.rotated_ball.info
+
             self.text_is_draw_line[1] = str(settings.is_draw_line)
 
+            if settings.ball_in_game is not None: 
+                center = settings.ball_in_game.rect.center
+                self.text_ball_in_game[1] = settings.ball_in_game.info + "  center = " + self.point_to_str(center)
+            else:
+                self.text_ball_in_game[1] = "None"
 
-    # def set_text_rotated_ball(self, text):
-    #     if self.is_active_panel:
-    #         self.text_rotated_ball[1] = text
+            if settings.selected_ball is not None:
+                self.text_selected_ball[1] = settings.selected_ball.info
+            else:
+                self.text_selected_ball[1] = "None"
+
+            if settings.prev_selected_ball is not None:
+                self.text_prev_selected_ball[1] = settings.prev_selected_ball.info  
+            else:
+                self.text_prev_selected_ball[1] = "None"
+
 
     def set_text_mousemotion(self, text):
         if self.is_active_panel:
