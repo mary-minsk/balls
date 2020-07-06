@@ -25,6 +25,7 @@ def display_additional_info(sc, settings, info):
     show_add_text(sc, settings, info.text_rotated_ball, settings.white, 20, 240)   
    
     show_add_text(sc, settings, info.text_ball_in_game, settings.white, 20, 260)
+    show_add_text(sc, settings, info.text_is_draw_line, settings.white, 20, 280)
 
     
     # Generated things:
@@ -84,6 +85,19 @@ def get_ball(mouse_pos, balls): # индекс выбранного шара с 
             active_ball = ball
 
     return active_ball
+
+
+def mouse_inside_ball_in_game(settings, mouse_pos):
+    if settings.ball_in_game is not None:
+        dx = settings.ball_in_game.x - mouse_pos[0]
+        dy = settings.ball_in_game.y - mouse_pos[1]
+        distance_square = dx ** 2 + dy ** 2
+        
+        if distance_square > settings.ball_in_game.radius**2:
+            if pygame.Rect(settings.game_panel).collidepoint(mouse_pos):
+                return True
+    return False
+
 
 def get_screen(settings):
 
@@ -214,25 +228,25 @@ def get_next_ball(current_ball, balls):
         return None
 
 
-def check_ball_border(settings, next_ball):
+def check_ball_border(settings):
 
     # Если при нажатии Таб следующий по сету мяч выходит за границы игрового поля, то корректируем его центр
     # Нижняя граница
-    if settings.screen_height - settings.height_bottom_panel in range(next_ball.rect.top, next_ball.rect.bottom):
-        if next_ball.y < settings.screen_height - settings.height_bottom_panel:
-            next_ball.y = settings.screen_height - \
-                settings.height_bottom_panel - next_ball.radius
+    if settings.screen_height - settings.height_bottom_panel in range(settings.next_ball.rect.top, settings.next_ball.rect.bottom):
+        if settings.next_ball.y < settings.screen_height - settings.height_bottom_panel:
+            settings.next_ball.y = settings.screen_height - \
+                settings.height_bottom_panel - settings.next_ball.radius
     # Верхняя граница
-    if next_ball.y < settings.up_margin + next_ball.radius:
-        next_ball.y = settings.up_margin + next_ball.radius
+    if settings.next_ball.y < settings.up_margin + settings.next_ball.radius:
+        settings.next_ball.y = settings.up_margin + settings.next_ball.radius
 
     # Левая граница
-    if next_ball.x < settings.left_margin + next_ball.radius:
-        next_ball.x = settings.left_margin + next_ball.radius
+    if settings.next_ball.x < settings.left_margin + settings.next_ball.radius:
+        settings.next_ball.x = settings.left_margin + settings.next_ball.radius
 
     # Правая граница
-    if next_ball.x > settings.screen_width - settings.right_margin - next_ball.radius:
-        next_ball.x = settings.screen_width - settings.right_margin - next_ball.radius
+    if settings.next_ball.x > settings.screen_width - settings.right_margin - settings.next_ball.radius:
+        settings.next_ball.x = settings.screen_width - settings.right_margin - settings.next_ball.radius
 
 
 

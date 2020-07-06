@@ -26,7 +26,8 @@ class Settings():
 
         self.up_margin = 40
         self.left_margin = 25
-        self.right_margin = 25 
+        self.right_margin = 25
+        # self.bottom_margine = 25
         self.height_bottom_panel = 90
         self.bottom_margin_center_ball = 40
 
@@ -99,14 +100,12 @@ class Settings():
         self.reset()   # Сброс основных параметров
         
     def reset(self):  
-        self.selected_ball = None
-        self.prev_selected_ball = None
-        self.rotated_ball = None
-        self.ball_in_game = None
-        # self.index_current_ball = None  # индекс выбранного шара(мяча)
-        # self.index_prev_ball = None     # индекс предыдущего выбранного шара(мяча)
-        # self.index_prev_selected_ball = None 
-
+        self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
+        self.prev_selected_ball = None # При нажатии (выборе) на новый шар, шар на игровом поле перемещается на панель шаров
+        self.rotated_ball = None # При наведении мыши на шары на панели шаров, текущий шар начинает вращаться
+        self.ball_in_game = None # Один шар на игровои поле
+        self.next_ball = None # При нажатии Табуляции на игровом поле помещается следующий шар
+       
         # self.is_ball_selected = False # шар на нижней панеле выбран мышкой
 
         # self.is_ball_pressed = False  # шар на игровой поверхности:

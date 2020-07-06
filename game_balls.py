@@ -435,6 +435,11 @@ while not done:
             done = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                # if settings.ball_in_game is not None:
+
+                    # settings.ball_in_game = settings.selected_ball
+                    # settings.ball_in_game.isJump = False
+
                 settings.selected_ball = func.get_ball(event.pos, balls)
                 func.rotation_balls_off(balls)
                 
@@ -463,8 +468,10 @@ while not done:
             if event.button == 1:
 
                 if settings.selected_ball is not None:
-                    # if settings.ball_in_game is not N
+                    
                     settings.ball_in_game = settings.selected_ball
+                    settings.ball_in_game.isJump = True
+                    settings.ball_in_game.x1, settings.ball_in_game.y1 = event.pos
                     # мяч на нижней границе игрового поля. В зависимости от того к чему ближе центр шара, переносим его либо вверх на игровое поле, либо возвращаем к остальным мячам.
                     if settings.screen_height - settings.height_bottom_panel in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
                         if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel:
@@ -499,21 +506,21 @@ while not done:
             
             info.set_text_mousemotion(point_to_str((event.pos)))
 
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:  # При нажатии Табуляции меняем на игровом поле мячи
             if event.key == pygame.K_TAB:
                 if settings.ball_in_game is not None:
-                    next_ball = func.get_next_ball(settings.ball_in_game, balls)
+                    settings.next_ball = func.get_next_ball(settings.ball_in_game, balls)
 
-                    if next_ball is not None:
+                    if settings.next_ball is not None:
+                        
                         center = settings.ball_in_game.rect.center
                         settings.ball_in_game.go_home(settings)
-                        next_ball.set_ball_xy((center))
+                        settings.next_ball.set_ball_xy((center))
 
                         # Если при нажатии Таб следующий по счету мяч выходит за границы игрового поля, то корректируем его центр
-                        func.check_ball_border(settings, next_ball)
-
-                        settings.ball_in_game = next_ball
-                        settings.prev_selected_ball = next_ball
+                        func.check_ball_border(settings)
+                        settings.ball_in_game = settings.next_ball
+                        settings.prev_selected_ball = settings.next_ball
             
         else:
             info.set_text_other_events()
@@ -528,12 +535,12 @@ while not done:
 
             if settings.rotated_ball is None:        # курсор мыши не над мячиками
                 func.rotation_balls_off(balls)
-                info.set_text_rotated_ball("None")
             else:                           # над мячиком мышка
-                func.rotation_ball_on(balls, settings.rotated_ball)
-                info.set_text_rotated_ball(settings.rotated_ball.info)
+                func.rotation_ball_on(balls, settings.rotated_ball)  # Мяч вращается, его можно перетаскивать
 
-            info.set_text_mouse_xy(point_to_str(mouse_xy))
+            settings.is_draw_line = func.mouse_inside_ball_in_game(settings, mouse_xy)
+
+        info.set_text_mouse_event(settings, mouse_xy)
 
         
         

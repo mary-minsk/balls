@@ -16,7 +16,8 @@ class Info():
             self.text_event = ["event.pos:", ""]
             self.text_prev_selected_ball = ["prev selected ball: ", "None"]
             self.text_selected_ball = ["selected ball: ", "None"]
-            self.text_ball_in_game = ["ball in the game:" , "None"]
+            self.text_ball_in_game = ["ball in the game:", "None"]
+            self.text_is_draw_line = ["is draw line: ", ""]
 
 
             self.text_mouse_xy = ["mouse: ", ""]
@@ -69,7 +70,7 @@ class Info():
         self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
         self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
         self.text_mousemotion = ["MOUSEMOTION: ", ""]
-        self.text_else = ["other motion: ", ""]
+        self.text_else = ["other event type: ", ""]
         self.text_rotated_ball = ["rotated ball: ", "None"]
         self.text_not_equal = ["", ""]
 
@@ -140,13 +141,24 @@ class Info():
         if self.is_active_panel:
             self.text_else[1] = "Yes"
 
-    def set_text_mouse_xy(self, text):
-        if self.is_active_panel:
-            self.text_mouse_xy[1] = text
+    def point_to_str(self, point):  # строковое представление точки
+        return "(" + str(point[0]) + ", " + str(point[1]) + ")"
+    
 
-    def set_text_rotated_ball(self, text):
+    def set_text_mouse_event(self, settings, mouse_xy):
         if self.is_active_panel:
-            self.text_rotated_ball[1] = text
+            self.text_mouse_xy[1] = self.point_to_str(mouse_xy)
+           
+            if settings.rotated_ball is None:        
+                self.text_rotated_ball[1] = "None"
+            else:                          
+                self.text_rotated_ball[1] = settings.rotated_ball.info
+            self.text_is_draw_line[1] = str(settings.is_draw_line)
+
+
+    # def set_text_rotated_ball(self, text):
+    #     if self.is_active_panel:
+    #         self.text_rotated_ball[1] = text
 
     def set_text_mousemotion(self, text):
         if self.is_active_panel:
@@ -213,8 +225,7 @@ class Info():
         if self.is_active_panel:
             self.text_random_unfit[1] = str(self.random_unfit) + " "
 
-    
-    
+   
 
               
             

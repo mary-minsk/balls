@@ -61,54 +61,55 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
        
     def update(self, settings, sc):
         
-        pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
+        # pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
  
-        if self.isRolling:               # когда шар каится по поверхности
-            if len(settings.all_path_points) >0:
-                self.x1, self.y1 = settings.all_path_points.pop(0)
-                self.rotate_rolling_ball(self, settings, sc) 
-                self.is_new_point = False
+        # if self.isRolling:               # когда шар каится по поверхности
+        #     if len(settings.all_path_points) >0:
+        #         self.x1, self.y1 = settings.all_path_points.pop(0)
+        #         self.rotate_rolling_ball(self, settings, sc) 
+        #         self.is_new_point = False
                 
-                if self.x1 >= settings.screen_width - self.radius or self.x1 <= self.radius:
-                    self.is_new_point = True 
-                    self.current_distance += hypot(self.prev_point[0]-self.x1, self.prev_point[1]-self.y1)
-                    self.prev_point = (self.x1, self.y1)
-                    self.last_path_distance = 0
+        #         if self.x1 >= settings.screen_width - self.radius or self.x1 <= self.radius:
+        #             self.is_new_point = True 
+        #             self.current_distance += hypot(self.prev_point[0]-self.x1, self.prev_point[1]-self.y1)
+        #             self.prev_point = (self.x1, self.y1)
+        #             self.last_path_distance = 0
                         
-                if self.y1 >= settings.screen_height- self.radius or self.y1 <= self.radius:
-                    self.is_new_point = True
-                    self.current_distance += hypot(self.prev_point[0]-self.x1, self.prev_point[1]-self.y1)
-                    self.prev_point = (self.x1, self.y1)
-                    self.last_path_distance = 0
+        #         if self.y1 >= settings.screen_height- self.radius or self.y1 <= self.radius:
+        #             self.is_new_point = True
+        #             self.current_distance += hypot(self.prev_point[0]-self.x1, self.prev_point[1]-self.y1)
+        #             self.prev_point = (self.x1, self.y1)
+        #             self.last_path_distance = 0
 
-                if not self.is_new_point:
-                    self.last_path_distance = hypot(self.prev_point[0]-self.x1, self.prev_point[1]-self.y1)
-                    # sum = self.current_distance + self.last_path_distance
-                    # settings.text1 = str(round(sum/10)*10)
-            else:
-                self.isRolling = False 
-                settings.is_points_erasing = True
-                settings.is_deleted_ball = True
+        #         if not self.is_new_point:
+        #             self.last_path_distance = hypot(self.prev_point[0]-self.x1, self.prev_point[1]-self.y1)
+        #             # sum = self.current_distance + self.last_path_distance
+        #             # settings.text1 = str(round(sum/10)*10)
+        #     else:
+        #         self.isRolling = False 
+        #         settings.is_points_erasing = True
+        #         settings.is_deleted_ball = True
+        # else:
+        if self.is_rotated:
+            self.rotate_ball(self)
+            self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения\
         else:
-            if self.is_rotated:
-                self.rotate_ball(self)
-                self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения\
-            else:
-                self.rect.center = (self.x, self.y)
+            self.rect.center = (self.x, self.y)
                 
-            if self.isJump:
-                # pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
-                self.delay +=1
-                if self.delay==3: # мяч  подпрыгивает с небольшой задержкой
-                    if self.step <=0 or self.step >=3:
-                        self.delta = self.delta * -1       
-                    self.step = self.step + self.delta
-                    if not settings.is_draw_line:   # мяч вертикально подпрыгивает на игровой поверхности
-                        self.rect.center = (self.x1, self.y1+self.step)
-                        
-                    else:   #  мяч двигается(подскакивает) в сторону возможной траектории движения при
-                        self.rect.center = settings.bouncing_ball_points[self.step]  # движении мыши или стрелок
-                    self.delay = 0
+        # if self.isJump:
+        #     pass
+        #     # pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
+        #     self.delay +=1
+        #     # if self.delay==3: # мяч  подпрыгивает с небольшой задержкой
+        #     if self.step <=0 or self.step >=3:
+        #         self.delta = self.delta * -1       
+        #     self.step = self.step + self.delta
+        # #     if not settings.is_draw_line:   # мяч вертикально подпрыгивает на игровой поверхности
+        #     self.rect.center = (self.x1, self.y1+self.step)
+                
+        # #     else:   #  мяч двигается(подскакивает) в сторону возможной траектории движения при
+        # #         self.rect.center = settings.bouncing_ball_points[self.step]  # движении мыши или стрелок
+        #     self.delay = 0
 
 
     @staticmethod
