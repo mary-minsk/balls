@@ -1,4 +1,5 @@
 import pygame
+from math import sqrt, hypot, sin, cos, atan2
 
 def display_additional_info(sc, settings, info):
 
@@ -229,10 +230,10 @@ def check_ball_border(settings):
 
     # Если при нажатии Таб следующий по сету мяч выходит за границы игрового поля, то корректируем его центр
     # Нижняя граница
-    if settings.screen_height - settings.height_bottom_panel - settings.bottom_margine in range(settings.next_ball.rect.top, settings.next_ball.rect.bottom):
-        if settings.next_ball.y < settings.screen_height - settings.height_bottom_panel - settings.bottom_margine:
+    if settings.screen_height - settings.height_bottom_panel - settings.bottom_margin in range(settings.next_ball.rect.top, settings.next_ball.rect.bottom):
+        if settings.next_ball.y < settings.screen_height - settings.height_bottom_panel - settings.bottom_margin:
             settings.next_ball.y = settings.screen_height - \
-                settings.height_bottom_panel - settings.bottom_margine - settings.next_ball.radius
+                settings.height_bottom_panel - settings.bottom_margin - settings.next_ball.radius
     # Верхняя граница
     if settings.next_ball.y < settings.up_margin + settings.next_ball.radius:
         settings.next_ball.y = settings.up_margin + settings.next_ball.radius
@@ -248,14 +249,14 @@ def check_ball_border(settings):
 
 def check_correct_bottom_border(settings):
 
-    if settings.screen_height - settings.height_bottom_panel - settings.bottom_margine in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
-        if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel - settings.bottom_margine:
+    if settings.screen_height - settings.height_bottom_panel - settings.bottom_margin in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
+        if settings.selected_ball.y < settings.screen_height - settings.height_bottom_panel - settings.bottom_margin:
             settings.selected_ball.y = settings.screen_height - settings.height_bottom_panel - \
-                settings.bottom_margine - settings.selected_ball.radius
+                settings.bottom_margin - settings.selected_ball.radius
         else:
             settings.selected_ball.go_home(settings)
 
-    elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel - settings.bottom_margine:  # мяч оставлен снизу, не на панеле мячей
+    elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel - settings.bottom_margin:  # мяч оставлен снизу, не на панеле мячей
         settings.selected_ball.go_home(settings)
 
 
@@ -271,6 +272,137 @@ def check_correct_up_left_right_border(settings):
             settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius
 
 
+# Перевод точки (x,y) в декартову систему координат, где (0, 0) - центр тек. шара на игровой панели
+def get_new_coordinates(settings):
+
+    x0, y0 = settings.ball_in_game.x, settings.ball_in_game.y
+    mouse_x, mouse_y = settings.mouse_xy
+
+    if mouse_x >= x0 and mouse_y >= y0:  # 4 четверть
+        x1 = (mouse_x - x0)
+        y1 = -(mouse_y - y0)
+
+    elif mouse_x <= x0 and mouse_y <= y0:  # 2 четверть
+        x1 = -(x0 - mouse_x)
+        y1 = y0 - mouse_y
+
+    elif mouse_x <= x0 and mouse_y >= y0:  # 3 четверть
+        x1 = -(x0 - mouse_x)
+        y1 = -(mouse_y - y0)
+
+    elif mouse_x >= x0 and mouse_y <= y0:  # 1 четверть
+        x1 = mouse_x - x0
+        y1 = y0 - mouse_y
+
+    return x1, y1
+
+def get_dx_dy(settings):  # Направляющий вектор. От центра шара на игровой панели до курсора мыши
+
+    a, b = settings.a, settings.b
+    da, db = 0, 0
+
+    if a >= 0 and b >= 0:
+        da = - 1
+        db = 1
+    elif a < 0 and b >= 0:
+        da = 1
+        db = 1
+    elif a < 0 and b < 0:
+        da = 1
+        db = -1
+    else:
+        da = -1
+        db = -1
+
+    if abs(b) > abs(a):
+        dx = da * abs(a/b)
+        dy = db
+    else:
+        dx = da
+        dy = db * abs(b/a)
+    return dx, dy
+
+
+def build_path(settings):  # определение траектории движения мяча
+
+    radius, max_distance = settings.ball_in_game.radius, settings.ball_in_game.distance
+
+    #  accumulated_distance + current_distance = max_distance. Траектория нужной длины построена: is_path_passed = True
+    accumulated_distance = 0
+    current_distance = 0
+    is_path_passed = False  
+
+    center_ball_xy = settings.ball_in_game.x, settings.ball_in_game.y
+    x, y = center_ball_xy    # Начало траектории от центра шара
+    prev_point = center_ball_xy
+
+    # смещение по осям, направление последующего удара
+    dx, dy = get_dx_dy(settings)
+
+    # список крайних точек ломаной кривой (вершин) для рисования линии
+    settings.edges = []
+    # settings.edges.append((mouse_x, mouse_y))
+    settings.edges.append(settings.mouse_xy)
+
+    # список 5 точек подпрыгивания на месте мяча при прицеливании
+    settings.bouncing_ball_points = []
+    settings.bouncing_ball_points.append(center_ball_xy)
+    balls_x, balls_y = center_ball_xy
+    settings.center_ball_xy = center_ball_xy
+   
+    while not is_path_passed:   # Создание списков     1. для рисования ломанной кривой settings.edges
+                                    # 2. подпрыгивания на одном месте во время прицеливания settings.bouncing_ball_points
+        if accumulated_distance + current_distance <= max_distance:
+            is_new_point = False
+            if x + dx > settings.screen_width - radius or x + dx < radius:
+                dx = -dx
+                is_new_point = True
+
+            if y + dy > settings.screen_height - radius or y + dy < radius:
+                dy = -dy
+                is_new_point = True
+
+            if is_new_point:
+                accumulated_distance += hypot(
+                    prev_point[0]-x, prev_point[1]-y)
+                settings.edges.append((round(x), round(y)))
+                prev_point = (x, y)
+                current_distance = 0
+
+            # Первые точки траектории движени мяча сохранияем для подпрыгивания мяча на месте
+            if len(settings.bouncing_ball_points) < settings.jump_height_ball:
+                balls_x += dx
+                balls_y += dy
+                settings.bouncing_ball_points.append((round(balls_x), round(balls_y)))
+
+            x += dx
+            y += dy
+            current_distance = hypot(prev_point[0]-x, prev_point[1]-y)
+        else:
+            is_path_passed = True
+
+    settings.edges.append((round(x), round(y)))
+    settings.last_path_point = (round(x), round(y))
+
+# def draw_tips(sc, settings):  # На месте пересечения окружности шара с последующей траекторией движения
+
+#     # будет находиться наконечник. Но только в момент прицеливания и движения
+#     angle = atan2(settings.a, settings.b)
+#     ball = settings.ball_in_game
+#     pos_center_ball = settings.ball_in_game.x, settings.ball_in_game.y
+#     tip1_x, tip1_y = get_pygame_point(pos_center_ball,
+#                                       (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
+#     pygame.draw.circle(sc, settings.yellow, (tip1_x, tip1_y), 4, 0)
+#     z = 7/57.2958
+#     ang1 = angle-z
+#     ang2 = angle+z
+#     (arrow1_x, arrow1_y) = get_pygame_point(pos_center_ball,
+#                                             (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
+#     (arrow2_x, arrow2_y) = get_pygame_point(pos_center_ball,
+#                                             (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
+#     pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
+#     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
+#     settings.tip_x, settings.tip_y = (tip1_x, tip1_y)
 
 
 

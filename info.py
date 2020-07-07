@@ -32,7 +32,7 @@ class Info():
             self.text_generated_things = ["Generated things", ""]
             self.attempts_one_cell = ["attempts to place thing in one color cell < ", ""]
 
-            self.reset()
+            self.reset_event_info()
             self.reset_things_text()
             
             self.text_switch = ["Lines on", "Lines off"]
@@ -69,7 +69,7 @@ class Info():
         else:
             return self.text_switch[1]
 
-    def reset(self):
+    def reset_event_info(self):
         
         self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
         self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
@@ -114,28 +114,10 @@ class Info():
         
 
     # Balls
-    def set_text_not_equal_balls(self):
+    def set_text_not_equal_balls(self, settings):
         if self.is_active_panel:
             self.text_not_equal = ["prev selected ball!=selected ball", ""]
 
-    # def set_selected_ball(self, selected_ball, prev_selected_ball):
-    #     if selected_ball is not None:
-    #         self.text_selected_ball[1] = selected_ball.info
-    #     else:
-    #         self.text_selected_ball[1] = "None"
-
-    #     if prev_selected_ball is not None:
-    #         self.text_prev_selected_ball[1] = prev_selected_ball.info  
-    #     else:
-    #         self.text_prev_selected_ball[1] = "None"
-            
-    # def set_ball_in_game(self, ball_in_game):
-    #     if ball_in_game is not None:
-    #         self.text_ball_in_game[1] = ball_in_game.info
-    #     else:
-    #         self.text_ball_in_game[1] = "None"
-
-    
     # Events
 
     def set_text_mousebuttondown(self, event_pos):

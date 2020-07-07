@@ -17,27 +17,12 @@ class Settings():
         self.balls()   # Мяч
         self.buttons()  # Кнопки
 
-        # Траектория движения
-        self.disappearing_edges = []  # исчезающие вершины ломаной прямой
-        self.is_points_erasing = False # Удаление траектории движения шара. 
-        self.tip_x, self.tip_y = (0, 0) # Точка на окружности шара (наконечник), на одной линии с центром шара  и позицией мыши
-
-        self.bouncing_ball_points =[]  # список 5 точек подпрыгивания на месте мяча при прицеливании
-        self.edges = [] # все точки на ломаной кривой для рисования ломаной кривой
-        self.all_path_points = [] # вначале содержит все точки пути (скорость мяча = 1),  но
-                                 # после запуска мяча часть точек будет отброшена для отображения движения
-                                 # с ускорением или замедлением
-
-        self.all_dx_dy = [] # все направляющие вектора движения
-        self.dxy = (0, 0)  # выборочные направляющие вектора движения (для отображения стягивающейся точки      траектории)
-
-        self.path_acceleration = 0.2 #(20%) часть пути, когда мяч будет ускоряться и замедляться
-        self.last_path_point = (0, 0) # последняя точка ломаной кривой = settings.all_path_points[-1] 
-        self.a, self.b = (0, 0)  # направление последующего движения мяча (позиция курсора мыши 
-                                 # относительно центра выбранного шара в декартовой систете координат
-
-        # self.text1 = "" 
+        self.mouse_xy = 0, 0  # тек пигейм координаты мыши
         
+        # Направляющий вектор движения мяча. Декартова система координат
+        self.a, self.b = (0, 0)
+        self.ball_trajectory()  # Траектория движения
+    
         self.reset()   # Сброс основных параметров
         
     def reset(self):  
@@ -77,22 +62,24 @@ class Settings():
         self.up_margin = 40
         self.left_margin = 25
         self.right_margin = 25
-        self.bottom_margine = 25
+        self.bottom_margin = 25
 
         self.height_bottom_panel = 90
         self.bottom_margin_center_ball = 40
 
         self.game_panel_rect = (self.left_margin, self.up_margin,
-                                self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin - self.bottom_margine)
+                                self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin - self.bottom_margin)
         self.game_panel = pygame.Rect(self.game_panel_rect)
 
-        self.game_panel_rect2 = (0, 0,
-                                self.screen_width, self.screen_height - self.height_bottom_panel - self.bottom_margine)
-        self.game_panel2 = pygame.Rect(self.game_panel_rect2)
 
-        self.game_panel_rect3 = (0, 0,
+        self.game_panel_3_margins_rect = (0, 0,
+                                self.screen_width, self.screen_height - self.height_bottom_panel - self.bottom_margin)
+        self.game_panel_add_3_margins = pygame.Rect(self.game_panel_3_margins_rect)
+
+
+        self.border_game_panel_rect = (0, 0,
                                 self.screen_width, self.screen_height - self.height_bottom_panel)
-        self.game_panel3 = pygame.Rect(self.game_panel_rect3)
+        self.border_game_panel = pygame.Rect(self.border_game_panel_rect)
 
     def levels_and_things(self):
 
@@ -129,7 +116,7 @@ class Settings():
         # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
         self.balls_distance = [3, 2, 1]  # *settings.screen_height
         self.balls_info = ["small", "medium", "large"]
-        self.unit = self.screen_height
+        self.unit = self.screen_height - self.up_margin - self.bottom_margin - self.height_bottom_panel
 
     def buttons(self):
 
@@ -137,4 +124,29 @@ class Settings():
         self.button_level_text = "Next level..."
         # self.button_ruler = [300, self.w - 115, 90, 30]
         # self.button_ruler_text = "Ruler"   
+        
+    def ball_trajectory(self):
+    
+        self.disappearing_edges = []  # исчезающие вершины ломаной прямой
+        self.is_points_erasing = False  # Удаление траектории движения шара.
+        # Точка на окружности шара (наконечник), на одной линии с центром шара  и позицией мыши
+        self.tip_x, self.tip_y = (0, 0)
+
+        # список 5 точек подпрыгивания на месте мяча при прицеливании
+        self.bouncing_ball_points = []
+        self.edges = []  # все точки на ломаной кривой для рисования ломаной кривой
+        # вначале содержит все точки пути (скорость мяча = 1),  но
+        self.all_path_points = []
+        # после запуска мяча часть точек будет отброшена для отображения движения
+        # с ускорением или замедлением
+
+        self.all_dx_dy = []  # все направляющие вектора движения
+        # выборочные направляющие вектора движения (для отображения стягивающейся точки      траектории)
+        self.dxy = (0, 0)
+
+        # (20%) часть пути, когда мяч будет ускоряться и замедляться
+        self.path_acceleration = 0.2
+        # последняя точка ломаной кривой = settings.all_path_points[-1]
+        self.last_path_point = (0, 0)
+       
         
