@@ -7,6 +7,8 @@ class Settings():
         
         self.is_used_additional_panel = True  # Использовать панель с доп. иформацией об основных параметрах игры
         # self.is_used_additional_panel = False
+
+        self.is_used_hints = True  # в ticker() подсказки отражаются бегущей строкой
         
         self.game_sizes()    # Размеры окна игры, игровой панели, отступы
         self.levels_and_things() # Уровни и количество предметов на экране
@@ -14,16 +16,16 @@ class Settings():
         self.path_images()    # изображения предметов
         self.set_color()
 
-        self.balls()   # Мяч
+        self.balls()   # Мяч 
         self.buttons()  # Кнопки
+        self.ticker()  # бегущая строка
 
         self.mouse_xy = 0, 0  # тек пигейм координаты мыши
-        
-        # Направляющий вектор движения мяча. Декартова система координат
+         # Направляющий вектор движения мяча. Декартова система координат
         self.a, self.b = (0, 0)
         self.ball_trajectory()  # Траектория движения
     
-        self.reset()   # Сброс основных параметров
+        self.reset()  # Сброс основных параметров
         
     def reset(self):  
         self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
@@ -65,21 +67,19 @@ class Settings():
         self.bottom_margin = 25
 
         self.height_bottom_panel = 90
-        self.bottom_margin_center_ball = 40
+        self.bottom_margin_center_ball = 40  #(Класс Ball панель шаров self.y = settings.screen_height - settings.bottom_margin_center_ball)
 
-        self.game_panel_rect = (self.left_margin, self.up_margin,
+        game_panel_rect = (self.left_margin, self.up_margin,
                                 self.screen_width - self.right_margin - self.left_margin, self.screen_height - self.height_bottom_panel - self.up_margin - self.bottom_margin)
-        self.game_panel = pygame.Rect(self.game_panel_rect)
+        self.game_panel = pygame.Rect(game_panel_rect)
 
-
-        self.game_panel_3_margins_rect = (0, 0,
+        game_panel_3_margins_rect = (0, 0,
                                 self.screen_width, self.screen_height - self.height_bottom_panel - self.bottom_margin)
-        self.game_panel_add_3_margins = pygame.Rect(self.game_panel_3_margins_rect)
+        self.game_panel_add_3_margins = pygame.Rect(game_panel_3_margins_rect)
 
-
-        self.border_game_panel_rect = (0, 0,
+        border_game_panel_rect = (0, 0,
                                 self.screen_width, self.screen_height - self.height_bottom_panel)
-        self.border_game_panel = pygame.Rect(self.border_game_panel_rect)
+        self.border_game_panel = pygame.Rect(border_game_panel_rect)
 
     def levels_and_things(self):
 
@@ -124,7 +124,27 @@ class Settings():
         self.button_level_text = "Next level..."
         # self.button_ruler = [300, self.w - 115, 90, 30]
         # self.button_ruler_text = "Ruler"   
-        
+
+    def ticker(self):
+
+        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
+                      "Aim at things and press space!",
+                      "Harvesting...", "Oops!...I did it again!"]
+
+        self.ticker_rect = (0, self.screen_height - self.height_bottom_panel - self.bottom_margin,
+                            self.bottom_margin, self.bottom_margin)
+
+        self.ticker_panel = pygame.Rect(self.ticker_rect)
+
+        # self.ticker_surf = pygame.Surface((self.screen_width, self.bottom_margin))
+        # self.ticker_surf = pygame.Surface((self.bottom_margin, self.bottom_margin))
+        # player_rect = self.ticker_surf.get_rect(topleft=(0, self.screen_height - self.height_bottom_panel - self.bottom_margin))
+        self.triker_margine = 5
+        self.triker_reset()
+
+    def triker_reset(self):
+        self.triker_x = self.triker_margine = 5
+    
     def ball_trajectory(self):
     
         self.disappearing_edges = []  # исчезающие вершины ломаной прямой

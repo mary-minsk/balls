@@ -15,7 +15,6 @@ from button import Button
 
 def point_to_str(point): # строковое представление точки
     return "(" + str(point[0])+ ", " + str(point[1]) + ")"
-
    
 def get_all_points(radius, max_distance, start_point): # в момент запуска шара получение всех точек траектории и смещений 
                                           # по осям (для последующего движения наконечника)
@@ -107,47 +106,6 @@ def build_speedway(speed):  # Построение пути движения ш�
         print("Error! len(temp)!=n")
     return result
 
-def get_pygame_point(pos_center_ball, pos_edge): # перевод координат из декартовых четвертей обратно в пигейм
-    x0 = pos_center_ball[0] #центр шара в пигейм координатах
-    y0 = pos_center_ball[1]
-    x1 = pos_edge[0]  # декартова система координат
-    y1 = pos_edge[1]
-    (x, y) = (0, 0)
-    if x1 >= 0 and y1 >= 0: # Перевод из первой декартовой четверти в координаты пигейм
-        x = x1 + x0
-        y = settings.screen_height - y1- (settings.screen_height - y0)
-    elif  x1 <= 0 and y1 >= 0: # Перевод из второй декартовой четверти в координаты пигейм
-        x = x0 + x1
-        y = y0 - y1
-    elif  x1 <= 0 and y1 <= 0: # Перевод из третьей декартовой четверти в координаты пигейм
-        x = x0 + x1
-        y = y0 - y1
-        
-    elif  x1 >= 0 and y1 <= 0: # Перевод из четвертой декартовой четверти в координаты пигейм
-        x = x0 + x1
-        y = y0 - y1
-        
-    return (x, y)
-
-
-def draw_tips(sc, settings):  # На месте пересечения окружности шара с последующей траекторией движения
-     
-                                        # будет находиться наконечник. Но только в момент прицеливания и движения
-    angle = atan2(settings.a, settings.b)
-    ball = settings.ball_in_game
-    pos_center_ball = settings.ball_in_game.x, settings.ball_in_game.y
-    tip1_x, tip1_y = get_pygame_point(pos_center_ball, \
-                                            (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
-    pygame.draw.circle(sc,settings.yellow,(tip1_x, tip1_y), 4,0)
-    z=7/57.2958
-    ang1 = angle-z
-    ang2 = angle+z
-    (arrow1_x, arrow1_y) = get_pygame_point(pos_center_ball, (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
-    (arrow2_x, arrow2_y) = get_pygame_point(pos_center_ball, (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
-    pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
-    pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
-    settings.tip_x, settings.tip_y = (tip1_x, tip1_y)
-
 def draw_tips_disappearing(a, b, pos_center_ball): # После движения мяча траектория исчезает, наконечник следует за ней
     angle = atan2(-a, b)
     pygame.draw.circle(sc,settings.yellow, pos_center_ball, 4,0)
@@ -182,9 +140,7 @@ def create_balls(): # создание трех шаров, определени
         if i == settings.number_balls - 1:
             # print(shift + settings.balls_offset*i + w)
             w1 = shift + settings.balls_offset*i + settings.left_offset
-            # h1 = 
-            # balls_space = [0, settings.screen_height - settings.height_bottom_panel,  w1, settings.height_bottom_panel-2]
-    
+            
 
     list = sorted(list)  #сортируем по размеру изображения шара
     distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
@@ -224,21 +180,6 @@ def launch_ball():  # Пробел или двойное нажатие мыши
     settings.all_path_points = build_speedway(ball.speed) # отвеиваются точки для скоростного движения
     settings.edges.pop(0)  # Траектория движения начинается не из в позиции мыши, 
     settings.edges.insert(0, (settings.tip_x, settings.tip_y)) # а из наконечника ломаной прямой
-       
-def get_hints(): # Подсказки
-    
-    if not settings.is_ball_pressed: return info.hints[0]
-    elif settings.is_ball_selected: return info.hints[1]
-    elif not settings.is_draw_line and settings.is_ball_pressed and not ball.isRolling: return info.hints[2]
-    elif settings.is_draw_line and not ball.isRolling: return info.hints[3]
-    # elif 
-    else: return info.hints[4]
-
-# def draw_path_and_tips(pos_cener_ball): # Конечные точки ломаной кривой - траектории движения мяча (наконечники)
-                                            # и сам путь
-    # pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
-    # draw_tips()
-   
 
 def get_things_hit(): # Мяч сталкивается с предметами. Создается группа удаленных с игровой поверхности предметов
                          # которые поле непродолжительного вращения и уменьшения быстро исчезнут м экрана
@@ -318,7 +259,7 @@ def draw_disappearing_path(): # Отображение исчезающего п
 pygame.init()
 
 settings = Settings()
-info = Info(settings.is_used_additional_panel)
+info = Info(settings)
 
 sc = func.get_screen(settings, info)
 sc.fill(settings.black)
@@ -327,6 +268,9 @@ pygame.display.update()
 func.set_caption(settings)
 clock = pygame.time.Clock()
 settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
+ticker_surf = pygame.Surface((settings.screen_width, settings.bottom_margin))
+# ticker_surf.fill((255, 0, 0))
+
 
 next_level_button = Button(settings.button_level, settings.button_level_text)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
@@ -334,15 +278,12 @@ next_level_button = Button(settings.button_level, settings.button_level_text)
 things = create_things()
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
-
-pos_center_ball = (0, 0)            # пигейм координаты центра выбранного шара в момент выбора направления удара
-(mouse_x, mouse_y) = (0, 0)         # тек пигейм координаты мыши
      
 done = False
 
 while not done:
     for event in pygame.event.get():
-        info.reset_event_info()
+        info.reset_event_info(settings)
         settings.is_draw_line = False
 
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -369,7 +310,7 @@ while not done:
                     if next_level_button.isOver(settings.mouse_xy):
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                     
-                    if info.check_click(settings.mouse_xy, settings): # Перегенерируются все объекты, если для них не было получено доп. информации
+                    if info.check_click(settings): # Перегенерируются все объекты, если для них не было получено доп. информации
                         settings.current_number_things -=  1    # Только если активна доп. панель информации 
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
 
@@ -432,10 +373,9 @@ while not done:
 
             settings.is_draw_line = func.mouse_inside_ball_in_game(settings, settings.mouse_xy)
             if settings.is_draw_line:
-                settings.a, settings.b = func.get_new_coordinates(settings)
+                settings.a, settings.b = func.get_cartesian_mouse_xy_coordinates(settings)
                 # print(settings.a, settings.b)
         #
-
         info.set_text_mouse_event(settings, settings.mouse_xy)
 
 
@@ -510,21 +450,24 @@ while not done:
         #             mouse_y +=1
         #         pygame.mouse.set_pos(mouse_x, mouse_y)
     sc.fill(settings.black)               
+    ticker_surf.fill((255, 60, 120))
+    settings.background_image.blit(ticker_surf, (0, settings.screen_height - settings.height_bottom_panel - settings.bottom_margin))
     sc.blit(settings.background_image, (0, 0))
-    
+
     if settings.is_draw_line:  # Мяч на игровой поверхности
         # # if settings.is_draw_line and not ball.isRolling and not settings.is_points_erasing: # Момент прицеливания
         #     # строим путь (ломаная кривая) и собираем информацию о движении мяча
         func.build_path(settings)
         pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
-        draw_tips(sc, settings)
+        func.draw_tips(sc, settings)
         # draw_path_and_tips(settings.ball_in_game.rect.center)
 
 
     pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
     # pygame.draw.rect(sc, settings.white, settings.game_panel2, 1)
-    pygame.draw.rect(sc, settings.bg_color,
-                     settings.border_game_panel, 2)
+    # self.ticker_panel = pygame.Rect(self.ticker_rect)
+    pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2)
+    # pygame.draw.rect(sc, settings.blue, settings.ticker_panel, 3)
 
     # y1 = settings.screen_height - settings.height_bottom_panel - settings.bottom_margine
     # pygame.draw.line(sc, settings.red, (10, y1), (390, y1), 2)
@@ -557,10 +500,8 @@ while not done:
     #     get_disappearing_path()
     #     draw_disappearing_path()
                 
-    # draw_text(sc, get_hints(), settings.white, 20, (130, settings.screen_height+ 5))
     
-    
-    func.display_info(sc, settings, info)
+    func.display_info(sc, ticker_surf, settings, info)
     
     next_level_button.draw(sc, settings)
     # ruler_button.draw(sc, settings)

@@ -1,74 +1,25 @@
 import pygame
 from math import sqrt, hypot, sin, cos, atan2
 
-def display_additional_info(sc, settings, info):
 
-    info.set_number_things(settings.current_number_things)
-    info.set_things_attempts()
-
-    # pygame.event:
-    show_add_text(sc, settings, info.text_game_info, settings.white, 25, 10, 90)
-    show_add_text(sc, settings, info.text_event, settings.white, 20, 30)
-    show_add_text(sc, settings, info.text_mousebuttondown, settings.white, 20, 50)
-    show_add_text(sc, settings, info.text_mousebuttonup, settings.white, 20, 70)
-    show_add_text(sc, settings, info.text_mousemotion, settings.white, 20, 90)
-    show_add_text(sc, settings, info.text_else, settings.white, 20, 110)
-    show_add_text(sc, settings, info.text_mouse_xy, settings.white, 20, 130)
-    show_add_text(sc, settings, info.text_line, settings.white, 20, 140)
-    
-    # Основные параметры: выбранный мяч, вращающийся, предыдущий выбранный мяч и т. д.
-    show_add_text(sc, settings, info.text_selected_ball, settings.white, 20, 180)
-    show_add_text(sc, settings, info.text_prev_selected_ball, settings.white, 20, 200) 
-    show_add_text(sc, settings, info.text_not_equal, settings.yellow, 20, 220)
-    show_add_text(sc, settings, info.text_rotated_ball, settings.white, 20, 240)   
-   
-    show_add_text(sc, settings, info.text_ball_in_game, settings.white, 20, 260)
-    show_add_text(sc, settings, info.text_is_draw_line, settings.white, 20, 280)
-
-    
-    # Generated things:
-    h = 370
-    show_add_text(sc, settings, info.text_line, settings.white, 20, h -20)
-    show_generatet_things(sc, settings, info, h)
-    
-    # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
-    info.show_lines_button.draw(sc, settings)
-
-    
-    
-def show_add_text(sc, settings, text, color, size, h, w = 0, is_border = False, white_border_color = None):  # вывод на экран текста
-    # point = h, w
-    # show_text(sc, settings, text, color, size, point)
+def show_text(sc, settings, color, size, point, isCenter = False, str1="", str2=""):  # вывод на экран текста
     font = pygame.font.Font(None, size)
-    str1, str2 = "", ""
-    if text[0] is not None:
-        str1 = text[0]
-    if text[1] is not None:
-        str2 = text[1]
-    all_text = str1+ " " + str2
-    text_surface = font.render(all_text, True, color)
-    text_rect = text_surface.get_rect()
-    text_rect.x, text_rect.y = settings.screen_width + 3 + w, h
-    sc.blit(text_surface, text_rect)   
-    if is_border:
-        if white_border_color is not None :
-            pygame.draw.rect(sc, white_border_color, text_rect, 1)
-        else:
-            pygame.draw.rect(sc, color, text_rect, 1)
-    
-
-def show_text(sc, settings, text, color, size, point):  # вывод на экран текста
-    font = pygame.font.Font(None, size)
-    str1, str2 = "", ""
-    if text[0] is not None:
-        str1 = text[0]
-    if text[1] is not None:
-        str2 = text[1]
-    all_text = str1+ " " + str2
-    text_surface = font.render(all_text, True, color)
+    text = str1+ " " + str2
+    text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()
     text_rect.x, text_rect.y = point
-    sc.blit(text_surface, text_rect)   
+    if isCenter:
+        text_rect.centery = point[1]
+    sc.blit(text_surface, text_rect)
+    
+def show_text2(sc, settings, color, size, point, text = ""):  # вывод на экран текста
+    font = pygame.font.Font(None, size)
+   
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.x, text_rect.y = point
+    # text_rect.center = point
+    sc.blit(text_surface, text_rect)
 
 def get_ball(mouse_pos, balls): # индекс выбранного шара с панели шаров
     
@@ -84,7 +35,6 @@ def get_ball(mouse_pos, balls): # индекс выбранного шара с 
 
     return active_ball
 
-
 def mouse_inside_ball_in_game(settings, mouse_pos):
     if settings.ball_in_game is not None:
         dx = settings.ball_in_game.x - mouse_pos[0]
@@ -95,7 +45,6 @@ def mouse_inside_ball_in_game(settings, mouse_pos):
             if pygame.Rect(settings.game_panel).collidepoint(mouse_pos):
                 return True
     return False
-
 
 def get_screen(settings, info):
 
@@ -123,98 +72,57 @@ def set_caption(settings):
     else:
         pygame.display.set_caption(settings.text_caption)
 
-def draw_cells(sc, settings, info):
-    for rect in info.lines_2_3:
-        pygame.draw.rect(sc, rect[1], rect[0], 1)
 
-    if settings.current_number_things > 6: 
-        for rect in info.lines_2_2:
-            pygame.draw.rect(sc, rect[1], rect[0], 1)
-            
-    if settings.current_number_things > 10:
-        for rect in info.lines_1_5:
-            pygame.draw.rect(sc, rect[1], rect[0], 1)
-
-    if len(info.deleted_things_rect) > 0:
-        for rect in info.deleted_things_rect:
-            # pygame.draw.rect(sc, settings.white, rect[0], 2)  
-            pygame.draw.rect(sc, rect[1], rect[0], 1)  
-            pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
-            pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
-
-    if len(info.random_deleted_things_rect) > 0:
-        for rect in info.random_deleted_things_rect:
-            pygame.draw.rect(sc, settings.white, rect[0], 2)   
-            pygame.draw.line(sc, rect[1], rect[0].topleft, rect[0].bottomright, 2)
-            pygame.draw.line(sc, rect[1], rect[0].bottomleft, rect[0].topright, 2)
-    
-def display_info(sc, settings, info):
+def display_info(sc, ticker_surf, settings, info):
     if settings.is_used_additional_panel:
-        display_additional_info(sc, settings, info)
+        info.display_additional_info(sc, settings)
 
     if info.is_displayed_lines:
-        draw_cells(sc, settings, info)
+        info.draw_cells(sc, settings)
 
     display_level(sc, settings)
 
+    if settings.is_used_hints:
+        text = get_hints(settings)
+        point = (settings.triker_x, settings.screen_height - settings.height_bottom_panel - settings.bottom_margin + 5)
+        
+        font = pygame.font.Font(None, 23)
+        text_surface = font.render(text, True, settings.white)
+        text_rect = text_surface.get_rect()
+        text_rect.x, text_rect.y = point  #ticker_panel
+        # ticker_panel
+        sc.blit(text_surface, text_rect)
+
+        settings.triker_x += 1
+        # if text_rect.right == settings.screen_width - settings.triker_margine:
+        if text_rect.left == settings.screen_width:
+            settings.triker_reset() 
+   
+def get_hints(settings):  # Подсказки
+
+#         # self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
+#         #               "Aim at things and press space!",
+#         #               "Harvesting...", "Oops!...I did it again!"]
+    if settings.ball_in_game is None:
+        if settings.selected_ball is None:
+            return settings.hints[0]
+        else:
+            return settings.hints[1]
+    else:
+        return settings.hints[2]
+#         # elif settings.is_ball_selected:
+        #     return self.hints[1]
+        # elif not settings.is_draw_line and settings.is_ball_pressed and not ball.isRolling:
+        #     return self.hints[2]
+        # elif settings.is_draw_line and not ball.isRolling:
+        #     return self.hints[3]
+        # # elif
+        # else:
+        #     return self.hints[4]
+
 def display_level(sc, settings):
-   
-    show_text(sc, settings, settings.text_level, settings.white, 28, settings.level_point_xy)
-   
 
-def show_generatet_things(sc, settings, info, h):
-
-    show_add_text(sc, settings, info.text_generated_things, settings.white, 24, h, 50)
-
-    info.attempts_one_cell[1] = str(info.attempts_place_thing)
-    # макс. количество попыток разместить предмет в одну выбранную ячейку решетки
-    show_add_text(sc, settings, info.attempts_one_cell, settings.white, 20, h + 30)
-                    
-    # кол-во всех предметов на игровом поле
-    show_add_text(sc, settings, info.text_number_things, settings.white, 20, h+50)
-    
-    
-    h1 = h+50
-    # решетка 2*3 предметов сгенерировано
-    if info.len_things_2_3 > 0:
-            show_add_text(sc, settings, info.text_len_things_2_3, settings.green, 22, h1 + 20, 0, True)
-    # решетка 2*2 предметов сгенерировано
-    if info.len_things_2_2 > 0:
-        show_add_text(sc, settings, info.text_len_things_2_2, settings.yellow, 22,  h1 + 40, 0, True)
-    # решетка 1*5
-    if info.len_things_1_5 > 0:
-        show_add_text(sc, settings, info.text_len_things_1_5, settings.blue, 22, h1 + 60, 0, True)
-    # случайно сгенерированные предметы, общее количество
-    if info.number_random_lines > 0:
-        show_add_text(sc, settings, info.text_random_lines, settings.fuchsia, 22, h1 + 80, 0, True)
-
-    # Отброшеные предметы (вышедшие за рамки игрового поля или наложенные на другие предметы)
-    if info.unfit_2_3 > 0:
-        show_add_text(sc, settings, info.text_unsuitable_things_2_3, settings.green, 22, h1 + 20, 120, True)
-
-    if info.unfit_2_2 > 0:
-        show_add_text(sc, settings, info.text_unsuitable_things_2_2, settings.yellow, 22, h1 + 40, 120, True)
-
-    if info.unfit_1_5 > 0:
-        show_add_text(sc, settings, info.text_unsuitable_things_1_5, settings.blue, 22, h1+ 60, 120, True)
-
-    if info.random_unfit > 0:
-        show_add_text(sc, settings, info.text_random_unfit, settings.fuchsia, 22, h1 + 80, 120, True)
-
-    # сделанных попыток разместить все предметы
-    show_add_text(sc, settings, info.text_things_attempts,
-                  settings.white, 21, h1 + 100)
-
-    # Случайным образом удаленные лишние предметы с последней наложенной решетки
-    if info.del_things > 0:
-        show_add_text(sc, settings, info.text_deleted,
-                      info.del_things_text_color, 22, h1 + 120, 0, True, settings.white)
-    
-    # Надпись.Если дополнительные данные о предметах не были сгенерированы для заданного количества предметов, то при нажатии кнопки
-    # перегенерировать заданное количество предметов
-    if not info.generated_things_lines:
-        show_add_text(sc, settings, info.message, settings.white, 20, info.show_lines[1] + 10, 105)
-
+   show_text(sc, settings, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
 
 def get_next_ball(current_ball, balls):
     if len(balls)>1:
@@ -224,7 +132,6 @@ def get_next_ball(current_ball, balls):
             return balls.sprites()[0]
     else:
         return None
-
 
 def check_ball_border(settings):
 
@@ -246,7 +153,6 @@ def check_ball_border(settings):
     if settings.next_ball.x > settings.screen_width - settings.right_margin - settings.next_ball.radius:
         settings.next_ball.x = settings.screen_width - settings.right_margin - settings.next_ball.radius
 
-
 def check_correct_bottom_border(settings):
 
     if settings.screen_height - settings.height_bottom_panel - settings.bottom_margin in range(settings.selected_ball.rect.top, settings.selected_ball.rect.bottom):
@@ -259,7 +165,6 @@ def check_correct_bottom_border(settings):
     elif settings.selected_ball.y > settings.screen_height - settings.height_bottom_panel - settings.bottom_margin:  # мяч оставлен снизу, не на панеле мячей
         settings.selected_ball.go_home(settings)
 
-
 def check_correct_up_left_right_border(settings):
 
     if settings.selected_ball.y < settings.up_margin + settings.selected_ball.radius:
@@ -271,9 +176,8 @@ def check_correct_up_left_right_border(settings):
     if settings.selected_ball.x > settings.screen_width - settings.right_margin - settings.selected_ball.radius:
             settings.selected_ball.x = settings.screen_width - settings.right_margin - settings.selected_ball.radius
 
-
 # Перевод точки (x,y) в декартову систему координат, где (0, 0) - центр тек. шара на игровой панели
-def get_new_coordinates(settings):
+def get_cartesian_mouse_xy_coordinates(settings):
 
     x0, y0 = settings.ball_in_game.x, settings.ball_in_game.y
     mouse_x, mouse_y = settings.mouse_xy
@@ -296,32 +200,60 @@ def get_new_coordinates(settings):
 
     return x1, y1
 
-def get_dx_dy(settings):  # Направляющий вектор. От центра шара на игровой панели до курсора мыши
+# перевод координат из декартовых четвертей обратно в пигейм
+def get_pygame_point(settings, point):
+
+    x0, y0 = settings.ball_in_game.x, settings.ball_in_game.y
+
+    x1 = point[0]  # декартова система координат
+    y1 = point[1]
+
+    if x1 >= 0 and y1 >= 0:  # Перевод из первой декартовой четверти в координаты пигейм
+        x = x1 + x0
+        y = settings.screen_height - y1 - (settings.screen_height - y0)
+
+    elif x1 <= 0 and y1 >= 0:  # Перевод из второй декартовой четверти в координаты пигейм
+        x = x0 + x1
+        y = y0 - y1
+
+    elif x1 <= 0 and y1 <= 0:  # Перевод из третьей декартовой четверти в координаты пигейм
+        x = x0 + x1
+        y = y0 - y1
+
+    elif x1 >= 0 and y1 <= 0:  # Перевод из четвертой декартовой четверти в координаты пигейм
+        x = x0 + x1
+        y = y0 - y1
+
+    return x, y
+
+def get_dx_dy(settings):  # Смещение по осям x и y за один шаг. Одна ось = 1.
 
     a, b = settings.a, settings.b
-    da, db = 0, 0
 
     if a >= 0 and b >= 0:
         da = - 1
         db = 1
+
     elif a < 0 and b >= 0:
         da = 1
         db = 1
+
     elif a < 0 and b < 0:
         da = 1
         db = -1
+
     else:
         da = -1
         db = -1
 
     if abs(b) > abs(a):
-        dx = da * abs(a/b)
+        dx = da * abs(a / b)
         dy = db
     else:
         dx = da
-        dy = db * abs(b/a)
+        dy = db * abs(b / a)
+        
     return dx, dy
-
 
 def build_path(settings):  # определение траектории движения мяча
 
@@ -354,11 +286,11 @@ def build_path(settings):  # определение траектории дви�
                                     # 2. подпрыгивания на одном месте во время прицеливания settings.bouncing_ball_points
         if accumulated_distance + current_distance <= max_distance:
             is_new_point = False
-            if x + dx > settings.screen_width - radius or x + dx < radius:
+            if x + dx + settings.right_margin > settings.screen_width - radius or x + dx - settings.left_margin < radius:
                 dx = -dx
                 is_new_point = True
 
-            if y + dy > settings.screen_height - radius or y + dy < radius:
+            if y + dy + settings.bottom_margin + settings.height_bottom_panel > settings.screen_height - radius or y + dy - settings.up_margin < radius:
                 dy = -dy
                 is_new_point = True
 
@@ -384,25 +316,27 @@ def build_path(settings):  # определение траектории дви�
     settings.edges.append((round(x), round(y)))
     settings.last_path_point = (round(x), round(y))
 
-# def draw_tips(sc, settings):  # На месте пересечения окружности шара с последующей траекторией движения
+def draw_tips(sc, settings):  # На месте пересечения окружности шара с последующей траекторией движения
 
-#     # будет находиться наконечник. Но только в момент прицеливания и движения
-#     angle = atan2(settings.a, settings.b)
-#     ball = settings.ball_in_game
-#     pos_center_ball = settings.ball_in_game.x, settings.ball_in_game.y
-#     tip1_x, tip1_y = get_pygame_point(pos_center_ball,
-#                                       (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
-#     pygame.draw.circle(sc, settings.yellow, (tip1_x, tip1_y), 4, 0)
-#     z = 7/57.2958
-#     ang1 = angle-z
-#     ang2 = angle+z
-#     (arrow1_x, arrow1_y) = get_pygame_point(pos_center_ball,
-#                                             (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
-#     (arrow2_x, arrow2_y) = get_pygame_point(pos_center_ball,
-#                                             (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
-#     pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
-#     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
-#     settings.tip_x, settings.tip_y = (tip1_x, tip1_y)
+    # будет находиться наконечник. Но только в момент прицеливания и движения
+    angle = atan2(settings.a, settings.b)
+    ball = settings.ball_in_game
+    center_ball_xy = settings.ball_in_game.x, settings.ball_in_game.y
+    tip1_x, tip1_y = get_pygame_point(settings,
+                                      (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
+    pygame.draw.circle(sc, settings.yellow, (tip1_x, tip1_y), 4, 0)
+    z = 7/57.2958
+    ang1 = angle-z
+    ang2 = angle+z
+    (arrow1_x, arrow1_y) = get_pygame_point(settings,
+                                            (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
+    (arrow2_x, arrow2_y) = get_pygame_point(settings,
+                                            (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
+    pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
+    pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
+    settings.tip_x, settings.tip_y = (tip1_x, tip1_y)
+
+
 
 
 

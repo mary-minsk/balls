@@ -1,20 +1,17 @@
 from button import Button
+import pygame
+# from func import get_cartesian_mouse_xy_coordinates
+import func
 class Info():
-    def __init__(self, is_active_panel):
+    def __init__(self, settings):
 
         self.additional_panel_width = 300
         # self.is_displayed_lines = True
         self.is_displayed_lines = False  # Вывести все ячейки, используемые при генерации предметов и отобразить цветами границы изображений
 
-        self.is_active_panel = is_active_panel
-        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!","Use mouse to aim",\
-            "Aim at things and press space!", \
-            "Harvesting...", "Oops!...I did it again!"]
+        self.is_active_panel = settings.is_used_additional_panel
         
-
-            # self.text_level = ["Level:", ""]
-        
-        if is_active_panel:
+        if self.is_active_panel:
 
             self.text_game_info = ["Game info", ""]
             self.text_event = ["event.pos:", ""]
@@ -25,6 +22,8 @@ class Info():
 
 
             self.text_mouse_xy = ["mouse: ", ""]
+            # self.text_cartesian_mouse_xy = ["mouse (cartesian): ", ""]
+           
             self.text_line = ["______________________________", ""]
             self.text_number_things = ["number of things: ",""]  
             self.text_things_attempts = ["all attempts to generate the things: ",""]
@@ -32,7 +31,7 @@ class Info():
             self.text_generated_things = ["Generated things", ""]
             self.attempts_one_cell = ["attempts to place thing in one color cell < ", ""]
 
-            self.reset_event_info()
+            self.reset_event_info(settings)
             self.reset_things_text()
             
             self.text_switch = ["Lines on", "Lines off"]
@@ -43,10 +42,116 @@ class Info():
             self.show_lines_button = Button(self.show_lines, self.get_text_switch(), 22)
 
             self.generated_things_lines = False
-            
-    def check_click(self, mouse_xy, settings):
+
+    def display_additional_info(self, sc, settings):
+
+        self.set_number_things(settings.current_number_things)
+        self.set_things_attempts()
+
+        # pygame.event:
+        self.show_add_text(sc, settings, self.text_game_info, settings.white, 25, 10, 90)
+        self.show_add_text(sc, settings, self.text_event, settings.white, 20, 30)
+        self.show_add_text(sc, settings, self.text_mousebuttondown, settings.white, 20, 50)
+        self.show_add_text(sc, settings, self.text_mousebuttonup, settings.white, 20, 70)
+        self.show_add_text(sc, settings, self.text_mousemotion, settings.white, 20, 90)
+        self.show_add_text(sc, settings, self.text_else, settings.white, 20, 110)
+        self.show_add_text(sc, settings, self.text_mouse_xy, settings.white, 20, 130)
+
+        self.show_add_text(sc, settings, self.text_cartesian_mouse_xy, settings.white, 20, 150)
+        self.show_add_text(sc, settings, self.text_line, settings.white, 20, 160)
+
+        # Основные параметры: выбранный мяч, вращающийся, предыдущий выбранный мяч и т. д.
+        self.show_add_text(sc, settings, self.text_selected_ball, settings.white, 20, 180)
+        self.show_add_text(sc, settings, self.text_prev_selected_ball, settings.white, 20, 200)
+        self.show_add_text(sc, settings, self.text_not_equal, settings.yellow, 20, 220)
+        self.show_add_text(sc, settings, self.text_rotated_ball, settings.white, 20, 240)
+
+        self.show_add_text(sc, settings, self.text_ball_in_game, settings.white, 20, 260)
+        self.show_add_text(sc, settings, self.text_is_draw_line, settings.white, 20, 280)
+
+        # Generated things:
+        h = 370
+        self.show_add_text(sc, settings, self.text_line, settings.white, 20, h - 20)
+        self.show_generated_things(sc, settings, self, h)
+
+        # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
+        self.show_lines_button.draw(sc, settings)
+
+    def show_generated_things(self, sc, settings, info, h):
+
+        self.show_add_text(sc, settings, self.text_generated_things, settings.white, 24, h, 50)
+
+        self.attempts_one_cell[1] = str(self.attempts_place_thing)
+        # макс. количество попыток разместить предмет в одну выбранную ячейку решетки
+        self.show_add_text(sc, settings, self.attempts_one_cell, settings.white, 20, h + 30)
+
+        # кол-во всех предметов на игровом поле
+        self.show_add_text(sc, settings, self.text_number_things, settings.white, 20, h+50)
+
+        h1 = h+50
+        # решетка 2*3 предметов сгенерировано
+        if self.len_things_2_3 > 0:
+            self.show_add_text(sc, settings, self.text_len_things_2_3, settings.green, 22, h1 + 20, 0, True)
+        # решетка 2*2 предметов сгенерировано
+        if self.len_things_2_2 > 0:
+            self.show_add_text(sc, settings, self.text_len_things_2_2, settings.yellow, 22,  h1 + 40, 0, True)
+        # решетка 1*5
+        if self.len_things_1_5 > 0:
+            self.show_add_text(sc, settings, self.text_len_things_1_5, settings.blue, 22, h1 + 60, 0, True)
+        # случайно сгенерированные предметы, общее количество
+        if self.number_random_lines > 0:
+            self.show_add_text(sc, settings, self.text_random_lines, settings.fuchsia, 22, h1 + 80, 0, True)
+
+        # Отброшеные предметы (вышедшие за рамки игрового поля или наложенные на другие предметы)
+        if self.unfit_2_3 > 0:
+            self.show_add_text(sc, settings, self.text_unsuitable_things_2_3, settings.green, 22, h1 + 20, 120, True)
+
+        if self.unfit_2_2 > 0:
+            self.show_add_text(sc, settings, self.text_unsuitable_things_2_2, settings.yellow, 22, h1 + 40, 120, True)
+
+        if self.unfit_1_5 > 0:
+            self.show_add_text(sc, settings, self.text_unsuitable_things_1_5, settings.blue, 22, h1 + 60, 120, True)
+
+        if self.random_unfit > 0:
+            self.show_add_text(sc, settings, self.text_random_unfit, settings.fuchsia, 22, h1 + 80, 120, True)
+
+        # сделанных попыток разместить все предметы
+        self.show_add_text(sc, settings, self.text_things_attempts,
+                    settings.white, 21, h1 + 100)
+
+        # Случайным образом удаленные лишние предметы с последней наложенной решетки
+        if self.del_things > 0:
+            self.show_add_text(sc, settings, self.text_deleted,
+                        self.del_things_text_color, 22, h1 + 120, 0, True, settings.white)
+
+        # Надпись.Если дополнительные данные о предметах не были сгенерированы для заданного количества предметов, то при нажатии кнопки
+        # перегенерировать заданное количество предметов
+        if not self.generated_things_lines:
+            self.show_add_text(sc, settings, self.message, settings.white, 20, self.show_lines[1] + 10, 105)
+
+    def show_add_text(self, sc, settings, text, color, size, h, w=0, is_border=False, white_border_color=None):  # вывод на экран текста
+        # point = h, w
+        # show_text(sc, settings, text, color, size, point)
+        font = pygame.font.Font(None, size)
+        str1, str2 = "", ""
+        if text[0] is not None:
+            str1 = text[0]
+        if text[1] is not None:
+            str2 = text[1]
+        all_text = str1 + " " + str2
+        text_surface = font.render(all_text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.x, text_rect.y = settings.screen_width + 3 + w, h
+        sc.blit(text_surface, text_rect)
+        if is_border:
+            if white_border_color is not None:
+                pygame.draw.rect(sc, white_border_color, text_rect, 1)
+            else:
+                pygame.draw.rect(sc, color, text_rect, 1)
+
+    def check_click(self, settings):
         if self.is_active_panel:
-            if self.show_lines_button.isOver(mouse_xy):
+            if self.show_lines_button.isOver(settings.mouse_xy):
                         
                 self.is_displayed_lines = not self.is_displayed_lines
                 self.show_lines_button.text = self.switch()
@@ -69,7 +174,7 @@ class Info():
         else:
             return self.text_switch[1]
 
-    def reset_event_info(self):
+    def reset_event_info(self, settings):
         
         self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
         self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
@@ -77,6 +182,8 @@ class Info():
         self.text_else = ["other event type: ", ""]
         self.text_rotated_ball = ["rotated ball: ", "None"]
         self.text_not_equal = ["", ""]
+        self.text_cartesian_mouse_xy = ["", ""]
+        # self.text_cartesian_mouse_xy = ["mouse (cartesian): ", ""]
 
     def reset_things_text(self):
         
@@ -110,8 +217,7 @@ class Info():
         self.number_random_lines = 0
         self.text_random_lines = [" random:    ", ""]
         self.deleted_things_rect = []  
-        self.random_deleted_things_rect = []  
-        
+        self.random_deleted_things_rect = []       
 
     # Balls
     def set_text_not_equal_balls(self, settings):
@@ -131,8 +237,8 @@ class Info():
     def point_to_str(self, point):  # строковое представление точки
         return "(" + str(point[0]) + ", " + str(point[1]) + ")"
     
-
     def set_text_mouse_event(self, settings, mouse_xy):
+
         if self.is_active_panel:
             self.text_mouse_xy[1] = self.point_to_str(mouse_xy)
            
@@ -146,6 +252,9 @@ class Info():
             if settings.ball_in_game is not None: 
                 center = settings.ball_in_game.rect.center
                 self.text_ball_in_game[1] = settings.ball_in_game.info + ";  center = " + self.point_to_str(center)
+                cartesian_point = func.get_cartesian_mouse_xy_coordinates(settings)
+                self.text_cartesian_mouse_xy[0] = "mouse (cartesian): "
+                self.text_cartesian_mouse_xy[1] = self.point_to_str(cartesian_point)
             else:
                 self.text_ball_in_game[1] = "None"
 
@@ -165,7 +274,7 @@ class Info():
 
     def set_text_mousebuttonup(self, event_pos):
         if self.is_active_panel:
-            self.text_mousebuttonup[1] = self.point_to_str(event_pos)
+            self.text_mousebuttonup[1] = self.point_to_str(event_pos) 
 
     
     # Things
@@ -224,13 +333,33 @@ class Info():
         if self.is_active_panel:
             self.text_random_unfit[1] = str(self.random_unfit) + " "
 
+    def draw_cells(self, sc, settings):
+
+        for rect in self.lines_2_3:
+            pygame.draw.rect(sc, rect[1], rect[0], 1)
+
+        if settings.current_number_things > 6: 
+            for rect in self.lines_2_2:
+                pygame.draw.rect(sc, rect[1], rect[0], 1)
+                
+        if settings.current_number_things > 10:
+            for rect in self.lines_1_5:
+                pygame.draw.rect(sc, rect[1], rect[0], 1)
+
+        if len(self.deleted_things_rect) > 0:
+            for rect in self.deleted_things_rect:
+                # pygame.draw.rect(sc, settings.white, rect[0], 2)  
+                pygame.draw.rect(sc, rect[1], rect[0], 1)  
+                pygame.draw.aaline(sc, rect[1], rect[0].topleft, rect[0].bottomright)
+                pygame.draw.aaline(sc, rect[1], rect[0].bottomleft, rect[0].topright)
+
+        if len(self.random_deleted_things_rect) > 0:
+            for rect in self.random_deleted_things_rect:
+                pygame.draw.rect(sc, settings.white, rect[0], 2)   
+                pygame.draw.line(sc, rect[1], rect[0].topleft, rect[0].bottomright, 2)
+                pygame.draw.line(sc, rect[1], rect[0].bottomleft, rect[0].topright, 2)
+
    
-
-              
-            
-
-
-
 
       
             
