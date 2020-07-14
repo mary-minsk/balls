@@ -11,15 +11,6 @@ def show_text(sc, settings, color, size, point, isCenter = False, str1="", str2=
     if isCenter:
         text_rect.centery = point[1]
     sc.blit(text_surface, text_rect)
-    
-def show_text2(sc, settings, color, size, point, text = ""):  # вывод на экран текста
-    font = pygame.font.Font(None, size)
-   
-    text_surface = font.render(text, True, color)
-    text_rect = text_surface.get_rect()
-    text_rect.x, text_rect.y = point
-    # text_rect.center = point
-    sc.blit(text_surface, text_rect)
 
 def get_ball(mouse_pos, balls): # индекс выбранного шара с панели шаров
     
@@ -73,7 +64,7 @@ def set_caption(settings):
         pygame.display.set_caption(settings.text_caption)
 
 
-def display_info(sc, ticker_surf, settings, info):
+def display_info(sc, settings, info):
     if settings.is_used_additional_panel:
         info.display_additional_info(sc, settings)
 
@@ -83,20 +74,21 @@ def display_info(sc, ticker_surf, settings, info):
     display_level(sc, settings)
 
     if settings.is_used_hints:
-        text = get_hints(settings)
-        point = (settings.triker_x, settings.screen_height - settings.height_bottom_panel - settings.bottom_margin + 5)
-        
+        text = get_hints(settings) 
         font = pygame.font.Font(None, 23)
         text_surface = font.render(text, True, settings.white)
         text_rect = text_surface.get_rect()
-        text_rect.x, text_rect.y = point  #ticker_panel
-        # ticker_panel
+        if not settings.is_triker_stop:
+            text_rect.x, text_rect.y = (settings.triker_x, settings.screen_height - settings.height_bottom_panel - settings.bottom_margin + 5)
+        else:
+            text_rect.center = settings.ticker_rect.center
         sc.blit(text_surface, text_rect)
-
-        settings.triker_x += 1
-        # if text_rect.right == settings.screen_width - settings.triker_margine:
-        if text_rect.left == settings.screen_width:
-            settings.triker_reset() 
+        
+        if text_rect.centerx >= settings.ticker_rect.centerx:
+            settings.triker_x -= 1
+        else:
+            settings.is_triker_stop = True
+        
    
 def get_hints(settings):  # Подсказки
 
@@ -121,8 +113,7 @@ def get_hints(settings):  # Подсказки
         #     return self.hints[4]
 
 def display_level(sc, settings):
-
-   show_text(sc, settings, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
+    show_text(sc, settings, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
 
 def get_next_ball(current_ball, balls):
     if len(balls)>1:
