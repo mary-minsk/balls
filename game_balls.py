@@ -255,7 +255,6 @@ def draw_disappearing_path(): # Отображение исчезающего п
         settings.is_points_erasing = False
 
 
-
 pygame.init()
 
 settings = Settings()
@@ -268,11 +267,8 @@ pygame.display.update()
 func.set_caption(settings)
 clock = pygame.time.Clock()
 settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
-ticker_surf = pygame.Surface((settings.screen_width, settings.bottom_margin))
-# ticker_surf.fill((255, 0, 0))
 
-
-next_level_button = Button(settings.button_level, settings.button_level_text)
+next_level_button = Button(sc, settings.button_level, settings.button_level_text, settings.white, settings.bg_color, 22)
 # ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
 things = create_things()
@@ -283,7 +279,7 @@ done = False
 
 while not done:
     for event in pygame.event.get():
-        info.reset_event_info(settings)
+        info.reset_event_info()
         settings.is_draw_line = False
 
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -300,7 +296,7 @@ while not done:
                     if settings.prev_selected_ball != settings.selected_ball:
                         if settings.prev_selected_ball is not None:
                             settings.prev_selected_ball.go_home(settings)
-                            info.set_text_not_equal_balls(settings)
+                            info.set_text_not_equal_balls()
                         settings.prev_selected_ball = settings.selected_ball
         
                     selected_offset_x = settings.selected_ball.x - event.pos[0]
@@ -310,7 +306,7 @@ while not done:
                     if next_level_button.isOver(settings.mouse_xy):
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                     
-                    if info.check_click(settings): # Перегенерируются все объекты, если для них не было получено доп. информации
+                    if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
                         settings.current_number_things -=  1    # Только если активна доп. панель информации 
                         balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
 
@@ -375,11 +371,8 @@ while not done:
             if settings.is_draw_line:
                 settings.a, settings.b = func.get_cartesian_mouse_xy_coordinates(settings)
                 # print(settings.a, settings.b)
-        #
-        info.set_text_mouse_event(settings, settings.mouse_xy)
-
-
         
+        info.set_text_mouse_event(settings.mouse_xy)
         
         # settings.is_draw_line = False
         # if event.type == pygame.MOUSEBUTTONDOWN:
@@ -449,11 +442,8 @@ while not done:
         #         elif event.key == pygame.K_DOWN:
         #             mouse_y +=1
         #         pygame.mouse.set_pos(mouse_x, mouse_y)
-    sc.fill(settings.black)               
-    ticker_surf.fill((255, 60, 120))
-    settings.background_image.blit(ticker_surf, (0, settings.screen_height - settings.height_bottom_panel - settings.bottom_margin))
     sc.blit(settings.background_image, (0, 0))
-
+   
     if settings.is_draw_line:  # Мяч на игровой поверхности
         # # if settings.is_draw_line and not ball.isRolling and not settings.is_points_erasing: # Момент прицеливания
         #     # строим путь (ломаная кривая) и собираем информацию о движении мяча
@@ -462,16 +452,9 @@ while not done:
         func.draw_tips(sc, settings)
         # draw_path_and_tips(settings.ball_in_game.rect.center)
 
-
     pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
-    # pygame.draw.rect(sc, settings.white, settings.game_panel2, 1)
-    # self.ticker_panel = pygame.Rect(self.ticker_rect)
-    pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2)
-    # pygame.draw.rect(sc, settings.blue, settings.ticker_panel, 3)
-
-    # y1 = settings.screen_height - settings.height_bottom_panel - settings.bottom_margine
-    # pygame.draw.line(sc, settings.red, (10, y1), (390, y1), 2)
-    
+    pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2) 
+    # pygame.draw.rect(sc, settings.blue, settings.ticker_rect, 1)
     
       
      
@@ -501,16 +484,13 @@ while not done:
     #     draw_disappearing_path()
                 
     
-    func.display_info(sc, ticker_surf, settings, info)
-    
-    next_level_button.draw(sc, settings)
+    func.display_info(sc, settings, info)
+    next_level_button.draw()
     # ruler_button.draw(sc, settings)
     
     things.update(sc, settings, info, things)
     things.draw(sc)
 
-
-    # sc.blit(settings.background_image,(0, 0))
     balls.update(settings, sc)
     balls.draw(sc)
 

@@ -2,27 +2,25 @@ import pygame
 import pygame.font
 
 class Button():
-    def __init__(self, button_pos, text = '', size=20):
-        self.x = button_pos[0]
-        self.y = button_pos[1]
-        self.width = button_pos[2]
-        self.height = button_pos[3]
+    def __init__(self, sc, rect, text, text_color, border_color, text_size):
+        self.sc = sc
+        self.rect = pygame.Rect(rect)
         self.text = text
-        self.size = size
+        self.text_color = text_color
+        self.border_color = border_color
+        self.text_size = text_size
 
-    def draw(self, sc, settings):
-        pygame.draw.rect(sc, settings.bg_color, (self.x,self.y, self.width, self.height),2)
-        font = pygame.font.Font(None, self.size)
-        text_surface = font.render(self.text, True, settings.white)
+    def draw(self):
+        pygame.draw.rect(self.sc, self.border_color, self.rect, 2)
+        font = pygame.font.Font(None, self.text_size)
+        text_surface = font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect()
-        text_rect.midtop = (self.x + self.width/2+ 2, self.y + text_rect.h/2+2)
-        sc.blit(text_surface, text_rect)   
+        text_rect.center = self.rect.center
+        self.sc.blit(text_surface, text_rect)
        
     def isOver(self, pos):
-        #Pos is the mouse position or a tuple of (x,y) coordinates
-        if pos[0] > self.x and pos[0] < self.x + self.width:
-            if pos[1] > self.y and pos[1] < self.y + self.height:
-                return True
-            
-        return False
+        if self.rect.collidepoint(pos):
+            return True
+        else:    
+            return False
 

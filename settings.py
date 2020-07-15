@@ -50,7 +50,6 @@ class Settings():
         self.green = (0, 200, 0)
         self.aqua = (0,155,155)
         self.blue = (0, 191, 255)
-        # Fuchsia	#FF00FF	255, 0, 255
         self.fuchsia = (255, 0, 255)
 
     def set_text_level(self):
@@ -120,30 +119,26 @@ class Settings():
 
     def buttons(self):
 
-        self.button_level = [310,  self.screen_height - self.height_bottom_panel +10, 90, 30]
-        self.button_level_text = "Next level..."
+        self.button_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
+        self.button_level_text = "Next level"
         # self.button_ruler = [300, self.w - 115, 90, 30]
         # self.button_ruler_text = "Ruler"   
 
     def ticker(self):
 
-        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
+        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aimrr re ere rr r  r r r",
                       "Aim at things and press space!",
                       "Harvesting...", "Oops!...I did it again!"]
 
-        self.ticker_rect = (0, self.screen_height - self.height_bottom_panel - self.bottom_margin,
-                            self.bottom_margin, self.bottom_margin)
-
-        self.ticker_panel = pygame.Rect(self.ticker_rect)
-
-        # self.ticker_surf = pygame.Surface((self.screen_width, self.bottom_margin))
-        # self.ticker_surf = pygame.Surface((self.bottom_margin, self.bottom_margin))
-        # player_rect = self.ticker_surf.get_rect(topleft=(0, self.screen_height - self.height_bottom_panel - self.bottom_margin))
+        self.ticker_rect = pygame.Rect(0, self.screen_height - self.height_bottom_panel - self.bottom_margin,
+                            self.screen_width, self.bottom_margin)
         self.triker_margine = 5
         self.triker_reset()
+        # self.info_surf = pygame.Surface((300, self.screen_height))  # settings.bottom_margin
 
     def triker_reset(self):
-        self.triker_x = self.triker_margine = 5
+        self.triker_x = self.screen_width
+        self.is_triker_stop = False
     
     def ball_trajectory(self):
     

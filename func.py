@@ -45,6 +45,8 @@ def get_screen(settings, info):
         sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
     return sc
 
+    info.surf.fill(settings.black)
+
 def rotation_balls_off(balls):
     for i, ball in enumerate(balls):
         ball.is_rotated = False
@@ -66,10 +68,12 @@ def set_caption(settings):
 
 def display_info(sc, settings, info):
     if settings.is_used_additional_panel:
-        info.display_additional_info(sc, settings)
-
+        sc.blit(info.surf, (settings.screen_width, 0))
+        info.surf.fill(settings.black)
+        info.display_additional_info()
+        
     if info.is_displayed_lines:
-        info.draw_cells(sc, settings)
+        info.draw_cells(sc)
 
     display_level(sc, settings)
 
