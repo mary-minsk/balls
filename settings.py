@@ -126,7 +126,7 @@ class Settings():
 
     def ticker(self):
 
-        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aimrr re ere rr r  r r r",
+        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
                       "Aim at things and press space!",
                       "Harvesting...", "Oops!...I did it again!"]
 

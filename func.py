@@ -33,7 +33,7 @@ def mouse_inside_ball_in_game(settings, mouse_pos):
         distance_square = dx ** 2 + dy ** 2
         
         if distance_square > settings.ball_in_game.radius**2:
-            if pygame.Rect(settings.game_panel).collidepoint(mouse_pos):
+            if pygame.Rect(settings.border_game_panel).collidepoint(mouse_pos):
                 return True
     return False
 

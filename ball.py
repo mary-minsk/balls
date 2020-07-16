@@ -57,6 +57,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
     def go_home(self,settings):
         # self.rect.center = (self.balls_panel_x, self.balls_panel_y)
         self.x, self.y = self.balls_panel_x, self.balls_panel_y
+        settings.ball_in_game.isJump = False
         settings.ball_in_game = None
        
     def update(self, settings, sc):
@@ -89,12 +90,29 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         #         self.isRolling = False 
         #         settings.is_points_erasing = True
         #         settings.is_deleted_ball = True
-        # else:
+        # else:;
+        # if not settings.ball_in_game:
         if self.is_rotated:
             self.rotate_ball(self)
-            self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения\
+            self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения
         else:
-            self.rect.center = (self.x, self.y)
+            if not self.isJump:
+                self.rect.center = (self.x, self.y)
+        
+        if settings.ball_in_game:
+            if self.isJump:
+               
+                self.delay += 1
+                if self.delay==2: # мяч  подпрыгивает с небольшой задержкой
+                    if self.step <= 0 or self.step >= 3:
+                        self.delta = self.delta * -1
+                    self.step = self.step + self.delta
+                    self.delay = 0
+
+                if settings.is_draw_line:   #мяч подпрыгивает в направлении мыши
+                    self.rect.center = settings.bouncing_ball_points[self.step]
+                else:                       #вертикальное подпрыгивание 
+                    self.rect.center = (self.x, self.y + self.step)
                 
         # if self.isJump:
         #     pass

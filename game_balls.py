@@ -323,7 +323,8 @@ while not done:
                     settings.prev_selected_ball = settings.selected_ball
                     settings.selected_ball = None
                     settings.prev_selected_ball.is_rotated = True  # После отпускания мышки шарик на панели шаров вновь вращается
-            
+
+                    settings.ball_in_game.isJump = True
             info.set_text_mousebuttonup(event.pos)
 
         elif event.type == pygame.MOUSEMOTION:
@@ -344,10 +345,12 @@ while not done:
                         center = settings.ball_in_game.rect.center
                         settings.ball_in_game.go_home(settings)
                         settings.next_ball.set_ball_xy((center))
+                        
 
                         # Если при нажатии Таб следующий по счету мяч выходит за границы игрового поля, то корректируем его центр
                         func.check_ball_border(settings)
                         settings.ball_in_game = settings.next_ball
+                        settings.ball_in_game.isJump = True
                         settings.prev_selected_ball = settings.next_ball
             
         else:
@@ -370,6 +373,7 @@ while not done:
             settings.is_draw_line = func.mouse_inside_ball_in_game(settings, settings.mouse_xy)
             if settings.is_draw_line:
                 settings.a, settings.b = func.get_cartesian_mouse_xy_coordinates(settings)
+                # settings.ball_in_game.isJump = True
                 # print(settings.a, settings.b)
         
         info.set_text_mouse_event(settings.mouse_xy)
