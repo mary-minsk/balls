@@ -1,5 +1,6 @@
 import pygame
 from math import sqrt, hypot
+import func
 
 # класс Мяч или Шар (при сталкновении с 10 предметами шар их лопает (уничтожает))
 class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, средний и большой мяч (шар)
@@ -46,19 +47,23 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.prev_point = (0, 0)
         self.last_path_distance = 0
         self.info = ""
-        # self.new_x = 0
-        # self.new.y = 0
-        # self.isDisable = False
+
+        self.moving_right = False
+        self.moving_left = False
+        self.moving_up = False
+        self.moving_down = False
+
+        self.num = 0
+       
     def set_ball_xy(self, point):
         self.x,self.y = point
         self.rect.center = (self.x, self.y)
-        # self.rect.center = (200, 200)
+        
         
     def go_home(self,settings):
-        # self.rect.center = (self.balls_panel_x, self.balls_panel_y)
+        
         self.x, self.y = self.balls_panel_x, self.balls_panel_y
-        settings.ball_in_game.isJump = False
-        settings.ball_in_game = None
+        self.isJump = False
        
     def update(self, settings, sc):
         
@@ -97,39 +102,44 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
             self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения
         else:
             if not self.isJump:
+            
                 self.rect.center = (self.x, self.y)
         
-        if settings.ball_in_game:
-            if self.isJump:
-               
-                self.delay += 1
-                if self.delay==2: # мяч  подпрыгивает с небольшой задержкой
-                    if self.step <= 0 or self.step >= 3:
-                        self.delta = self.delta * -1
-                    self.step = self.step + self.delta
-                    self.delay = 0
+        # if self.moving_right:
+        #     self.x += 1
+        #     func.check_correct_up_left_right_border(self, settings, True)
+        #     self.rect.center = (self.x, self.y)
+           
+        # if self.moving_left:
+        #     self.x -= 1
+        #     func.check_correct_up_left_right_border(self, settings, True)
+        #     self.rect.center = (self.x, self.y)
+           
+        # if self.moving_up:
+        #     self.y -= 1
+        #     func.check_correct_up_left_right_border(self, settings, True)
+        #     self.rect.center = (self.x, self.y)
 
-                if settings.is_draw_line:   #мяч подпрыгивает в направлении мыши
-                    self.rect.center = settings.bouncing_ball_points[self.step]
-                else:                       #вертикальное подпрыгивание 
-                    self.rect.center = (self.x, self.y + self.step)
+        # if self.moving_down:
+        #     self.y += 1
+        #     func.check_correct_up_left_right_border(self, settings, True)
+        #     self.rect.center = (self.x, self.y)
+    
+
+        if self.isJump:
+            pass
+            self.delay += 1
+            if self.delay==2: # мяч  подпрыгивает с небольшой задержкой
+                if self.step <= 0 or self.step >= 3:
+                    self.delta = self.delta * -1
+                self.step = self.step + self.delta
+                self.delay = 0
+
+            if settings.is_draw_line:   # мяч подпрыгивает в направлении движения мыши
+                self.rect.center = settings.bouncing_ball_points[self.step]
+            else:                       #вертикальное подпрыгивание 
+                self.rect.center = (self.x, self.y + self.step)
                 
-        # if self.isJump:
-        #     pass
-        #     # pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
-        #     self.delay +=1
-        #     # if self.delay==3: # мяч  подпрыгивает с небольшой задержкой
-        #     if self.step <=0 or self.step >=3:
-        #         self.delta = self.delta * -1       
-        #     self.step = self.step + self.delta
-        # #     if not settings.is_draw_line:   # мяч вертикально подпрыгивает на игровой поверхности
-        #     self.rect.center = (self.x1, self.y1+self.step)
-                
-        # #     else:   #  мяч двигается(подскакивает) в сторону возможной траектории движения при
-        # #         self.rect.center = settings.bouncing_ball_points[self.step]  # движении мыши или стрелок
-        #     self.delay = 0
-
-
     @staticmethod
     def rotate_rolling_ball(self, settings, sc): # вращение мяча во время движения по ломаной траектории
         self.rotate_ball(self)
@@ -145,7 +155,4 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         if self.angle ==360:
             self.angle = 0
 
-    def move_balls_panel(self):
-        self.rect = self.image.get_rect(center=(self.x, self.y))
-        self.isJump = False
 
