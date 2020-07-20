@@ -241,17 +241,17 @@ class Info():
     def point_to_str(self, point):  # строковое представление точки
         return "(" + str(point[0]) + ", " + str(point[1]) + ")"
     
-    def set_text_mouse_event(self, mouse_xy):
 
+    def set_text_events(self):
         if self.is_active_panel:
-            self.text_mouse_xy[1] = self.point_to_str(mouse_xy)
-           
-            if self.settings.rotated_ball is None:        
-                self.text_rotated_ball[1] = "None"
-            else:                          
-                self.text_rotated_ball[1] = self.settings.rotated_ball.info
 
+            self.text_mouse_xy[1] = self.point_to_str(self.settings.mouse_xy)
             self.text_is_draw_line[1] = str(self.settings.is_draw_line)
+
+            if self.settings.rotated_ball is None:
+                self.text_rotated_ball[1] = "None"
+            else:
+                self.text_rotated_ball[1] = self.settings.rotated_ball.info
 
             if self.settings.ball_in_game is not None:
                 center = self.settings.ball_in_game.rect.center
@@ -271,6 +271,7 @@ class Info():
                 self.text_prev_selected_ball[1] = self.settings.prev_selected_ball.info
             else:
                 self.text_prev_selected_ball[1] = "None"
+
 
     def set_text_mousemotion(self, event_pos):
         if self.is_active_panel:

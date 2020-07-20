@@ -60,10 +60,22 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.rect.center = (self.x, self.y)
         
         
-    def go_home(self,settings):
+    def go_home(self, stop_moving = False):
         
         self.x, self.y = self.balls_panel_x, self.balls_panel_y
         self.isJump = False
+        # if stop_moving: 
+        #     self.moving_right = False
+        #     self.moving_left = False
+        #     self.moving_up = False
+        #     self.moving_down = False
+
+    def stop_moving(self):
+       
+        self.moving_right = False
+        self.moving_left = False
+        self.moving_up = False
+        self.moving_down = False
        
     def update(self, settings, sc):
         
@@ -102,28 +114,31 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
             self.rect.center = self.prev_rect_center # центр шара не должен смещаться во время вращения
         else:
             if not self.isJump:
-            
                 self.rect.center = (self.x, self.y)
         
-        # if self.moving_right:
-        #     self.x += 1
-        #     func.check_correct_up_left_right_border(self, settings, True)
-        #     self.rect.center = (self.x, self.y)
+        if self.moving_right:
+            self.x += 1
+            func.check_correct_up_left_right_border(self, settings, True)
+            self.rect.center = (self.x, self.y)
+            # print(self.info, "moving_right")
            
-        # if self.moving_left:
-        #     self.x -= 1
-        #     func.check_correct_up_left_right_border(self, settings, True)
-        #     self.rect.center = (self.x, self.y)
+        if self.moving_left:
+            self.x -= 1
+            func.check_correct_up_left_right_border(self, settings, True)
+            self.rect.center = (self.x, self.y)
+            # print(self.info, "moving_left")
            
-        # if self.moving_up:
-        #     self.y -= 1
-        #     func.check_correct_up_left_right_border(self, settings, True)
-        #     self.rect.center = (self.x, self.y)
+        if self.moving_up:
+            self.y -= 1
+            func.check_correct_up_left_right_border(self, settings, True)
+            self.rect.center = (self.x, self.y)
+            # print(self.info, "moving_up")
 
-        # if self.moving_down:
-        #     self.y += 1
-        #     func.check_correct_up_left_right_border(self, settings, True)
-        #     self.rect.center = (self.x, self.y)
+        if self.moving_down:
+            self.y += 1
+            func.check_correct_up_left_right_border(self, settings, True)
+            self.rect.center = (self.x, self.y)
+            # print(self.info, "moving_down")
     
 
         if self.isJump:
