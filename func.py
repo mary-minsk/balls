@@ -502,6 +502,20 @@ def continue_ball_moving(ball_in_game, next_ball): # При постояном �
 #     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), r, 0)
 
 
+def draw_tips_disappearing(sc, settings, a, b, pos_center_ball):  # После движения мяча траектория исчезает, наконечник следует за ней
+    angle = atan2(-a, b)
+    pygame.draw.circle(sc, settings.yellow, pos_center_ball, 4, 0)
+    z = 1.571
+    ang1 = angle-z
+    ang2 = angle+z
+    l = 4
+    (arrow1_x, arrow1_y) = get_pygame_point(settings, pos_center_ball, (round(l * sin(ang1)), round(l * cos(ang1))))
+    (arrow2_x, arrow2_y) = get_pygame_point(settings, pos_center_ball, (round(l * sin(ang2)), round(l * cos(ang2))))
+    r = 2
+    pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), r, 0)
+    pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), r, 0)
+
+
 def get_disappearing_path(settings):  # Построение исчезающей ломаной прямой. Перед исчезновением мяча на игровой поверхности
     newpoints = []
     if len(settings.disappearing_points) > settings.disappearance:
@@ -530,7 +544,7 @@ def get_disappearing_path(settings):  # Построение исчезающе�
 def draw_disappearing_path(sc,settings):  # Отображение исчезающего пути послеостановки шара
     if len(settings.disappearing_points) > settings.disappearance:
         pygame.draw.aalines(sc, settings.bg_color, False, settings.disappearing_edges)
-        # draw_tips_disappearing(sc, settings.dxy[0], settings.dxy[1], settings.disappearing_edges[0])
+        draw_tips_disappearing(sc, settings, settings.dxy[0], settings.dxy[1], settings.disappearing_edges[0])
     else:
         settings.is_points_erasing = False
 
@@ -545,13 +559,7 @@ def display_last_path_point(sc, settings):  # Отображение конца 
     if settings.is_draw_line or is_ball_rolling(settings):
         pygame.draw.circle(sc, settings.yellow, settings.ball_in_game.center(), 2, 0)
 
-        # is_display = False
-    # if settings.is_ball_down:
-    #     if settings.is_draw_line and not ball.isRolling or ball.isRolling:
-    #         is_display = True
-    # elif settings.is_points_erasing:
-    #     is_display = True
-
+    
     if settings.is_draw_line or is_ball_rolling(settings):
         pygame.draw.circle(sc, settings.red, settings.last_path_point, 4, 0)
         pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)

@@ -313,8 +313,8 @@ while not done:
             settings.reset() 
             settings.edges.pop(0)  # Траектория мяча начинается не с позиции мыши, а с точки на окружности шара
             
-        # func.get_disappearing_path()
-        # func.draw_disappearing_path()
+        func.get_disappearing_path(settings)
+        func.draw_disappearing_path(sc, settings)
                 
     
     func.display_info(sc, settings, info)
