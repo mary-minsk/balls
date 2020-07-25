@@ -1,12 +1,11 @@
 import pygame
 class Deleted_thing(pygame.sprite.Sprite):  # класс вещей/предметов. 10 шт, которые надо сбить мячиками
-    def __init__(self, x, y, surf, angle = 0):
+    def __init__(self, center, surf, angle = 0):
         pygame.sprite.Sprite.__init__(self)
-        self.x = x
-        self.y = y
+        self.x, self.y = center
         self.image = surf
         self.original_surf = surf
-        self.rect = self.image.get_rect(center=(x, y))
+        self.rect = self.image.get_rect(center=(self.x, self.y))
 
         self.angle = angle
         self.decrease = 0.6  

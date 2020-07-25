@@ -22,7 +22,8 @@ class Settings():
 
         self.mouse_xy = 0, 0  # тек пигейм координаты мыши
          # Направляющий вектор движения мяча. Декартова система координат
-        self.a, self.b = (0, 0)
+        self.a, self.b = 0, 0
+        self.pos_center_ball = 0, 0
         self.ball_trajectory()  # Траектория движения
     
         self.reset()  # Сброс основных параметров

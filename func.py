@@ -1,5 +1,6 @@
 import pygame
 from math import sqrt, hypot, sin, cos, atan2
+import game_render
 
 
 def show_text(sc, settings, color, size, point, isCenter = False, str1="", str2=""):  # вывод на экран текста
@@ -61,18 +62,19 @@ def rotation_ball_on(balls, rotated_ball):
             ball.is_rotated = True
 
 
-def jump_ball_on(balls, next_ball):
+# def jump_ball_on(balls, next_ball):
 
-    for i, ball in enumerate(balls):
-        if ball != next_ball:
-            # ball.isJump = False
-            ball.go_home(True)
-            # ball.moving_right = False
-            # ball.moving_left = False
-            # ball.moving_up = False
-            # ball.moving_down = False
-        else:
-            ball.isJump = True
+#     for i, ball in enumerate(balls):
+#         if ball != next_ball:
+#             ball.go_home(True)
+#         else:
+#             ball.isJump = True
+
+
+def jump_ball_on(ball_in_game, next_ball):
+
+    ball_in_game.go_home(True)
+    next_ball.isJump = True
 
 def set_caption(settings):
     if settings.is_used_additional_panel:
@@ -108,7 +110,6 @@ def display_info(sc, settings, info):
         else:
             settings.is_triker_stop = True
         
-   
 def get_hints(settings):  # Подсказки
 
 #         # self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
@@ -218,13 +219,19 @@ def get_cartesian_mouse_xy_coordinates(settings):
 
     return x1, y1
 
+
+# def get_pygame_point(pos_center_ball, pos_edge):  # перевод координат из декартовых четвертей обратно в пигейм
+#     x0 = pos_center_ball[0]  # центр шара в пигейм координатах
+#     y0 = pos_center_ball[1]
+#     x1 = pos_edge[0]  # декартова система координат
+#     y1 = pos_edge[1]
+#     (x, y) = (0, 0)
+
 # перевод координат из декартовых четвертей обратно в пигейм
-def get_pygame_point(settings, point):
+def get_pygame_point(settings, pos_center_ball, point):
 
-    x0, y0 = settings.ball_in_game.x, settings.ball_in_game.y
-
-    x1 = point[0]  # декартова система координат
-    y1 = point[1]
+    x0, y0 = pos_center_ball
+    x1, y1 = point  # декартова система координат
 
     if x1 >= 0 and y1 >= 0:  # Перевод из первой декартовой четверти в координаты пигейм
         x = x1 + x0
@@ -282,6 +289,7 @@ def build_path(settings):  # определение траектории дви�
     is_path_passed = False  
 
     center_ball_xy = settings.ball_in_game.x, settings.ball_in_game.y
+    # print(center_ball_xy)
     x, y = center_ball_xy    # Начало траектории от центра шара
     prev_point = center_ball_xy
 
@@ -291,6 +299,7 @@ def build_path(settings):  # определение траектории дви�
     # список крайних точек ломаной кривой (вершин) для рисования линии
     settings.edges = []
     # settings.edges.append((mouse_x, mouse_y))
+    
     settings.edges.append(settings.mouse_xy)
 
     # список 5 точек подпрыгивания на месте мяча при прицеливании
@@ -333,33 +342,70 @@ def build_path(settings):  # определение траектории дви�
     settings.edges.append((round(x), round(y)))
     settings.last_path_point = (round(x), round(y))
 
-def draw_tips(sc, settings):  # На месте пересечения окружности шара с последующей траекторией движения
+def draw_tips(sc, settings, pos_center_ball):  # На месте пересечения окружности шара с последующей траекторией движения
                              # будет находиться наконечник. Но только в момент прицеливания и движения
     ball = settings.ball_in_game
-    center_ball_xy = ball.x, ball.y
 
     angle = atan2(settings.a, settings.b)
-    tip1_x, tip1_y = get_pygame_point(settings,
+    tip1_x, tip1_y = get_pygame_point(settings, pos_center_ball,
                                       (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
     pygame.draw.circle(sc, settings.yellow, (tip1_x, tip1_y), 4, 0)
 
     z = 7/57.2958
     ang1 = angle-z
     ang2 = angle+z
-    (arrow1_x, arrow1_y) = get_pygame_point(settings,
+    (arrow1_x, arrow1_y) = get_pygame_point(settings, pos_center_ball,
                                             (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
-    (arrow2_x, arrow2_y) = get_pygame_point(settings,
+    (arrow2_x, arrow2_y) = get_pygame_point(settings, pos_center_ball,
                                             (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
     pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
-    settings.tip_x, settings.tip_y = (tip1_x, tip1_y)
+    settings.tip_x, settings.tip_y = tip1_x, tip1_y
 
-    pygame.draw.circle(sc, settings.yellow, (ball.x, ball.y), 2, 0)
+
+def build_speedway(settings, speed):  # Построение пути движения шара с учетом его скорости
+
+    n = len(settings.all_path_points)  # количество всех точек траектории
+    len_path_acceleration = round(settings.path_acceleration * n)
+
+    acceleration, slowdown = game_render.get_acceleration(len_path_acceleration, speed-1)
+    acceleration_sum = sum(acceleration)
+
+    constant_number_points = (n - 2 * acceleration_sum)//speed
+    constant_speed_list = [speed for i in range(constant_number_points)]
+
+    generated_list = acceleration + constant_speed_list + slowdown  # какие точки не будут отброшены (каждая вторая, третья)
+    total_sum = sum(generated_list)
+    diference = n - total_sum
+    # print("diference = %d" %(diference))
+    if diference in range(1, speed):  # в сгенерированном списке всех точек траектории мяча добавляем
+        # один недостающий элемент, чтобы суммы точек совпали
+        if diference in generated_list:
+                ind = len(generated_list) - 1 - generated_list[::-1].index(diference)  # дополнительная точка при торможении
+                generated_list.insert(ind, diference)
+
+    temp = []
+    result = []
+
+    while (len(generated_list)) > 0:  # Отбрасываем лишние точки и нужные точки заносим в список result
+        elem = generated_list.pop(0)
+        for i in range(0, elem):
+            temp.append(i)
+            if i == 0:
+                result.append(settings.all_path_points[len(temp)-1])
+    # print(temp)
+    if (len(temp) != n):
+        print("Error! len(temp)!=n")
+    return result
 
 def launch_ball(settings):  # Пробел или двойное нажатие мыши запускает шар  (создает вихрь). Определение всех точек пути движения шаря
+    
     ball = settings.ball_in_game
     ball.isRolling = True
-    point = settings.ball_in_game.x, settings.ball_in_game.y
+    ball.isJump = False
+    point = settings.ball_in_game.center()
+    # print(point)
+    settings.pos_center_ball = point
     # списки точек (траектории и соответствующих направляющих для последующего движения мяча и исчезновения всех линий)
     # settings.all_path_points, settings.all_dx_dy, settings.disappearing_points = get_all_points(ball.radius, ball.distance, settings.pos_center_ball)
     settings.all_path_points, settings.all_dx_dy, settings.disappearing_points = get_all_points(settings, ball.radius, ball.distance, point)
@@ -396,11 +442,12 @@ def get_all_points(settings, radius, max_distance, start_point):  # в моме�
             # 3) направление наконечников во время схлопывания траектории движения settings.all_dx_dy
             if accumulated_distance + last_distance <= max_distance:
                 is_new_point = False
-                if x1 + dx > settings.screen_width - radius or x1 + dx < radius:
+            
+                if x1 + dx + settings.right_margin > settings.screen_width - radius or x1 + dx - settings.left_margin < radius:
                     dx = -dx
                     is_new_point = True
 
-                if y1 + dy > settings.screen_height - radius or y1 + dy < radius:
+                if y1 + dy + settings.bottom_margin + settings.height_bottom_panel > settings.screen_height - radius or y1 + dy - settings.up_margin < radius:
                     dy = -dy
                     is_new_point = True
 
@@ -417,46 +464,11 @@ def get_all_points(settings, radius, max_distance, start_point):  # в моме�
             else:
                 is_distance_found = True
 
-        if settings.last_path_point != all_path_points[-1]:
-            print("Error! get_all_points:")
-            print("Ok settings.last_path_point != settings.all_path_points[-1]")
+        # if settings.last_path_point != all_path_points[-1]:
+        #     print("Error! get_all_points:")
+        #     print("Ok settings.last_path_point != settings.all_path_points[-1]")
 
     return all_path_points, tips_dx_dy + all_dx_dy, tips + all_path_points
-
-    def build_speedway(settings, speed):  # Построение пути движения шара с учетом его скорости
-
-        n = len(settings.all_path_points)  # количество всех точек траектории
-        len_path_acceleration = round(settings.path_acceleration * n)
-
-        acceleration, slowdown = game_render.get_acceleration(len_path_acceleration, speed-1)
-        acceleration_sum = sum(acceleration)
-
-        constant_number_points = (n - 2 * acceleration_sum)//speed
-        constant_speed_list = [speed for i in range(constant_number_points)]
-
-        generated_list = acceleration + constant_speed_list + slowdown  # какие точки не будут отброшены (каждая вторая, третья)
-        total_sum = sum(generated_list)
-        diference = n - total_sum
-        # print("diference = %d" %(diference))
-        if diference in range(1, speed):  # в сгенерированном списке всех точек траектории мяча добавляем
-            # один недостающий элемент, чтобы суммы точек совпали
-            if diference in generated_list:
-                ind = len(generated_list) - 1 - generated_list[::-1].index(diference)  # дополнительная точка при торможении
-                generated_list.insert(ind, diference)
-
-        temp = []
-        result = []
-
-        while (len(generated_list)) > 0:  # Отбрасываем лишние точки и нужные точки заносим в список result
-            elem = generated_list.pop(0)
-            for i in range(0, elem):
-                temp.append(i)
-                if i == 0:
-                    result.append(settings.all_path_points[len(temp)-1])
-        # print(temp)
-        if (len(temp) != n):
-            print("Error! len(temp)!=n")
-        return result
 
 def check_holding_arrow_keys(settings):
 
@@ -467,9 +479,81 @@ def check_holding_arrow_keys(settings):
             if settings.is_draw_line:
                 settings.a, settings.b = get_cartesian_mouse_xy_coordinates(settings)
 
-
-def continue_ball_moving(ball_in_game, next_ball):
+def continue_ball_moving(ball_in_game, next_ball): # При постояном нажатии стрелок при нажатии Таб следующий мяч продолжает движение
+    
     next_ball.moving_right = ball_in_game.moving_right
     next_ball.moving_left = ball_in_game.moving_left
     next_ball.moving_up = ball_in_game.moving_up
     next_ball.moving_down = ball_in_game.moving_down
+
+# def draw_tips_disappearing(sc, settings):  # После движения мяча траектория исчезает, наконечник следует за ней
+#     a, b = setting.a, settings.b
+#     pos_center_ball = settings.pos_center_ball
+#     angle = atan2(-a, b)
+#     pygame.draw.circle(sc, settings.yellow, pos_center_ball, 4, 0)
+#     z = 1.571
+#     ang1 = angle-z
+#     ang2 = angle+z
+#     l = 4
+#     (arrow1_x, arrow1_y) = get_pygame_point(pos_center_ball, (round(l * sin(ang1)), round(l * cos(ang1))))
+#     (arrow2_x, arrow2_y) = get_pygame_point(pos_center_ball, (round(l * sin(ang2)), round(l * cos(ang2))))
+#     r = 2
+#     pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), r, 0)
+#     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), r, 0)
+
+
+def get_disappearing_path(settings):  # Построение исчезающей ломаной прямой. Перед исчезновением мяча на игровой поверхности
+    newpoints = []
+    if len(settings.disappearing_points) > settings.disappearance:
+
+        del_list = settings.disappearing_points[0:settings.disappearance]
+        del_set = settings.all_dx_dy[0:settings.disappearance]  # Также соответствующие направляющие для отображения наконечника
+
+        if settings.edges[0] in del_list:
+            settings.edges.pop(0)
+
+        point = del_list[0]
+        settings.dxy = del_set[0]
+
+        del settings.disappearing_points[0:settings.disappearance]
+        del settings.all_dx_dy[0:settings.disappearance]
+
+        newpoints.append(point)
+        newpoints.extend(settings.edges)
+
+        settings.disappearing_edges = newpoints
+        settings.disappearance += 1  # Ускорение для стирания ломаной прямой
+        # settings.disappearance = 2 # Поточечно
+        # print(settings.disappearance)
+
+
+def draw_disappearing_path(sc,settings):  # Отображение исчезающего пути послеостановки шара
+    if len(settings.disappearing_points) > settings.disappearance:
+        pygame.draw.aalines(sc, settings.bg_color, False, settings.disappearing_edges)
+        # draw_tips_disappearing(sc, settings.dxy[0], settings.dxy[1], settings.disappearing_edges[0])
+    else:
+        settings.is_points_erasing = False
+
+def is_ball_rolling(settings):
+    if settings.ball_in_game is not None:
+        if settings.ball_in_game.isRolling:
+            return True
+    return False
+
+def display_last_path_point(sc, settings):  # Отображение конца траектории движения. После вывода на экран всех изображений, чтобы
+    #  финальная точка пути не скрывалась за изображениями предметов
+    if settings.is_draw_line or is_ball_rolling(settings):
+        pygame.draw.circle(sc, settings.yellow, settings.ball_in_game.center(), 2, 0)
+
+        # is_display = False
+    # if settings.is_ball_down:
+    #     if settings.is_draw_line and not ball.isRolling or ball.isRolling:
+    #         is_display = True
+    # elif settings.is_points_erasing:
+    #     is_display = True
+
+    if settings.is_draw_line or is_ball_rolling(settings):
+        pygame.draw.circle(sc, settings.red, settings.last_path_point, 4, 0)
+        pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)
+
+

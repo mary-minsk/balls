@@ -255,6 +255,7 @@ class Info():
 
             if self.settings.ball_in_game is not None:
                 center = self.settings.ball_in_game.rect.center
+                
                 self.text_ball_in_game[1] = self.settings.ball_in_game.info + ";  center = " + self.point_to_str(center)
                 cartesian_point = func.get_cartesian_mouse_xy_coordinates(self.settings)
                 self.text_cartesian_mouse_xy[0] = "mouse (cartesian): "
