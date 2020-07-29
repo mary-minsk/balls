@@ -1,6 +1,7 @@
 import pygame
 from math import sqrt, hypot, sin, cos, atan2
 import game_render
+from deleted_things import Deleted_thing
 
 
 def show_text(sc, settings, color, size, point, isCenter = False, str1="", str2=""):  # вывод на экран текста
@@ -136,13 +137,16 @@ def display_level(sc, settings):
     show_text(sc, settings, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
 
 def get_next_ball(current_ball, balls):
-    if len(balls)>1:
-        if current_ball.index != 2:
-            return balls.sprites()[current_ball.index + 1]
+    
+    index = current_ball.index
+    if len(balls) > 1:
+        if  index  + 1 != len(balls):
+            return balls.sprites()[index + 1]
         else:
             return balls.sprites()[0]
     else:
         return None
+    return None
 
 def check_ball_border(settings):
 
@@ -362,6 +366,27 @@ def draw_tips(sc, settings, pos_center_ball):  # На месте пересеч�
     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
     settings.tip_x, settings.tip_y = tip1_x, tip1_y
 
+def draw_tips2(sc, settings, pos_center_ball):  # На месте пересечения окружности шара с последующей траекторией движения
+                             # будет находиться наконечник. Но только в момент прицеливания и движения
+    ball = settings.ball_in_game
+
+    angle = atan2(settings.a, settings.b)
+    tip1_x, tip1_y = get_pygame_point(settings, pos_center_ball,
+                                      (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
+    pygame.draw.circle(sc, settings.yellow, (tip1_x, tip1_y), 4, 0)
+
+    z = 7/57.2958
+    ang1 = angle-z
+    ang2 = angle+z
+    (arrow1_x, arrow1_y) = get_pygame_point(settings, pos_center_ball,
+                                            (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
+    (arrow2_x, arrow2_y) = get_pygame_point(settings, pos_center_ball,
+                                            (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
+    pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
+    pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
+    # settings.tip_x, settings.tip_y = tip1_x, tip1_y
+
+
 
 def build_speedway(settings, speed):  # Построение пути движения шара с учетом его скорости
 
@@ -486,25 +511,9 @@ def continue_ball_moving(ball_in_game, next_ball): # При постояном �
     next_ball.moving_up = ball_in_game.moving_up
     next_ball.moving_down = ball_in_game.moving_down
 
-# def draw_tips_disappearing(sc, settings):  # После движения мяча траектория исчезает, наконечник следует за ней
-#     a, b = setting.a, settings.b
-#     pos_center_ball = settings.pos_center_ball
-#     angle = atan2(-a, b)
-#     pygame.draw.circle(sc, settings.yellow, pos_center_ball, 4, 0)
-#     z = 1.571
-#     ang1 = angle-z
-#     ang2 = angle+z
-#     l = 4
-#     (arrow1_x, arrow1_y) = get_pygame_point(pos_center_ball, (round(l * sin(ang1)), round(l * cos(ang1))))
-#     (arrow2_x, arrow2_y) = get_pygame_point(pos_center_ball, (round(l * sin(ang2)), round(l * cos(ang2))))
-#     r = 2
-#     pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), r, 0)
-#     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), r, 0)
-
-
 def draw_tips_disappearing(sc, settings, a, b, pos_center_ball):  # После движения мяча траектория исчезает, наконечник следует за ней
     angle = atan2(-a, b)
-    pygame.draw.circle(sc, settings.yellow, pos_center_ball, 4, 0)
+    pygame.draw.circle(sc, settings.yellow, pos_center_ball, 3, 0)
     z = 1.571
     ang1 = angle-z
     ang2 = angle+z
@@ -564,4 +573,17 @@ def display_last_path_point(sc, settings):  # Отображение конца 
         pygame.draw.circle(sc, settings.red, settings.last_path_point, 4, 0)
         pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)
 
+def set_balls_index(balls):
 
+    for i, ball in enumerate(balls):
+        ball.index = i
+
+
+def del_ball(settings, balls, deleted_balls):
+    if settings.is_deleted_ball:
+        deleted_balls.add(Deleted_thing(settings.ball_in_game.center(), settings.ball_in_game.image, settings.ball_in_game.angle))  # Создание исчезающего вращающегося мяча
+        balls.remove(settings.ball_in_game)
+        set_balls_index(balls)
+        settings.is_deleted_ball = False
+        settings.reset()
+        settings.edges.pop(0)   # Траектория мяча начинается не с позиции мыши, а с точки на окружности шара

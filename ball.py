@@ -102,8 +102,6 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
                 self.isRolling = False 
                 settings.is_points_erasing = True
                 settings.is_deleted_ball = True
-        # else:;
-        # if not settings.ball_in_game:
 
         self.check_rotation_balls_panel(self)   # вращение шаров напанели шаров
         self.check_movings(self, settings)      # перемещение шара на игровом поле клавишами (стрелки вверх, вниз и т. д.)
@@ -111,13 +109,13 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
                 
     @staticmethod
     def rotate_rolling_ball(self, settings, sc): # вращение мяча во время движения по ломаной траектории
-        self.rotate_ball(self)
+        self.rotate_ball(self, 3)
         self.rect = self.image.get_rect(center=(round(self.x1), round(self.y1)))
         pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
         
     @staticmethod
-    def rotate_ball(self):          # мяч на панеле шаров при приближении к нему мыши и на 
-        self.angle +=1              # игровой поверхности во время прицеливания
+    def rotate_ball(self, angle = 1):          # мяч на панеле шаров при приближении к нему мыши и на 
+        self.angle += angle              # игровой поверхности во время прицеливания
         self.image = pygame.transform.rotate(self.original_surf, self.angle)
         self.rect = self.image.get_rect()
         
