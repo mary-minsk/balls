@@ -568,8 +568,7 @@ def display_last_path_point(sc, settings):  # Отображение конца 
     if settings.is_draw_line or is_ball_rolling(settings):
         pygame.draw.circle(sc, settings.yellow, settings.ball_in_game.center(), 2, 0)
 
-    
-    if settings.is_draw_line or is_ball_rolling(settings):
+    if settings.is_draw_line or is_ball_rolling(settings) or settings.is_points_erasing:
         pygame.draw.circle(sc, settings.red, settings.last_path_point, 4, 0)
         pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)
 
@@ -577,7 +576,6 @@ def set_balls_index(balls):
 
     for i, ball in enumerate(balls):
         ball.index = i
-
 
 def del_ball(settings, balls, deleted_balls):
     if settings.is_deleted_ball:

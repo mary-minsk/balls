@@ -49,8 +49,6 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.info = ""
 
         self.stop_moving()
-
-        # self.num = 0
        
     def set_ball_xy(self, point):
         self.x,self.y = point
@@ -80,24 +78,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
             if len(settings.all_path_points) >0:
                 self.x, self.y = settings.all_path_points.pop(0)
                 self.rotate_rolling_ball(self, settings, sc) 
-                # self.is_new_point = False
-                
-                # if self.x >= settings.screen_width - self.radius or self.x <= self.radius:
-                #     self.is_new_point = True 
-                #     self.current_distance += hypot(self.prev_point[0]-self.x, self.prev_point[1]-self.y)
-                #     self.prev_point = (self.x, self.y)
-                #     self.last_path_distance = 0
-                        
-                # if self.y >= settings.screen_height- self.radius or self.y <= self.radius:
-                #     self.is_new_point = True
-                #     self.current_distance += hypot(self.prev_point[0]-self.x, self.prev_point[1]-self.y)
-                #     self.prev_point = (self.x, self.y)
-                #     self.last_path_distance = 0
-
-            #     if not self.is_new_point:
-            #         self.last_path_distance = hypot(self.prev_point[0]-self.x, self.prev_point[1]-self.y)
-            #         # sum = self.current_distance + self.last_path_distance
-            #         # settings.text1 = str(round(sum/10)*10)
+            
             else:
                 self.isRolling = False 
                 settings.is_points_erasing = True

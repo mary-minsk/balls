@@ -116,12 +116,6 @@ done = False
 
 while not done:
     for event in pygame.event.get():
-
-        # if not func.is_ball_rolling(settings):
-        #     print(randint(0, 9), "not is_ball_rolling")
-        # else:
-        #     print(randint(0, 9), "is_ball_rolling")
-
         info.reset_event_info()
 
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
