@@ -62,16 +62,6 @@ def rotation_ball_on(balls, rotated_ball):
         else:
             ball.is_rotated = True
 
-
-# def jump_ball_on(balls, next_ball):
-
-#     for i, ball in enumerate(balls):
-#         if ball != next_ball:
-#             ball.go_home(True)
-#         else:
-#             ball.isJump = True
-
-
 def jump_ball_on(ball_in_game, next_ball):
 
     ball_in_game.go_home(True)
@@ -82,7 +72,6 @@ def set_caption(settings):
         pygame.display.set_caption(settings.text_additional_panel_caption)
     else:
         pygame.display.set_caption(settings.text_caption)
-
 
 def display_info(sc, settings, info):
     if settings.is_used_additional_panel:
@@ -223,14 +212,6 @@ def get_cartesian_mouse_xy_coordinates(settings):
 
     return x1, y1
 
-
-# def get_pygame_point(pos_center_ball, pos_edge):  # перевод координат из декартовых четвертей обратно в пигейм
-#     x0 = pos_center_ball[0]  # центр шара в пигейм координатах
-#     y0 = pos_center_ball[1]
-#     x1 = pos_edge[0]  # декартова система координат
-#     y1 = pos_edge[1]
-#     (x, y) = (0, 0)
-
 # перевод координат из декартовых четвертей обратно в пигейм
 def get_pygame_point(settings, pos_center_ball, point):
 
@@ -282,6 +263,7 @@ def get_dx_dy(settings):  # Смещение по осям x и y за один 
         dy = db * abs(b / a)
         
     return dx, dy
+
 
 def build_path(settings):  # определение траектории движения мяча
    
@@ -432,12 +414,11 @@ def launch_ball(settings):  # Пробел или двойное нажатие 
     # print(point)
     settings.pos_center_ball = point
     # списки точек (траектории и соответствующих направляющих для последующего движения мяча и исчезновения всех линий)
-    # settings.all_path_points, settings.all_dx_dy, settings.disappearing_points = get_all_points(ball.radius, ball.distance, settings.pos_center_ball)
     settings.all_path_points, settings.all_dx_dy, settings.disappearing_points = get_all_points(settings, ball.radius, ball.distance, point)
 
     settings.disappearing_edges = []  # исчезающие вершины ломаной прямой
-    settings.all_path_points = build_speedway(settings, ball.speed)  # отвеиваются точки для скоростного движения
-    settings.edges.pop(0)  # Траектория движения начинается не из в позиции мыши,
+    settings.all_path_points = build_speedway(settings, ball.speed)  # отвеиваются точки для ускоренного движения по ломаной прямой
+    settings.edges.pop(0)  #  Траектория движения начинается не из в позиции мыши,
     settings.edges.insert(0, (settings.tip_x, settings.tip_y))  # а из наконечника ломаной прямой
 
 def get_all_points(settings, radius, max_distance, start_point):  # в момент запуска шара получение всех точек траектории и смещений
@@ -585,3 +566,59 @@ def del_ball(settings, balls, deleted_balls):
         settings.is_deleted_ball = False
         settings.reset()
         settings.edges.pop(0)   # Траектория мяча начинается не с позиции мыши, а с точки на окружности шара
+
+def check_keyup(event, settings):
+    if settings.ball_in_game is not None:
+        if event.key == pygame.K_LEFT:
+            settings.ball_in_game.moving_left = False
+
+        if event.key == pygame.K_RIGHT:
+            settings.ball_in_game.moving_right = False
+
+        if event.key == pygame.K_UP:
+            settings.ball_in_game.moving_up = False
+
+        if event.key == pygame.K_DOWN:
+            settings.ball_in_game.moving_down = False
+
+
+def check_keydown(event, settings):
+    # Можно одновременно нажимать несколько клавиш
+    if event.key == pygame.K_RIGHT:
+        settings.ball_in_game.moving_right = True
+
+    elif event.key == pygame.K_LEFT:
+        settings.ball_in_game.moving_left = True
+
+    elif event.key == pygame.K_UP:
+        settings.ball_in_game.moving_up = True
+
+    elif event.key == pygame.K_DOWN:
+        settings.ball_in_game.moving_down = True
+
+
+def check_tab(settings, balls):
+    settings.next_ball = get_next_ball(settings.ball_in_game, balls)
+
+    if settings.next_ball is not None:
+        center = settings.ball_in_game.rect.center
+        continue_ball_moving(settings.ball_in_game, settings.next_ball) 
+        settings.ball_in_game.stop_moving()
+        settings.next_ball.set_xy((center))
+        
+        # Если при нажатии Таб следующий по счету мяч выходит за границы игрового поля, то корректируем его центр
+        check_ball_border(settings)
+        jump_ball_on(settings.ball_in_game, settings.next_ball)  #мяч на игровом поле отправляется на панель шаров
+
+        settings.ball_in_game = settings.next_ball
+        settings.prev_selected_ball = settings.next_ball
+
+
+def check_rotation(settings, balls):
+    if settings.rotated_ball is None:        # курсор мыши не над мячиками
+        rotation_balls_off(balls)
+    else:  # над мячиком мышка
+        rotation_ball_on(balls, settings.rotated_ball)  # Мяч вращается, его можно перетаскивать
+
+
+

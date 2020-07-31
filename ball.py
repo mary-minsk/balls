@@ -16,7 +16,6 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.prev_x = 0
         self.prev_y = 0
 
-
         self.image = surf
         self.original_surf = surf # для корректировки ценра вращения мяча (в прямоугольм контуре)
         self.rect = self.image.get_rect(center=(x, self.y))
@@ -50,7 +49,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
 
         self.stop_moving()
        
-    def set_ball_xy(self, point):
+    def set_xy(self, point):
         self.x,self.y = point
         self.rect.center = self.x, self.y
         
@@ -69,6 +68,11 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.moving_up = False
         self.moving_down = False
        
+    def finish_action(self, settings):
+        self.isRolling = False
+        settings.is_points_erasing = True
+        settings.is_deleted_ball = True
+
     def update(self, settings, sc):
         
         # pygame.draw.rect(sc, settings.bg_color, self.rect, 1)
@@ -80,9 +84,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
                 self.rotate_rolling_ball(self, settings, sc) 
             
             else:
-                self.isRolling = False 
-                settings.is_points_erasing = True
-                settings.is_deleted_ball = True
+                self.finish_action(settings)
 
         self.check_rotation_balls_panel(self)   # вращение шаров напанели шаров
         self.check_movings(self, settings)      # перемещение шара на игровом поле клавишами (стрелки вверх, вниз и т. д.)
@@ -90,7 +92,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
                 
     @staticmethod
     def rotate_rolling_ball(self, settings, sc): # вращение мяча во время движения по ломаной траектории
-        self.rotate_ball(self, 3)
+        self.rotate_ball(self, 2)
         self.rect = self.image.get_rect(center=(round(self.x1), round(self.y1)))
         pygame.draw.circle(sc, settings.yellow, (round(self.x1), round(self.y1)), 2, 0)
         
