@@ -94,13 +94,18 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
 
 
 def early_completion():
+    settings.is_early_completion = True  # флаг досрочного завершения
+
     for point in settings.all_path_points:
         settings.ball_in_game.set_xy(point)
         get_things_hit()
+        
 
     balls.remove(settings.ball_in_game)
     func.set_balls_index(balls)
     settings.reset()
+    settings.is_early_completion = False
+
 
 pygame.init()
 
@@ -196,14 +201,19 @@ while not done:
                 if not settings.is_points_erasing and not func.is_ball_rolling(settings):
                     if event.key == pygame.K_TAB:
                         func.check_tab(settings, balls)
+
                     elif event.key == pygame.K_SPACE:
                         func.launch_ball(settings)
+
                     else:        
                         func.check_keydown(event, settings)  # Можно одновременно нажимать несколько клавиш
-                elif event.key == pygame.K_SPACE: # При повторном нажатии пробела...
-                    # print("ppp")
-                    settings.is_early_completion = True
-                    early_completion()
+
+                elif event.key == pygame.K_SPACE: # При повторном нажатии пробела удаляются все пересекающие траекторию предметы
+                   early_completion()               # settings.is_early_completion = True 
+
+            elif settings.is_points_erasing and event.key == pygame.K_SPACE: # Мяч проделал весь путь. Происходит стирание траектории
+                early_completion()
+                settings.is_points_erasing = False # Траектория, начальная и конечные точки пути не будут отображаться
 
         elif event.type == pygame.KEYUP:  # Отключение движения при отпускании клавиши
             func.check_keyup(event, settings)
@@ -213,9 +223,9 @@ while not done:
 
         settings.is_draw_line = False
         settings.mouse_xy = pygame.mouse.get_pos()
+
         if not func.is_ball_rolling(settings):  # мяч катится и выбрать новый мяч нельзя
             if  settings.selected_ball is None:
-                
                 settings.rotated_ball = None
                 
                 if not pygame.Rect(settings.game_panel_add_3_margins).collidepoint(settings.mouse_xy):
@@ -226,30 +236,29 @@ while not done:
                 settings.is_draw_line = func.mouse_inside_ball_in_game(settings) # рисование траектории, если мышка за пределами шара
                 if settings.is_draw_line:
                     settings.a, settings.b = func.get_cartesian_mouse_xy_coordinates(settings)
+
     info.set_text_events()   
     sc.blit(settings.background_image, (0, 0))
     func.check_holding_arrow_keys(settings) # При нажатии/удерживании клавиш стрелок, вычисляем направление движения мяча
    
     if settings.is_draw_line:  # Мяч на игровой поверхности. Момент прицеливания. Cтроим путь (ломаная кривая)
-            func.build_path(settings)
-            pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
-            func.draw_tips(sc, settings, settings.ball_in_game.center())
-    if not settings.is_early_completion:
-        if func.is_ball_rolling(settings):    # Мяч катится по своей ттаектории
-                pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
-                func.draw_tips(sc, settings, settings.pos_center_ball)
-                get_things_hit()             # Проверяем столкновение с предметами
+        func.build_path(settings)
+        pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
+        func.draw_tips(sc, settings, settings.ball_in_game.center())
 
-    pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
-    pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2) 
-    # pygame.draw.rect(sc, settings.blue, settings.ticker_rect, 1)
-    if not settings.is_early_completion:
+    if not settings.is_early_completion:  # Если не досрочное завершение движения мяча (второй пробел)
+        if func.is_ball_rolling(settings):    # Мяч катится по своей ттаектории
+            pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
+            func.draw_tips(sc, settings, settings.pos_center_ball)
+            get_things_hit()             # Проверяем столкновение с предметами
+
         if settings.is_points_erasing: # Мяч проделал весь путь, но не исчезнул. Ломаная линия исчезает
             if settings.is_deleted_ball: 
                 func.del_ball(settings, balls, deleted_balls)  # Удаляется мяч с поверхности. Он вращается и уменьшается
             
             func.get_disappearing_path(settings)  # Стирание траектории
             func.draw_disappearing_path(sc, settings)
+            # print(settings.is_early_completion)
                 
     
     func.display_info(sc, settings, info)
@@ -266,6 +275,7 @@ while not done:
     deleted_balls.update(settings)
 
     func.display_last_path_point(sc, settings)
+    func.display_game_borders(sc, settings)
 
     pygame.display.update()
     clock.tick(25)

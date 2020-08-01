@@ -25,7 +25,8 @@ class Settings():
         self.a, self.b = 0, 0
         self.pos_center_ball = 0, 0
         self.ball_trajectory()  # Траектория движения
-    
+
+        self.is_early_completion = False
         self.reset()  # Сброс основных параметров
         
     def reset(self):  
@@ -39,7 +40,9 @@ class Settings():
         self.is_draw_line = False     # 2. курсор выходит за границы шара (радус шара) => рисуем линию на игровой поверхности
         self.disappearance = 10  # Ускорение для стирания ломаной прямой. Увеличивающееся на единицу с каждым шагом
         
-        self.is_early_completion = False
+        # self.is_points_erasing = False
+        
+        # self.is_early_completion = False
     
     def set_color(self):
         self.red = (255, 0, 0)

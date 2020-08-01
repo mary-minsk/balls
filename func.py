@@ -348,27 +348,6 @@ def draw_tips(sc, settings, pos_center_ball):  # На месте пересеч�
     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
     settings.tip_x, settings.tip_y = tip1_x, tip1_y
 
-def draw_tips2(sc, settings, pos_center_ball):  # На месте пересечения окружности шара с последующей траекторией движения
-                             # будет находиться наконечник. Но только в момент прицеливания и движения
-    ball = settings.ball_in_game
-
-    angle = atan2(settings.a, settings.b)
-    tip1_x, tip1_y = get_pygame_point(settings, pos_center_ball,
-                                      (round(ball.radius * sin(angle)), round(ball.radius * cos(angle))))
-    pygame.draw.circle(sc, settings.yellow, (tip1_x, tip1_y), 4, 0)
-
-    z = 7/57.2958
-    ang1 = angle-z
-    ang2 = angle+z
-    (arrow1_x, arrow1_y) = get_pygame_point(settings, pos_center_ball,
-                                            (round(ball.radius * sin(ang1)), round(ball.radius * cos(ang1))))
-    (arrow2_x, arrow2_y) = get_pygame_point(settings, pos_center_ball,
-                                            (round(ball.radius * sin(ang2)), round(ball.radius * cos(ang2))))
-    pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), 2, 0)
-    pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
-    # settings.tip_x, settings.tip_y = tip1_x, tip1_y
-
-
 
 def build_speedway(settings, speed):  # Построение пути движения шара с учетом его скорости
 
@@ -552,6 +531,12 @@ def display_last_path_point(sc, settings):  # Отображение конца 
     if settings.is_draw_line or is_ball_rolling(settings) or settings.is_points_erasing:
         pygame.draw.circle(sc, settings.red, settings.last_path_point, 4, 0)
         pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)
+
+
+def display_game_borders(sc, settings):
+    pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
+    pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2)
+    # pygame.draw.rect(sc, settings.blue, settings.ticker_rect, 1)
 
 def set_balls_index(balls):
 
