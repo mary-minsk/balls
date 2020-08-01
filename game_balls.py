@@ -92,9 +92,8 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     
     return balls, things, deleted_balls
 
-
 def early_completion():
-    settings.is_early_completion = True  # флаг досрочного завершения
+    # settings.is_early_completion = True  # флаг досрочного завершения
 
     for point in settings.all_path_points:
         settings.ball_in_game.set_xy(point)
@@ -104,7 +103,7 @@ def early_completion():
     balls.remove(settings.ball_in_game)
     func.set_balls_index(balls)
     settings.reset()
-    settings.is_early_completion = False
+    # settings.is_early_completion = False
 
 
 pygame.init()
@@ -159,7 +158,6 @@ while not done:
 
                 # else:
                 if next_level_button.isOver(settings.mouse_xy):
-                    print("qq")
                     balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                 
                 if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
@@ -246,19 +244,17 @@ while not done:
         pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
         func.draw_tips(sc, settings, settings.ball_in_game.center())
 
-    if not settings.is_early_completion:  # Если не досрочное завершение движения мяча (второй пробел)
-        if func.is_ball_rolling(settings):    # Мяч катится по своей ттаектории
-            pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
-            func.draw_tips(sc, settings, settings.pos_center_ball)
-            get_things_hit()             # Проверяем столкновение с предметами
+    if func.is_ball_rolling(settings):    # Мяч катится по своей траектории. При досрочном завершении произойдет сброс параметров
+        pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)
+        func.draw_tips(sc, settings, settings.pos_center_ball)
+        get_things_hit()             # Проверяем столкновение с предметами
 
-        if settings.is_points_erasing: # Мяч проделал весь путь, но не исчезнул. Ломаная линия исчезает
-            if settings.is_deleted_ball: 
-                func.del_ball(settings, balls, deleted_balls)  # Удаляется мяч с поверхности. Он вращается и уменьшается
-            
-            func.get_disappearing_path(settings)  # Стирание траектории
-            func.draw_disappearing_path(sc, settings)
-            # print(settings.is_early_completion)
+    if settings.is_points_erasing: # Мяч проделал весь путь, но не исчезнул. Ломаная линия исчезает
+        if settings.is_deleted_ball: 
+            func.del_ball(settings, balls, deleted_balls)  # Удаляется мяч с поверхности. Он вращается и уменьшается
+        
+        func.get_disappearing_path(settings)  # Стирание траектории
+        func.draw_disappearing_path(sc, settings)
                 
     
     func.display_info(sc, settings, info)
