@@ -98,13 +98,11 @@ def early_completion():
     for point in settings.all_path_points:
         settings.ball_in_game.set_xy(point)
         get_things_hit()
-        
 
     balls.remove(settings.ball_in_game)
     func.set_balls_index(balls)
     settings.reset()
     # settings.is_early_completion = False
-
 
 pygame.init()
 
@@ -257,7 +255,7 @@ while not done:
         func.draw_disappearing_path(sc, settings)
                 
     
-    func.display_info(sc, settings, info)
+    func.display_info(sc, settings, info, balls)
     next_level_button.draw()
     # ruler_button.draw(sc, settings)
     

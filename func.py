@@ -29,7 +29,12 @@ def get_ball(mouse_pos, balls): # индекс выбранного шара с 
     return active_ball
 
 def mouse_inside_ball_in_game(settings):
+
     mouse_xy = settings.mouse_xy
+
+    if mouse_xy[0] == 0 or mouse_xy[1] == 0: #  выход за пределы экрана
+        return False
+    
     if settings.ball_in_game is not None:
         dx = settings.ball_in_game.x - mouse_xy[0]
         dy = settings.ball_in_game.y - mouse_xy[1]
@@ -73,7 +78,7 @@ def set_caption(settings):
     else:
         pygame.display.set_caption(settings.text_caption)
 
-def display_info(sc, settings, info):
+def display_info(sc, settings, info, balls):
     if settings.is_used_additional_panel:
         sc.blit(info.surf, (settings.screen_width, 0))
         info.surf.fill(settings.black)
@@ -85,7 +90,7 @@ def display_info(sc, settings, info):
     display_level(sc, settings)
 
     if settings.is_used_hints:
-        text = get_hints(settings) 
+        text = get_hints(settings, balls) 
         font = pygame.font.Font(None, 23)
         text_surface = font.render(text, True, settings.white)
         text_rect = text_surface.get_rect()
@@ -99,19 +104,43 @@ def display_info(sc, settings, info):
             settings.triker_x -= 1
         else:
             settings.is_triker_stop = True
-        
-def get_hints(settings):  # Подсказки
 
-#         # self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
-#         #               "Aim at things and press space!",
-#         #               "Harvesting...", "Oops!...I did it again!"]
-    if settings.ball_in_game is None:
-        if settings.selected_ball is None:
-            return settings.hints[0]
-        else:
-            return settings.hints[1]
+
+def is_befor_aiming(settings):
+    if not settings.is_draw_line and settings.ball_in_game is not None \
+        and not is_ball_rolling(settings) and not settings.is_points_erasing:
+        return True
     else:
-        return settings.hints[2]
+        return False
+        
+def get_hints(settings, balls):  # Подсказки
+
+    if settings.ball_in_game is None and not settings.is_points_erasing:
+        if settings.selected_ball is None:  # Мяч (вихрь) еще не выбран
+            if len(balls) != 1:
+                return settings.balls_panel_hints[0]    # "Сhoose any whirlwind!"
+            else:
+                return settings.balls_panel_hints[1]    # "Take the last whirlwind"
+        else:
+            return settings.hints[0]  #"Drag the ball to things!"
+    
+    if is_befor_aiming(settings):
+         return settings.hints[1]  # "Use keyboard arrows to aim, tab to change ball"
+
+    if settings.is_draw_line:
+        return settings.hints[2]  # "After aiming, press space or double click!"
+       
+    if is_ball_rolling(settings):
+        if len(balls) != 1:
+            return settings.hints[3]  # "Harvesting... Press spacebar to select next hurricane"
+        else:
+            return settings.hints[4]  # "Harvesting... Press spacebar to select last hurricane"
+
+    if settings.is_points_erasing:
+        return settings.hints[5]  # "Oops!...I did it again!"
+
+    return ""
+            
 #         # elif settings.is_ball_selected:
         #     return self.hints[1]
         # elif not settings.is_draw_line and settings.is_ball_pressed and not ball.isRolling:

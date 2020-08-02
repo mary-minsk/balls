@@ -126,10 +126,16 @@ class Settings():
         # self.button_ruler_text = "Ruler"   
 
     def ticker(self):
+        
+        self.balls_panel_hints = ["Сhoose any whirlwind!", "Take the last whirlwind"]
 
-        self.hints = ["Сhoose the whirlwind!", "Drag the ball to things!", "Use mouse to aim",
-                      "Aim at things and press space!",
-                      "Harvesting...", "Oops!...I did it again!"]
+        self.hints = ["Drag the ball to things!",
+                      "Use keyboard arrows to aim, tab to change ball",
+                      "After aiming, press spacebar or double click!",
+                      "Harvesting... Press spacebar to select next hurricane",
+                      "Harvesting... Press spacebar to select last hurricane",
+                      "Oops!...I did it again! Press spacebar..."]
+
 
         self.ticker_rect = pygame.Rect(0, self.screen_height - self.height_bottom_panel - self.bottom_margin,
                             self.screen_width, self.bottom_margin)
@@ -139,7 +145,8 @@ class Settings():
 
     def triker_reset(self):
         self.triker_x = self.screen_width
-        self.is_triker_stop = False
+        # self.is_triker_stop = False
+        self.is_triker_stop = True
     
     def ball_trajectory(self):
     
