@@ -165,7 +165,9 @@ while not done:
                 info.set_text_mousebuttondown(event.pos)
 
             elif event.button == 3:  # шарик начинает катиться по столу, собирая все предметы на своем пути
-                func.launch_ball(settings)
+                if settings.is_draw_line and not func.is_ball_rolling(settings) and not settings.is_points_erasing:
+                    
+                    func.launch_ball(settings)
                   
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
