@@ -41,6 +41,7 @@ class Settings():
         self.disappearance = 10  # Ускорение для стирания ломаной прямой. Увеличивающееся на единицу с каждым шагом
         
         # self.is_early_completion = False
+        self.level_score = 5
     
     def set_color(self):
         self.red = (255, 0, 0)
@@ -55,6 +56,9 @@ class Settings():
 
     def set_text_level(self):
         self.text_level[1] = str(self.current_level)
+    
+    def set_text_score(self):
+        self.text_score[1] = str(self.score)    
 
     def game_sizes(self):
 
@@ -96,6 +100,13 @@ class Settings():
         self.text_level = ["Level:", ""]
         self.set_text_level()
         self.level_point_xy = 20, 15
+
+        self.score = 0
+        self.score_point_xy = 120, 15
+        self.text_score = ["Score:", ""]
+        self.set_text_score()
+
+        self.level_score = 5
         
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'

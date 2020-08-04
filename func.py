@@ -88,6 +88,7 @@ def display_info(sc, settings, info, balls):
         info.draw_cells(sc)
 
     display_level(sc, settings)
+    display_score(sc, settings)
 
     if settings.is_used_hints:
         text = get_hints(settings, balls) 
@@ -141,18 +142,14 @@ def get_hints(settings, balls):  # Подсказки
 
     return ""
             
-#         # elif settings.is_ball_selected:
-        #     return self.hints[1]
-        # elif not settings.is_draw_line and settings.is_ball_pressed and not ball.isRolling:
-        #     return self.hints[2]
-        # elif settings.is_draw_line and not ball.isRolling:
-        #     return self.hints[3]
-        # # elif
-        # else:
-        #     return self.hints[4]
 
 def display_level(sc, settings):
     show_text(sc, settings, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
+
+
+def display_score(sc, settings):
+    show_text(sc, settings, settings.white, 28, settings.score_point_xy, False, settings.text_score[0], settings.text_score[1])
+
 
 def get_next_ball(current_ball, balls):
     

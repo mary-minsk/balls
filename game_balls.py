@@ -70,10 +70,13 @@ def get_things_hit(): # Мяч сталкивается с предметами.
     things_set = set(things)
     hit_list_things = pygame.sprite.spritecollide(settings.ball_in_game, things, True, pygame.sprite.collide_circle)
     
-    for thing in hit_list_things:
+    for thing in hit_list_things:  
         if thing in things_set:
             deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image))
             things.remove(thing)
+            settings.level_score *= 2
+            settings.score += settings.level_score
+            settings.set_text_score()
     
 def create_groups(balls, things, deleted_balls, setting):  # Создание групп вещей и мячей вначале кажного нового уровня
     balls.empty()
