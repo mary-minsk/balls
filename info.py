@@ -44,6 +44,9 @@ class Info():
             self.switch()
             self.message =["all things will be regenerated",""]
             self.show_lines_button = Button(self.surf, self.show_lines, self.get_text_switch(), self.white, self.bg_color, 22)
+            
+            self.reset_size = [2, 645, 90, 28]
+            self.reset_score_button = Button(self.surf, self.reset_size, "Reset score", self.white, self.bg_color, 22)
 
             self.generated_things_lines = False
 
@@ -82,6 +85,7 @@ class Info():
         # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
         # if self.is_active_panel:
         self.show_lines_button.draw()
+        self.reset_score_button.draw()
 
     def show_generated_things(self, h):
 
@@ -134,8 +138,7 @@ class Info():
             self.show_add_text(self.message, self.white, 20, self.show_lines[1] + 10, 105)
 
     def show_add_text(self,text, color, size, h, w=0, is_border=False, white_border_color=None):  # вывод на экран текста
-        # point = h, w
-        # show_text(self.surf, settings, text, color, size, point)
+       
         font = pygame.font.Font(None, size)
         str1, str2 = "", ""
         if text[0] is not None:
@@ -162,6 +165,10 @@ class Info():
                              
                 if not self.generated_things_lines:
                     return True
+            elif self.reset_score_button.isOver(pos):
+                self.settings.level_score = 5
+                self.settings.score = 0
+                self.settings.set_text_score()
         return False
                         
     def switch(self):

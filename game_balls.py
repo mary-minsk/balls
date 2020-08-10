@@ -23,7 +23,10 @@ def create_balls(): # создание трех шаров, определени
     w1 = 0
     h1 = settings.screen_height - settings.bottom_margin_center_ball
     for i in range(settings.number_balls):
-        BALLS_SURF.append(pygame.image.load(BALLS[i]).convert_alpha()) # добавление изображения
+        surf = pygame.image.load(BALLS[i]).convert_alpha()
+        # surf = pygame.transform.scale(surf, (surf.get_width()*4//5, surf.get_height()*4//5))
+        # BALLS_SURF.append(pygame.image.load(BALLS[i]).convert_alpha()) # добавление изображения
+        BALLS_SURF.append(surf)  # добавление изображения
         w  = BALLS_SURF[i].get_rect()[2] # ширина изображения
         balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, BALLS_SURF[i],i)) # добавляем в группу три шара
         shift = shift + w 
@@ -72,10 +75,10 @@ def get_things_hit(): # Мяч сталкивается с предметами.
     
     for thing in hit_list_things:  
         if thing in things_set:
-            deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image))
-            things.remove(thing)
             settings.level_score *= 2
             settings.score += settings.level_score
+            deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image, 0, settings.level_score))
+            things.remove(thing)
             settings.set_text_score()
     
 def create_groups(balls, things, deleted_balls, setting):  # Создание групп вещей и мячей вначале кажного нового уровня
@@ -96,7 +99,6 @@ def create_groups(balls, things, deleted_balls, setting):  # Создание г
     return balls, things, deleted_balls
 
 def early_completion():
-    # settings.is_early_completion = True  # флаг досрочного завершения
 
     for point in settings.all_path_points:
         settings.ball_in_game.set_xy(point)
@@ -105,7 +107,6 @@ def early_completion():
     balls.remove(settings.ball_in_game)
     func.set_balls_index(balls)
     settings.reset()
-    # settings.is_early_completion = False
 
 pygame.init()
 
@@ -145,7 +146,6 @@ while not done:
                     
                     if settings.selected_ball is not None:
                     
-                    
                         if settings.prev_selected_ball != settings.selected_ball:
                             if settings.prev_selected_ball is not None:
                                 settings.prev_selected_ball.go_home()
@@ -157,7 +157,6 @@ while not done:
                         selected_offset_x = settings.selected_ball.x - event.pos[0]
                         selected_offset_y = settings.selected_ball.y - event.pos[1]
 
-                # else:
                 if next_level_button.isOver(settings.mouse_xy):
                     balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
                 
@@ -271,7 +270,7 @@ while not done:
     balls.draw(sc)
 
     deleted_balls.draw(sc)
-    deleted_balls.update(settings)
+    deleted_balls.update(sc, settings)
 
     func.display_last_path_point(sc, settings)
     func.display_game_borders(sc, settings)

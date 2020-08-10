@@ -3,17 +3,6 @@ from math import sqrt, hypot, sin, cos, atan2
 import game_render
 from deleted_things import Deleted_thing
 
-
-def show_text(sc, settings, color, size, point, isCenter = False, str1="", str2=""):  # вывод на экран текста
-    font = pygame.font.Font(None, size)
-    text = str1+ " " + str2
-    text_surface = font.render(text, True, color)
-    text_rect = text_surface.get_rect()
-    text_rect.x, text_rect.y = point
-    if isCenter:
-        text_rect.centery = point[1]
-    sc.blit(text_surface, text_rect)
-
 def get_ball(mouse_pos, balls): # индекс выбранного шара с панели шаров
     
     active_ball = None
@@ -106,7 +95,6 @@ def display_info(sc, settings, info, balls):
         else:
             settings.is_triker_stop = True
 
-
 def is_befor_aiming(settings):
     if not settings.is_draw_line and settings.ball_in_game is not None \
         and not is_ball_rolling(settings) and not settings.is_points_erasing:
@@ -140,16 +128,13 @@ def get_hints(settings, balls):  # Подсказки
     if settings.is_points_erasing:
         return settings.hints[5]  # "Oops!...I did it again!"
 
-    return ""
-            
+    return ""         
 
 def display_level(sc, settings):
-    show_text(sc, settings, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
-
+    settings.show_text(sc, settings.white, 28, settings.level_point_xy, False, settings.text_level[0], settings.text_level[1])
 
 def display_score(sc, settings):
-    show_text(sc, settings, settings.white, 28, settings.score_point_xy, False, settings.text_score[0], settings.text_score[1])
-
+    settings.show_text(sc, settings.white, 28, settings.score_point_xy, False, settings.text_score[0], settings.text_score[1])
 
 def get_next_ball(current_ball, balls):
     
@@ -290,7 +275,6 @@ def get_dx_dy(settings):  # Смещение по осям x и y за один 
         
     return dx, dy
 
-
 def build_path(settings):  # определение траектории движения мяча
    
     radius, max_distance = settings.ball_in_game.radius, settings.ball_in_game.distance
@@ -301,7 +285,6 @@ def build_path(settings):  # определение траектории дви�
     is_path_passed = False  
 
     center_ball_xy = settings.ball_in_game.x, settings.ball_in_game.y
-    # print(center_ball_xy)
     x, y = center_ball_xy    # Начало траектории от центра шара
     prev_point = center_ball_xy
 
@@ -374,7 +357,6 @@ def draw_tips(sc, settings, pos_center_ball):  # На месте пересеч�
     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), 2, 0)
     settings.tip_x, settings.tip_y = tip1_x, tip1_y
 
-
 def build_speedway(settings, speed):  # Построение пути движения шара с учетом его скорости
 
     n = len(settings.all_path_points)  # количество всех точек траектории
@@ -416,7 +398,6 @@ def launch_ball(settings):  # Пробел или двойное нажатие 
     ball.isRolling = True
     ball.isJump = False
     point = settings.ball_in_game.center()
-    # print(point)
     settings.pos_center_ball = point
     # списки точек (траектории и соответствующих направляющих для последующего движения мяча и исчезновения всех линий)
     settings.all_path_points, settings.all_dx_dy, settings.disappearing_points = get_all_points(settings, ball.radius, ball.distance, point)
@@ -510,7 +491,6 @@ def draw_tips_disappearing(sc, settings, a, b, pos_center_ball):  # После �
     pygame.draw.circle(sc, settings.red, (arrow1_x, arrow1_y), r, 0)
     pygame.draw.circle(sc, settings.red, (arrow2_x, arrow2_y), r, 0)
 
-
 def get_disappearing_path(settings):  # Построение исчезающей ломаной прямой. Перед исчезновением мяча на игровой поверхности
     newpoints = []
     if len(settings.disappearing_points) > settings.disappearance:
@@ -535,7 +515,6 @@ def get_disappearing_path(settings):  # Построение исчезающе�
         # settings.disappearance = 2 # Поточечно
         # print(settings.disappearance)
 
-
 def draw_disappearing_path(sc,settings):  # Отображение исчезающего пути послеостановки шара
     if len(settings.disappearing_points) > settings.disappearance:
         pygame.draw.aalines(sc, settings.bg_color, False, settings.disappearing_edges)
@@ -557,7 +536,6 @@ def display_last_path_point(sc, settings):  # Отображение конца 
     if settings.is_draw_line or is_ball_rolling(settings) or settings.is_points_erasing:
         pygame.draw.circle(sc, settings.red, settings.last_path_point, 4, 0)
         pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)
-
 
 def display_game_borders(sc, settings):
     pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
@@ -592,7 +570,6 @@ def check_keyup(event, settings):
         if event.key == pygame.K_DOWN:
             settings.ball_in_game.moving_down = False
 
-
 def check_keydown(event, settings):
     # Можно одновременно нажимать несколько клавиш
     if event.key == pygame.K_RIGHT:
@@ -606,7 +583,6 @@ def check_keydown(event, settings):
 
     elif event.key == pygame.K_DOWN:
         settings.ball_in_game.moving_down = True
-
 
 def check_tab(settings, balls):
     settings.next_ball = get_next_ball(settings.ball_in_game, balls)
@@ -623,7 +599,6 @@ def check_tab(settings, balls):
 
         settings.ball_in_game = settings.next_ball
         settings.prev_selected_ball = settings.next_ball
-
 
 def check_rotation(settings, balls):
     if settings.rotated_ball is None:        # курсор мыши не над мячиками

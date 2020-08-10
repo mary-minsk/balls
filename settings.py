@@ -11,7 +11,7 @@ class Settings():
         self.is_used_hints = True  # в ticker() подсказки отражаются бегущей строкой
         
         self.game_sizes()    # Размеры окна игры, игровой панели, отступы
-        self.levels_and_things() # Уровни и количество предметов на экране
+        self.levels_and_scores() # Уровни и количество предметов на экране
         
         self.path_images()    # изображения предметов
         self.set_color()
@@ -85,7 +85,7 @@ class Settings():
                                 self.screen_width, self.screen_height - self.height_bottom_panel)
         self.border_game_panel = pygame.Rect(border_game_panel_rect)
 
-    def levels_and_things(self):
+    def levels_and_scores(self):
 
         self.number_balls = 3
 
@@ -96,17 +96,22 @@ class Settings():
         self.finish_things = 20
         self.last_level = self.finish_things - self.start_things
 
-        self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
+        # self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
         self.text_level = ["Level:", ""]
         self.set_text_level()
         self.level_point_xy = 20, 15
 
-        self.score = 0
+        self.score = 0  # total score
         self.score_point_xy = 120, 15
         self.text_score = ["Score:", ""]
         self.set_text_score()
 
         self.level_score = 5
+
+        self.max_score = 0
+        self.text_max_score = ["Level:", ""]
+        self.set_text_level()
+        self.level_point_xy = 20, 15
         
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'
@@ -182,5 +187,15 @@ class Settings():
         self.path_acceleration = 0.15
         # последняя точка ломаной кривой = settings.all_path_points[-1]
         self.last_path_point = (0, 0)
+
+    def show_text(self, sc, color, size, point, isCenter=False, str1="", str2=""):  # вывод на экран текста
+        font = pygame.font.Font(None, size)
+        text = str1 + " " + str2
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.x, text_rect.y = point
+        if isCenter:
+            text_rect.centery = point[1]
+        sc.blit(text_surface, text_rect)
        
         
