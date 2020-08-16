@@ -10,32 +10,31 @@ import game_render, func
 from ball import Ball
 from thing import Thing
 from deleted_things import Deleted_thing
-from button import Button
 
 def create_balls(): # создание трех шаров, определени6 их скорости движения (settings.balls_speed[i]) и растояния (settings.balls_distance[i])
-    BALLS = game_render.get_images(settings.number_balls, settings.path_spirals)
-    BALLS_SURF = []
+
 
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
     list = []
-    balls_space = []
-    w1 = 0
-    h1 = settings.screen_height - settings.bottom_margin_center_ball
+   
+    
+    BALLS_SURF = game_render.random_balls_images(settings)
+
     for i in range(settings.number_balls):
-        surf = pygame.image.load(BALLS[i]).convert_alpha()
+        # surf = settings.balls_surf[i]
+        # surf = pygame.image.load(BALLS[i]).convert_alpha()
         # surf = pygame.transform.scale(surf, (surf.get_width()*4//5, surf.get_height()*4//5))
         # BALLS_SURF.append(pygame.image.load(BALLS[i]).convert_alpha()) # добавление изображения
-        BALLS_SURF.append(surf)  # добавление изображения
-        w  = BALLS_SURF[i].get_rect()[2] # ширина изображения
+        # BALLS_SURF.append(surf)  # добавление изображения
+        w = BALLS_SURF[i].get_rect()[2]  # ширина изображения
+       
         balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, BALLS_SURF[i],i)) # добавляем в группу три шара
+        # balls.add(Ball(settings, settings.balls_center[i][0], BALLS_SURF[i], i))  # добавляем в группу три шара
+     
         shift = shift + w 
         # print(shift + settings.balls_offset*i + w//2)
         list.append((w, i)) 
-        
-        if i == settings.number_balls - 1:
-            # print(shift + settings.balls_offset*i + w)
-            w1 = shift + settings.balls_offset*i + settings.left_offset
             
 
     list = sorted(list)  #сортируем по размеру изображения шара
@@ -54,8 +53,8 @@ def create_balls(): # создание трех шаров, определени
         balls.sprites()[i].speed = speed_dictionary.get(i) 
         balls.sprites()[i].info = additional_info.get(i)
         # print(balls.sprites()[i].distance)
-    max_h = (max(ball.radius for ball in balls))
-    balls_space = [0, h1 - max_h,  w1, max_h * 2]
+    # max_h = (max(ball.radius for ball in balls))
+    # balls_space = [0, h1 - max_h,  w1, max_h * 2]
     
     return balls
 
@@ -79,24 +78,32 @@ def get_things_hit(): # Мяч сталкивается с предметами.
             settings.score += settings.level_score
             deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image, 0, settings.level_score))
             things.remove(thing)
-            settings.set_text_score()
-    
-def create_groups(balls, things, deleted_balls, setting):  # Создание групп вещей и мячей вначале кажного нового уровня
+            settings.set_text_score()  
+
+def create_groups(balls, things, deleted_balls, setting, isRestart):  # Создание групп вещей и мячей вначале кажного нового уровня
     balls.empty()
     things.empty()
     deleted_balls.empty()
     setting.reset()
-    
-    if settings.current_level <= settings.last_level:
-        settings.current_number_things += 1
-        setting.current_level += 1
-        setting.set_text_level()
+
+    if not isRestart:
+        if settings.current_level <= settings.last_level:
+            settings.current_number_things += 1
+            setting.current_level += 1
+            setting.set_text_level()
 
     things = create_things()
     balls = create_balls()
     deleted_balls = pygame.sprite.Group()
     
     return balls, things, deleted_balls
+
+def change_difficulty(difficulty_button):
+
+    settings.current_difficulty += 1
+    if settings.current_difficulty >= len(settings.difficulty_level):
+        settings.current_difficulty = 0
+    difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
 
 def early_completion():
 
@@ -108,10 +115,22 @@ def early_completion():
     func.set_balls_index(balls)
     settings.reset()
 
+def restart_level(pballs, pthings, pdeleted_balls, psettings):
+    # settings.current_number_things -= 1
+    global balls, things, deleted_balls, settings
+    balls, things, deleted_balls = create_groups(pballs, pthings, pdeleted_balls, psettings, True)
+
+def start_next_level(pballs, pthings, pdeleted_balls, psettings):
+    global balls, things, deleted_balls, settings
+    balls, things, deleted_balls = create_groups(pballs, pthings, pdeleted_balls, psettings, False)
+
+
+
 pygame.init()
 
 settings = Settings()
 info = Info(settings)
+settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
 
 sc = func.get_screen(settings, info)
 sc.fill(settings.black)
@@ -119,18 +138,22 @@ sc.fill(settings.black)
 pygame.display.update()
 func.set_caption(settings)
 clock = pygame.time.Clock()
-settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
 
-next_level_button = Button(sc, settings.button_level, settings.button_level_text, settings.white, settings.bg_color, 22)
-# ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
+next_level_button, difficulty_button = func.create_buttons(sc, settings)
+
+# settings.difficulty_level[settings.current_difficulty]
+#  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
 things = create_things()
+settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
+# settings.get_center_balls()
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
      
 done = False
 
 while not done:
+
     for event in pygame.event.get():
         info.reset_event_info()
 
@@ -158,11 +181,16 @@ while not done:
                         selected_offset_y = settings.selected_ball.y - event.pos[1]
 
                 if next_level_button.isOver(settings.mouse_xy):
-                    balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+                    start_next_level(balls, things, deleted_balls, settings)
+
+                if difficulty_button.isOver(settings.mouse_xy):
+                    change_difficulty(difficulty_button)
+                    restart_level(balls, things, deleted_balls, settings)
                 
                 if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
-                    settings.current_number_things -=  1    # Только если активна доп. панель информации 
-                    balls, things, deleted_balls = create_groups(balls, things, deleted_balls, settings)
+                                          # Только если активна доп. панель информации 
+                  
+                    restart_level(balls, things, deleted_balls, settings)
 
                 info.set_text_mousebuttondown(event.pos)
 
@@ -261,6 +289,7 @@ while not done:
     
     func.display_info(sc, settings, info, balls)
     next_level_button.draw()
+    difficulty_button.draw()
     # ruler_button.draw(sc, settings)
     
     things.update(sc, settings, info, things)

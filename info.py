@@ -1,7 +1,7 @@
 from button import Button
 import pygame
-# from func import get_cartesian_mouse_xy_coordinates
 import func
+
 class Info():
     def __init__(self, settings):
         self.settings = settings
@@ -24,7 +24,6 @@ class Info():
             self.text_ball_in_game = ["ball in the game:", "None"]
             self.text_is_draw_line = ["is draw line: ", ""]
 
-
             self.text_mouse_xy = ["mouse: ", ""]
             # self.text_cartesian_mouse_xy = ["mouse (cartesian): ", ""]
            
@@ -45,7 +44,7 @@ class Info():
             self.message =["all things will be regenerated",""]
             self.show_lines_button = Button(self.surf, self.show_lines, self.get_text_switch(), self.white, self.bg_color, 22)
             
-            self.reset_size = [2, 645, 90, 28]
+            self.reset_size = [2, 635, 90, 28]
             self.reset_score_button = Button(self.surf, self.reset_size, "Reset score", self.white, self.bg_color, 22)
 
             self.generated_things_lines = False
@@ -76,6 +75,10 @@ class Info():
 
         self.show_add_text(self.text_ball_in_game, self.white, 20, 260)
         self.show_add_text(self.text_is_draw_line, self.white, 20, 280)
+        
+        # text_balls_surf = ["len(settings.balls_surf) = ", str(len(self.settings.balls_surf))]
+        # # settings.balls_surf
+        # self.show_add_text(text_balls_surf, self.white, 20, 300)
 
         # Generated things:
         h = 370
@@ -91,7 +94,7 @@ class Info():
 
         self.show_add_text(self.text_generated_things, self.white, 24, h, 50)
 
-        self.attempts_one_cell[1] = str(self.attempts_place_thing)
+        self.attempts_one_cell[1] = str(self.settings.attempts_place_thing)
         # макс. количество попыток разместить предмет в одну выбранную ячейку решетки
         self.show_add_text(self.attempts_one_cell, self.white, 20, h + 30)
 
@@ -220,7 +223,7 @@ class Info():
         self.del_things_text_color = None
 
         self.all_attempts = 0
-        self.attempts_place_thing = 3 #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
+        # self.attempts_place_thing = 3 #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
         self.random_placement_attempts = 0 #
         self.lines_2_3 = []
         self.lines_2_2 = []

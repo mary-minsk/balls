@@ -176,7 +176,7 @@ def render(n, m, THINGS_SURF, settings, things, color, shift, info): # игро�
         for j in range(m):
             current_attempt = 0
             is_point_found = False
-            while not is_point_found and current_attempt < info.attempts_place_thing: 
+            while not is_point_found and current_attempt < settings.attempts_place_thing:
                 possible_point = randint(step_x*i, step_x*i+step_x), randint(step_y*j, step_y*j+step_y)
                 serf = THINGS_SURF.pop(0)
                 thing = check_possible_place(settings, info, things, serf, possible_point, color)
@@ -206,7 +206,7 @@ def render_m(m, THINGS_SURF, settings, things, color, shift, info):# игров�
         
         is_point_found = False
         current_attempt = 0
-        while not is_point_found and current_attempt < info.attempts_place_thing: 
+        while not is_point_found and current_attempt < settings.attempts_place_thing:
 
             possible_point = randint(0, W), randint(int(step_y*j), int(step_y*(j+1)))
             serf = THINGS_SURF.pop(0)
@@ -256,5 +256,15 @@ def get_acceleration(n, speed):     # равномерное замедлени�
 
 def get_image(path):
    return os.path.dirname(os.path.abspath(__file__)) + path
+
+
+def random_balls_images(settings):
+    balls_images = settings.initial_balls_surf.copy()
+    random_balls_images = []
+    while len(balls_images) > 0:
+        ind = random.randint(0, len(balls_images)-1)
+        random_balls_images.append(balls_images.pop(ind))
+    return random_balls_images
+
 
 

@@ -1,4 +1,5 @@
 import pygame
+from game_render import get_images
 
 class Settings():
     def __init__(self):
@@ -24,6 +25,8 @@ class Settings():
          # Направляющий вектор движения мяча. Декартова система координат
         self.a, self.b = 0, 0
         self.pos_center_ball = 0, 0
+        self.attempts_place_thing = 3  #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
+
         self.ball_trajectory()  # Траектория движения
 
         # self.is_early_completion = False
@@ -96,7 +99,10 @@ class Settings():
         self.finish_things = 20
         self.last_level = self.finish_things - self.start_things
 
-        # self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
+        self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
+        self.balls_size_reduction = [0, 10, 20, 30] 
+        self.current_difficulty = 0
+
         self.text_level = ["Level:", ""]
         self.set_text_level()
         self.level_point_xy = 20, 15
@@ -133,11 +139,19 @@ class Settings():
         self.balls_distance = [3, 2, 1]  # *settings.screen_height
         self.balls_info = ["small", "medium", "large"]
         self.unit = self.screen_height - self.up_margin - self.bottom_margin - self.height_bottom_panel
+        self.balls_center = []  # центы шаров. При разных уровнях(размеров шаров) центры шаров не смещаются
+        
+        self.initial_balls_surf = []
+       
 
     def buttons(self):
 
-        self.button_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
-        self.button_level_text = "Next level"
+        self.button_next_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
+        self.button_next_level_text = "Next level"
+
+        self.button_difficulty = [310,  self.screen_height - self.height_bottom_panel + 50, 90, 30]
+        # self.button_difficulty_text = "easy"
+       
         # self.button_ruler = [300, self.w - 115, 90, 30]
         # self.button_ruler_text = "Ruler"   
 
@@ -198,4 +212,22 @@ class Settings():
             text_rect.centery = point[1]
         sc.blit(text_surface, text_rect)
        
-        
+    def set_original_balls_surf(self):
+        surfaces = []
+        balls_images = get_images(self.number_balls, self.path_spirals)
+        for i in range(self.number_balls):
+            surfaces.append(pygame.image.load(balls_images[i]).convert_alpha())
+
+        self.initial_balls_surf = surfaces
+
+    # def get_center_balls(self):  # расположение центров шаров на панели шаров (self.balls_center)
+       
+    #     y = self.screen_height - self.bottom_margin_center_ball
+    #     shift = self.left_offset
+      
+    #     for i in range(self.number_balls):
+    #         w = self.initial_balls_surf[i].get_rect()[2]  # ширина изображения
+    #         x = shift + self.balls_offset*i + w//2
+    #         shift = shift + w
+    #         self.balls_center.append((x, y))
+    #     # print(self.balls_center)

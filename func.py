@@ -2,6 +2,7 @@ import pygame
 from math import sqrt, hypot, sin, cos, atan2
 import game_render
 from deleted_things import Deleted_thing
+from button import Button
 
 def get_ball(mouse_pos, balls): # индекс выбранного шара с панели шаров
     
@@ -38,11 +39,10 @@ def get_screen(settings, info):
 
     if settings.is_used_additional_panel:
         sc = pygame.display.set_mode((settings.screen_width + info.additional_panel_width, settings.screen_height))
+        info.surf.fill(settings.black)
     else:
         sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
     return sc
-
-    info.surf.fill(settings.black)
 
 def rotation_balls_off(balls):
     for i, ball in enumerate(balls):
@@ -598,13 +598,32 @@ def check_tab(settings, balls):
         jump_ball_on(settings.ball_in_game, settings.next_ball)  #мяч на игровом поле отправляется на панель шаров
 
         settings.ball_in_game = settings.next_ball
+
         settings.prev_selected_ball = settings.next_ball
+
+
+# def change_difficulty(settings, difficulty_button):
+    
+#     settings.current_difficulty += 1
+#     if settings.current_difficulty >= len(settings.difficulty_level):
+#         settings.current_difficulty = 0
+#     difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
 
 def check_rotation(settings, balls):
     if settings.rotated_ball is None:        # курсор мыши не над мячиками
         rotation_balls_off(balls)
     else:  # над мячиком мышка
         rotation_ball_on(balls, settings.rotated_ball)  # Мяч вращается, его можно перетаскивать
+
+def create_buttons(sc, settings):
+    next_level_button = Button(sc, settings.button_next_level, \
+        settings.button_next_level_text, settings.white, settings.bg_color, 22)
+    difficulty_button = Button(sc, settings.button_difficulty, \
+        settings.difficulty_level[settings.current_difficulty], settings.white, settings.bg_color, 22)
+    return next_level_button, difficulty_button
+
+
+
 
 
 

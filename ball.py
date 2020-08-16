@@ -13,8 +13,6 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.balls_panel_x = x
         self.balls_panel_y = self.y
         self.index = index
-        self.prev_x = 0
-        self.prev_y = 0
 
         self.image = surf
         self.original_surf = surf # для корректировки ценра вращения мяча (в прямоугольм контуре)
@@ -25,7 +23,6 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
         self.isRolling = False # шар катится по поверхности
         self.isJump = False  # мяч подпрыгивает или не подпрыгивает на месте (на игровой поверхности)
         self.isDeleting = False
-        self.decrease = 0.7
         
         self.x1 = 0   # координаты центра шара на игровой поверхности  ????
         self.y1 = 0
