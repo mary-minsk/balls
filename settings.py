@@ -114,10 +114,10 @@ class Settings():
 
         self.level_score = 5
 
-        self.max_score = 0
-        self.text_max_score = ["Level:", ""]
-        self.set_text_level()
-        self.level_point_xy = 20, 15
+        # self.max_score = 0
+        # self.text_max_score = ["Level:", ""]
+        # self.set_text_level()
+        # self.level_point_xy = 20, 15
         
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'
@@ -125,6 +125,7 @@ class Settings():
         self.path_things = '/pict/things'
         self.max_things_images = 35
         self.path_spirals = '/pict/spiralls'
+        self.settings = '/pict/settings'
         
     def balls(self):
 
@@ -141,8 +142,8 @@ class Settings():
         self.unit = self.screen_height - self.up_margin - self.bottom_margin - self.height_bottom_panel
         self.balls_center = []  # центы шаров. При разных уровнях(размеров шаров) центры шаров не смещаются
         
-        self.initial_balls_surf = []
-       
+        self.initial_balls_surf = [] # изображения мячей. При повышении уровня сложности игры, их размеры уменьшаются 
+
 
     def buttons(self):
 

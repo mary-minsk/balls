@@ -13,12 +13,10 @@ from deleted_things import Deleted_thing
 
 def create_balls(): # создание трех шаров, определени6 их скорости движения (settings.balls_speed[i]) и растояния (settings.balls_distance[i])
 
-
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
     list = []
    
-    
     BALLS_SURF = game_render.random_balls_images(settings)
 
     for i in range(settings.number_balls):
@@ -116,7 +114,6 @@ def early_completion():
     settings.reset()
 
 def restart_level(pballs, pthings, pdeleted_balls, psettings):
-    # settings.current_number_things -= 1
     global balls, things, deleted_balls, settings
     balls, things, deleted_balls = create_groups(pballs, pthings, pdeleted_balls, psettings, True)
 
@@ -288,6 +285,7 @@ while not done:
                 
     
     func.display_info(sc, settings, info, balls)
+    
     next_level_button.draw()
     difficulty_button.draw()
     # ruler_button.draw(sc, settings)
@@ -306,6 +304,10 @@ while not done:
 
     pygame.display.update()
     clock.tick(25)
+
+    if info.is_restart_level:
+        restart_level(balls, things, deleted_balls, settings)
+        info.is_restart_level = False
 
 pygame.quit()
 

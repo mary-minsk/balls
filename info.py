@@ -1,6 +1,7 @@
 from button import Button
 import pygame
 import func
+# 1!
 
 class Info():
     def __init__(self, settings):
@@ -11,6 +12,7 @@ class Info():
 
         self.is_active_panel = self.settings.is_used_additional_panel
         # self.surf = pygame.Surface((300, self.settings.screen_height))
+        self.is_restart_level = False  # Перезапуск текущего уровня
 
         if self.is_active_panel:
             
@@ -47,9 +49,15 @@ class Info():
             self.reset_size = [2, 635, 90, 28]
             self.reset_score_button = Button(self.surf, self.reset_size, "Reset score", self.white, self.bg_color, 22)
 
+            self.restart_level = [102, 635, 90, 28]
+            self.restart_level_button = Button(self.surf, self.restart_level, "Restart level", self.white, self.bg_color, 22)
+
+            
             self.generated_things_lines = False
+           
 
     def display_additional_info(self):
+        # print(self.settings.current_number_things)
 
         self.set_number_things(self.settings.current_number_things)
         self.set_things_attempts()
@@ -77,7 +85,7 @@ class Info():
         self.show_add_text(self.text_is_draw_line, self.white, 20, 280)
         
         # text_balls_surf = ["len(settings.balls_surf) = ", str(len(self.settings.balls_surf))]
-        # # settings.balls_surf
+        # settings.balls_surf
         # self.show_add_text(text_balls_surf, self.white, 20, 300)
 
         # Generated things:
@@ -85,10 +93,12 @@ class Info():
         self.show_add_text(self.text_line, self.white, 20, h - 20)
         self.show_generated_things(h)
 
-        # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
-        # if self.is_active_panel:
+        # # кнопка отображения решеток, ячеек, контуров предметов и зон соприкосновения предметов (для наложения)
+       
         self.show_lines_button.draw()
         self.reset_score_button.draw()
+        self.restart_level_button.draw()
+
 
     def show_generated_things(self, h):
 
@@ -172,6 +182,11 @@ class Info():
                 self.settings.level_score = 5
                 self.settings.score = 0
                 self.settings.set_text_score()
+
+            elif self.restart_level_button.isOver(pos):
+                # print("restart_level_button")
+                self.is_restart_level = True
+
         return False
                         
     def switch(self):
@@ -189,14 +204,14 @@ class Info():
             return self.text_switch[1]
 
     def reset_event_info(self):
-        
-        self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
-        self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
-        self.text_mousemotion = ["MOUSEMOTION: ", ""]
-        self.text_else = ["other event type: ", ""]
-        self.text_rotated_ball = ["rotated ball: ", "None"]
-        self.text_not_equal = ["", ""]
-        self.text_cartesian_mouse_xy = ["", ""]
+        if self.is_active_panel:
+            self.text_mousebuttondown = ["MOUSEBUTTONDOWN: ", ""]
+            self.text_mousebuttonup = ["MOUSEBUTTONUP: ", ""]  
+            self.text_mousemotion = ["MOUSEMOTION: ", ""]
+            self.text_else = ["other event type: ", ""]
+            self.text_rotated_ball = ["rotated ball: ", "None"]
+            self.text_not_equal = ["", ""]
+            self.text_cartesian_mouse_xy = ["", ""]
         # self.text_cartesian_mouse_xy = ["mouse (cartesian): ", ""]
 
     def reset_things_text(self):
@@ -267,9 +282,9 @@ class Info():
                 center = self.settings.ball_in_game.rect.center
                 
                 self.text_ball_in_game[1] = self.settings.ball_in_game.info + ";  center = " + self.point_to_str(center)
-                cartesian_point = func.get_cartesian_mouse_xy_coordinates(self.settings)
-                self.text_cartesian_mouse_xy[0] = "mouse (cartesian): "
-                self.text_cartesian_mouse_xy[1] = self.point_to_str(cartesian_point)
+                # cartesian_point = func.get_cartesian_mouse_xy_coordinates(self.settings)
+                # self.text_cartesian_mouse_xy[0] = "mouse (cartesian): "
+                # self.text_cartesian_mouse_xy[1] = self.point_to_str(cartesian_point)
             else:
                 self.text_ball_in_game[1] = "None"
 

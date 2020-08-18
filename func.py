@@ -70,8 +70,10 @@ def set_caption(settings):
 def display_info(sc, settings, info, balls):
     if settings.is_used_additional_panel:
         sc.blit(info.surf, (settings.screen_width, 0))
+          
         info.surf.fill(settings.black)
         info.display_additional_info()
+
         
     if info.is_displayed_lines:
         info.draw_cells(sc)
