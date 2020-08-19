@@ -125,7 +125,9 @@ class Settings():
         self.path_things = '/pict/things'
         self.max_things_images = 35
         self.path_spirals = '/pict/spiralls'
-        self.settings = '/pict/settings'
+        self.system_image_path = '/pict/settings/settings.png'
+        self.game_settings_image = ""
+        self.game_settings_rect = None
         
     def balls(self):
 
@@ -220,6 +222,9 @@ class Settings():
             surfaces.append(pygame.image.load(balls_images[i]).convert_alpha())
 
         self.initial_balls_surf = surfaces
+
+
+
 
     # def get_center_balls(self):  # расположение центров шаров на панели шаров (self.balls_center)
        

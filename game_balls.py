@@ -122,12 +122,16 @@ def start_next_level(pballs, pthings, pdeleted_balls, psettings):
     balls, things, deleted_balls = create_groups(pballs, pthings, pdeleted_balls, psettings, False)
 
 
+def init_game_image():
+    settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
+    settings.game_settings_image = pygame.image.load(game_render.get_image(settings.system_image_path))
+    settings.game_settings_rect = settings.game_settings_image.get_rect(center=(390, 22))
+    settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
 
 pygame.init()
 
 settings = Settings()
 info = Info(settings)
-settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
 
 sc = func.get_screen(settings, info)
 sc.fill(settings.black)
@@ -135,6 +139,7 @@ sc.fill(settings.black)
 pygame.display.update()
 func.set_caption(settings)
 clock = pygame.time.Clock()
+init_game_image()
 
 next_level_button, difficulty_button = func.create_buttons(sc, settings)
 
@@ -142,8 +147,6 @@ next_level_button, difficulty_button = func.create_buttons(sc, settings)
 #  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
 things = create_things()
-settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
-# settings.get_center_balls()
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
      
@@ -262,8 +265,12 @@ while not done:
                 if settings.is_draw_line:
                     settings.a, settings.b = func.get_cartesian_mouse_xy_coordinates(settings)
 
-    info.set_text_events()   
+    info.set_text_events()
+    
     sc.blit(settings.background_image, (0, 0))
+    sc.blit(settings.game_settings_image, settings.game_settings_rect)
+    
+  
     func.check_holding_arrow_keys(settings) # При нажатии/удерживании клавиш стрелок, вычисляем направление движения мяча
    
     if settings.is_draw_line:  # Мяч на игровой поверхности. Момент прицеливания. Cтроим путь (ломаная кривая)
