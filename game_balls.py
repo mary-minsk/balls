@@ -96,12 +96,12 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
     
     return balls, things, deleted_balls
 
-def change_difficulty(difficulty_button):
+def change_difficulty():
 
     settings.current_difficulty += 1
     if settings.current_difficulty >= len(settings.difficulty_level):
         settings.current_difficulty = 0
-    difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
+    settings.difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
 
 def early_completion():
 
@@ -121,12 +121,12 @@ def start_next_level(pballs, pthings, pdeleted_balls, psettings):
     global balls, things, deleted_balls, settings
     balls, things, deleted_balls = create_groups(pballs, pthings, pdeleted_balls, psettings, False)
 
-
-def init_game_image():
+def init_game_images():
     settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
     settings.game_settings_image = pygame.image.load(game_render.get_image(settings.system_image_path))
     settings.game_settings_rect = settings.game_settings_image.get_rect(center=(390, 22))
     settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
+    settings.create_buttons(sc)
 
 pygame.init()
 
@@ -139,12 +139,7 @@ sc.fill(settings.black)
 pygame.display.update()
 func.set_caption(settings)
 clock = pygame.time.Clock()
-init_game_image()
-
-next_level_button, difficulty_button = func.create_buttons(sc, settings)
-
-# settings.difficulty_level[settings.current_difficulty]
-#  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
+init_game_images()
 
 things = create_things()
 balls = create_balls()
@@ -180,11 +175,11 @@ while not done:
                         selected_offset_x = settings.selected_ball.x - event.pos[0]
                         selected_offset_y = settings.selected_ball.y - event.pos[1]
 
-                if next_level_button.isOver(settings.mouse_xy):
+                if settings.next_level_button.isOver(settings.mouse_xy):
                     start_next_level(balls, things, deleted_balls, settings)
 
-                if difficulty_button.isOver(settings.mouse_xy):
-                    change_difficulty(difficulty_button)
+                if settings.difficulty_button.isOver(settings.mouse_xy):
+                    change_difficulty()
                     restart_level(balls, things, deleted_balls, settings)
                 
                 if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
@@ -293,8 +288,8 @@ while not done:
     
     func.display_info(sc, settings, info, balls)
     
-    next_level_button.draw()
-    difficulty_button.draw()
+    settings.next_level_button.draw()
+    settings.difficulty_button.draw()
     # ruler_button.draw(sc, settings)
     
     things.update(sc, settings, info, things)

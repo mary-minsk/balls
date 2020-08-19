@@ -1,5 +1,6 @@
 import pygame
 from game_render import get_images
+from button import Button
 
 class Settings():
     def __init__(self):
@@ -152,7 +153,9 @@ class Settings():
         self.button_next_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
         self.button_next_level_text = "Next level"
 
-        self.button_difficulty = [310,  self.screen_height - self.height_bottom_panel + 50, 90, 30]
+        self.button_difficulty = [310, self.screen_height - self.height_bottom_panel + 50, 90, 30]
+        
+        
         # self.button_difficulty_text = "easy"
        
         # self.button_ruler = [300, self.w - 115, 90, 30]
@@ -223,6 +226,12 @@ class Settings():
 
         self.initial_balls_surf = surfaces
 
+    def create_buttons(self, sc):
+        self.next_level_button = Button(sc, self.button_next_level,
+                                self.button_next_level_text, self.white, self.bg_color, 22)
+        self.difficulty_button = Button(sc, self.button_difficulty,
+                               self.difficulty_level[self.current_difficulty], self.white, self.bg_color, 22)
+        #  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
 
 

@@ -617,12 +617,12 @@ def check_rotation(settings, balls):
     else:  # над мячиком мышка
         rotation_ball_on(balls, settings.rotated_ball)  # Мяч вращается, его можно перетаскивать
 
-def create_buttons(sc, settings):
-    next_level_button = Button(sc, settings.button_next_level, \
-        settings.button_next_level_text, settings.white, settings.bg_color, 22)
-    difficulty_button = Button(sc, settings.button_difficulty, \
-        settings.difficulty_level[settings.current_difficulty], settings.white, settings.bg_color, 22)
-    return next_level_button, difficulty_button
+# def create_buttons(sc, settings):
+#     next_level_button = Button(sc, settings.button_next_level, \
+#         settings.button_next_level_text, settings.white, settings.bg_color, 22)
+#     difficulty_button = Button(sc, settings.button_difficulty, \
+#         settings.difficulty_level[settings.current_difficulty], settings.white, settings.bg_color, 22)
+#     return next_level_button, difficulty_button
 
 
 
