@@ -617,12 +617,26 @@ def check_rotation(settings, balls):
     else:  # над мячиком мышка
         rotation_ball_on(balls, settings.rotated_ball)  # Мяч вращается, его можно перетаскивать
 
-# def create_buttons(sc, settings):
-#     next_level_button = Button(sc, settings.button_next_level, \
-#         settings.button_next_level_text, settings.white, settings.bg_color, 22)
-#     difficulty_button = Button(sc, settings.button_difficulty, \
-#         settings.difficulty_level[settings.current_difficulty], settings.white, settings.bg_color, 22)
-#     return next_level_button, difficulty_button
+
+def game_options(sc, settings):
+    if settings.is_show_options_menu:
+        sc.blit(settings.options_menu_surf, settings.options_menu_left_top)
+        settings.options_menu_surf.fill(settings.dark_blue)
+        pygame.draw.rect(settings.options_menu_surf, settings.bg_color, settings.options_menu_surf_rect, 3)
+        pygame.draw.rect(settings.options_menu_surf, settings.bg_color, settings.inner_border, 2)
+        settings.show_center_text(settings.options_menu_surf, settings.white, 28, (settings.options_menu_surf.get_width()//2, 40), "Options")
+
+
+def check_options(settings, event_pos):
+    if not settings.is_show_options_menu:
+        if settings.options_icon.collidepoint(event_pos):
+            settings.is_show_options_menu = True
+
+    else:
+        if not settings.sc_options_menu_rect.collidepoint(event_pos):
+            settings.is_show_options_menu = False
+
+
 
 
 

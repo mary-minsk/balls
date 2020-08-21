@@ -29,9 +29,11 @@ class Settings():
         self.attempts_place_thing = 3  #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
 
         self.ball_trajectory()  # Траектория движения
+        self.game_settings()
 
         # self.is_early_completion = False
         self.reset()  # Сброс основных параметров
+        self.clock = pygame.time.Clock()
         
     def reset(self):  
         self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
@@ -57,6 +59,10 @@ class Settings():
         self.aqua = (0,155,155)
         self.blue = (0, 191, 255)
         self.fuchsia = (255, 0, 255)
+        # self.dark_blue = (31, 52, 66) rgb(31, 52, 66) rgb(71, 91, 117) rgb(33, 50, 81) 
+        # self.dark_blue = (71, 91, 117)
+        self.dark_blue = (33, 50, 81)
+        # self.dark_blue = (10, 18, 41)
 
     def set_text_level(self):
         self.text_level[1] = str(self.current_level)
@@ -73,6 +79,8 @@ class Settings():
         self.left_margin = 25
         self.right_margin = 25
         self.bottom_margin = 25
+
+        self.left_up_margin = (self.left_margin, self.up_margin)
 
         self.height_bottom_panel = 90
         self.bottom_margin_center_ball = 40  #(Класс Ball панель шаров self.y = settings.screen_height - settings.bottom_margin_center_ball)
@@ -128,7 +136,7 @@ class Settings():
         self.path_spirals = '/pict/spiralls'
         self.system_image_path = '/pict/settings/settings.png'
         self.game_settings_image = ""
-        self.game_settings_rect = None
+        self.options_icon = None
         
     def balls(self):
 
@@ -146,7 +154,6 @@ class Settings():
         self.balls_center = []  # центы шаров. При разных уровнях(размеров шаров) центры шаров не смещаются
         
         self.initial_balls_surf = [] # изображения мячей. При повышении уровня сложности игры, их размеры уменьшаются 
-
 
     def buttons(self):
 
@@ -208,7 +215,7 @@ class Settings():
         # последняя точка ломаной кривой = settings.all_path_points[-1]
         self.last_path_point = (0, 0)
 
-    def show_text(self, sc, color, size, point, isCenter=False, str1="", str2=""):  # вывод на экран текста
+    def show_text(self, sc, color, size, point, isCenter=False, str1="", str2=""):  # вывод текста
         font = pygame.font.Font(None, size)
         text = str1 + " " + str2
         text_surface = font.render(text, True, color)
@@ -216,6 +223,13 @@ class Settings():
         text_rect.x, text_rect.y = point
         if isCenter:
             text_rect.centery = point[1]
+        sc.blit(text_surface, text_rect)
+
+    def show_center_text(self, sc, color, size, point, str):  # текст по центру поверхности ("Options")
+        font = pygame.font.Font(None, size)
+        text_surface = font.render(str, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.center = point
         sc.blit(text_surface, text_rect)
        
     def set_original_balls_surf(self):
@@ -233,16 +247,23 @@ class Settings():
                                self.difficulty_level[self.current_difficulty], self.white, self.bg_color, 22)
         #  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
+    def game_settings(self):
+        self.is_show_options_menu = False
 
+        options_surf_w, options_surf_h = 300, 300
+        options_surf_margin_top = 100
+        left_margin = 10
+        top_margin = 15
 
-    # def get_center_balls(self):  # расположение центров шаров на панели шаров (self.balls_center)
-       
-    #     y = self.screen_height - self.bottom_margin_center_ball
-    #     shift = self.left_offset
-      
-    #     for i in range(self.number_balls):
-    #         w = self.initial_balls_surf[i].get_rect()[2]  # ширина изображения
-    #         x = shift + self.balls_offset*i + w//2
-    #         shift = shift + w
-    #         self.balls_center.append((x, y))
-    #     # print(self.balls_center)
+        self.options_menu_surf = pygame.Surface((300, 300))
+        self.options_menu_left_top = (self.screen_width // 2 - self.options_menu_surf.get_width() // 2, options_surf_margin_top)
+        self.options_menu_surf_rect = self.options_menu_surf.get_rect()
+        self.sc_options_menu_rect = pygame.Rect(self.screen_width // 2 - self.options_menu_surf.get_width() // 2, options_surf_margin_top, \
+                                                options_surf_w, options_surf_h)
+    
+        options_border = (left_margin, top_margin, self.options_menu_surf.get_width() - 2 * left_margin,
+                          self.options_menu_surf.get_height() - 2 * top_margin)
+        self.inner_border = pygame.Rect(options_border)
+        self.options_menu_surf.fill(self.dark_blue)
+
+ 

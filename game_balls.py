@@ -121,12 +121,17 @@ def start_next_level(pballs, pthings, pdeleted_balls, psettings):
     global balls, things, deleted_balls, settings
     balls, things, deleted_balls = create_groups(pballs, pthings, pdeleted_balls, psettings, False)
 
-def init_game_images():
+def init_images_buttons():
     settings.background_image = pygame.image.load(game_render.get_image(settings.background_image_path))
     settings.game_settings_image = pygame.image.load(game_render.get_image(settings.system_image_path))
-    settings.game_settings_rect = settings.game_settings_image.get_rect(center=(390, 22))
+    settings.options_icon = settings.game_settings_image.get_rect(center=(390, 22))
     settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
     settings.create_buttons(sc)
+
+def check_info_restart_level(balls, things, deleted_balls, settings, info):
+    if info.is_restart_level:
+        restart_level(balls, things, deleted_balls, settings)
+        info.is_restart_level = False
 
 pygame.init()
 
@@ -138,8 +143,8 @@ sc.fill(settings.black)
 
 pygame.display.update()
 func.set_caption(settings)
-clock = pygame.time.Clock()
-init_game_images()
+# clock = pygame.time.Clock()
+init_images_buttons()
 
 things = create_things()
 balls = create_balls()
@@ -184,14 +189,14 @@ while not done:
                 
                 if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
                                           # Только если активна доп. панель информации 
-                  
                     restart_level(balls, things, deleted_balls, settings)
+
+                func.check_options(settings, event.pos)
 
                 info.set_text_mousebuttondown(event.pos)
 
             elif event.button == 3:  # шарик начинает катиться по столу, собирая все предметы на своем пути
                 if settings.is_draw_line and not func.is_ball_rolling(settings) and not settings.is_points_erasing:
-                    
                     func.launch_ball(settings)
                   
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -263,9 +268,8 @@ while not done:
     info.set_text_events()
     
     sc.blit(settings.background_image, (0, 0))
-    sc.blit(settings.game_settings_image, settings.game_settings_rect)
+    sc.blit(settings.game_settings_image, settings.options_icon)
     
-  
     func.check_holding_arrow_keys(settings) # При нажатии/удерживании клавиш стрелок, вычисляем направление движения мяча
    
     if settings.is_draw_line:  # Мяч на игровой поверхности. Момент прицеливания. Cтроим путь (ломаная кривая)
@@ -285,12 +289,10 @@ while not done:
         func.get_disappearing_path(settings)  # Стирание траектории
         func.draw_disappearing_path(sc, settings)
                 
-    
     func.display_info(sc, settings, info, balls)
     
     settings.next_level_button.draw()
     settings.difficulty_button.draw()
-    # ruler_button.draw(sc, settings)
     
     things.update(sc, settings, info, things)
     things.draw(sc)
@@ -303,15 +305,15 @@ while not done:
 
     func.display_last_path_point(sc, settings)
     func.display_game_borders(sc, settings)
+    func.game_options(sc, settings)
 
     pygame.display.update()
-    clock.tick(25)
+    settings.clock.tick(25)
 
-    if info.is_restart_level:
-        restart_level(balls, things, deleted_balls, settings)
-        info.is_restart_level = False
+    check_info_restart_level(balls, things, deleted_balls, settings, info)
+
 
 pygame.quit()
 
-# draw_tips(settings.a, settings.b, pos_center_ball)
+
 
