@@ -172,7 +172,7 @@ class Info():
     def check_click(self):
         if self.is_active_panel:
             pos = self.settings.mouse_xy[0] - self.settings.screen_width, self.settings.mouse_xy[1]
-            if self.show_lines_button.isOver(pos):     
+            if self.show_lines_button.isOver(pos):    
                 self.is_displayed_lines = not self.is_displayed_lines
                 self.show_lines_button.text = self.switch()
                              

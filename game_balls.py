@@ -127,6 +127,8 @@ def init_images_buttons():
     settings.options_icon = settings.game_settings_image.get_rect(center=(390, 22))
     settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
     settings.create_buttons(sc)
+    # settings.create_options_buttons(sc)
+    settings.game_settings(sc)
 
 def check_info_restart_level(balls, things, deleted_balls, settings, info):
     if info.is_restart_level:
@@ -182,16 +184,20 @@ while not done:
 
                 if settings.next_level_button.isOver(settings.mouse_xy):
                     start_next_level(balls, things, deleted_balls, settings)
-
-                if settings.difficulty_button.isOver(settings.mouse_xy):
-                    change_difficulty()
-                    restart_level(balls, things, deleted_balls, settings)
                 
                 if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
                                           # Только если активна доп. панель информации 
                     restart_level(balls, things, deleted_balls, settings)
 
                 func.check_options(settings, event.pos)
+
+                if settings.is_show_options_menu:
+                    if settings.difficulty_button.isOver(event.pos):
+                        change_difficulty()
+                        
+                    elif settings.restart_game_button.isOver(event.pos):
+                        restart_level(balls, things, deleted_balls, settings)
+
 
                 info.set_text_mousebuttondown(event.pos)
 
@@ -292,7 +298,7 @@ while not done:
     func.display_info(sc, settings, info, balls)
     
     settings.next_level_button.draw()
-    settings.difficulty_button.draw()
+    # settings.difficulty_button.draw()
     
     things.update(sc, settings, info, things)
     things.draw(sc)

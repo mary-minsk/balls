@@ -11,6 +11,8 @@ class Settings():
         # self.is_used_additional_panel = False
 
         self.is_used_hints = True  # в ticker() подсказки отражаются бегущей строкой
+
+        # self.
         
         self.game_sizes()    # Размеры окна игры, игровой панели, отступы
         self.levels_and_scores() # Уровни и количество предметов на экране
@@ -19,7 +21,6 @@ class Settings():
         self.set_color()
 
         self.balls()   # Мяч 
-        self.buttons()  # Кнопки
         self.ticker()  # бегущая строка
 
         self.mouse_xy = 0, 0  # тек пигейм координаты мыши
@@ -29,7 +30,7 @@ class Settings():
         self.attempts_place_thing = 3  #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
 
         self.ball_trajectory()  # Траектория движения
-        self.game_settings()
+        
 
         # self.is_early_completion = False
         self.reset()  # Сброс основных параметров
@@ -155,19 +156,6 @@ class Settings():
         
         self.initial_balls_surf = [] # изображения мячей. При повышении уровня сложности игры, их размеры уменьшаются 
 
-    def buttons(self):
-
-        self.button_next_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
-        self.button_next_level_text = "Next level"
-
-        self.button_difficulty = [310, self.screen_height - self.height_bottom_panel + 50, 90, 30]
-        
-        
-        # self.button_difficulty_text = "easy"
-       
-        # self.button_ruler = [300, self.w - 115, 90, 30]
-        # self.button_ruler_text = "Ruler"   
-
     def ticker(self):
         
         self.balls_panel_hints = ["Сhoose any whirlwind!", "Take the last whirlwind"]
@@ -225,13 +213,14 @@ class Settings():
             text_rect.centery = point[1]
         sc.blit(text_surface, text_rect)
 
-    def show_center_text(self, sc, color, size, point, str):  # текст по центру поверхности ("Options")
+    def center_text(self, color, size, point, str):  # текст по центру поверхности ("Options")
         font = pygame.font.Font(None, size)
         text_surface = font.render(str, True, color)
         text_rect = text_surface.get_rect()
         text_rect.center = point
-        sc.blit(text_surface, text_rect)
-       
+        print(text_rect)
+        return text_surface, text_rect
+          
     def set_original_balls_surf(self):
         surfaces = []
         balls_images = get_images(self.number_balls, self.path_spirals)
@@ -240,14 +229,18 @@ class Settings():
 
         self.initial_balls_surf = surfaces
 
+
     def create_buttons(self, sc):
-        self.next_level_button = Button(sc, self.button_next_level,
+        button_next_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
+        self.button_next_level_text = "Next level"
+
+
+        self.next_level_button = Button(sc,button_next_level,
                                 self.button_next_level_text, self.white, self.bg_color, 22)
-        self.difficulty_button = Button(sc, self.button_difficulty,
-                               self.difficulty_level[self.current_difficulty], self.white, self.bg_color, 22)
+       
         #  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
 
-    def game_settings(self):
+    def game_settings(self, sc):
         self.is_show_options_menu = False
 
         options_surf_w, options_surf_h = 300, 300
@@ -255,7 +248,7 @@ class Settings():
         left_margin = 10
         top_margin = 15
 
-        self.options_menu_surf = pygame.Surface((300, 300))
+        self.options_menu_surf = pygame.Surface((300, 250))
         self.options_menu_left_top = (self.screen_width // 2 - self.options_menu_surf.get_width() // 2, options_surf_margin_top)
         self.options_menu_surf_rect = self.options_menu_surf.get_rect()
         self.sc_options_menu_rect = pygame.Rect(self.screen_width // 2 - self.options_menu_surf.get_width() // 2, options_surf_margin_top, \
@@ -266,4 +259,30 @@ class Settings():
         self.inner_border = pygame.Rect(options_border)
         self.options_menu_surf.fill(self.dark_blue)
 
- 
+        self.text_option_surf, self.text_option_rect = self.center_text(self.white, 28, (self.options_menu_surf.get_width()//2, 40), "Options")
+        text_difficulty = "Select the difficulty of the game:"
+        self.select_difficulty_surf, self.select_difficulty_rect = self.center_text(self.white, 23, (self.options_menu_surf.get_width()//2, 80), text_difficulty)
+        
+        button_difficulty_rect = [97, 210, self.select_difficulty_rect.w, 30]
+        self.difficulty_button = Button(sc, button_difficulty_rect,
+                                        self.difficulty_level[self.current_difficulty], self.white, self.bg_color, 22)
+
+        button_restart_game_rect = [97, 260, self.select_difficulty_rect.w, 30]
+
+        self.restart_game_button = Button(sc, button_restart_game_rect,
+                                        "Restart game", self.white, self.bg_color, 22)
+
+
+
+
+
+
+
+    # def get_screen(settings, info):
+
+    # if settings.is_used_additional_panel:
+    #     sc = pygame.display.set_mode((settings.screen_width + info.additional_panel_width, settings.screen_height))
+    #     info.surf.fill(settings.black)
+    # else:
+    #     sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
+    # return sc
