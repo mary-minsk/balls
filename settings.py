@@ -60,10 +60,8 @@ class Settings():
         self.aqua = (0,155,155)
         self.blue = (0, 191, 255)
         self.fuchsia = (255, 0, 255)
-        # self.dark_blue = (31, 52, 66) rgb(31, 52, 66) rgb(71, 91, 117) rgb(33, 50, 81) 
-        # self.dark_blue = (71, 91, 117)
+        self.dark_blue_options = (71, 91, 117)
         self.dark_blue = (33, 50, 81)
-        # self.dark_blue = (10, 18, 41)
 
     def set_text_level(self):
         self.text_level[1] = str(self.current_level)
@@ -110,7 +108,7 @@ class Settings():
         self.last_level = self.finish_things - self.start_things
 
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
-        self.balls_size_reduction = [0, 10, 20, 30] 
+        self.balls_size_reduction = [100, 80, 60, 50] 
         self.current_difficulty = 0
 
         self.text_level = ["Level:", ""]
@@ -218,7 +216,6 @@ class Settings():
         text_surface = font.render(str, True, color)
         text_rect = text_surface.get_rect()
         text_rect.center = point
-        print(text_rect)
         return text_surface, text_rect
           
     def set_original_balls_surf(self):
@@ -229,18 +226,16 @@ class Settings():
 
         self.initial_balls_surf = surfaces
 
-
     def create_buttons(self, sc):
         button_next_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
         self.button_next_level_text = "Next level"
 
 
         self.next_level_button = Button(sc,button_next_level,
-                                self.button_next_level_text, self.white, self.bg_color, 22)
+                                self.button_next_level_text, self.white, self.dark_blue, 22, 3)
        
-        #  ruler_button = Button(settings.button_ruler, settings.button_ruler_text)
-
     def game_settings(self, sc):
+
         self.is_show_options_menu = False
 
         options_surf_w, options_surf_h = 300, 300
@@ -249,6 +244,8 @@ class Settings():
         top_margin = 15
 
         self.options_menu_surf = pygame.Surface((300, 250))
+        self.options_menu_surf.fill(self.dark_blue)
+        
         self.options_menu_left_top = (self.screen_width // 2 - self.options_menu_surf.get_width() // 2, options_surf_margin_top)
         self.options_menu_surf_rect = self.options_menu_surf.get_rect()
         self.sc_options_menu_rect = pygame.Rect(self.screen_width // 2 - self.options_menu_surf.get_width() // 2, options_surf_margin_top, \
@@ -257,7 +254,7 @@ class Settings():
         options_border = (left_margin, top_margin, self.options_menu_surf.get_width() - 2 * left_margin,
                           self.options_menu_surf.get_height() - 2 * top_margin)
         self.inner_border = pygame.Rect(options_border)
-        self.options_menu_surf.fill(self.dark_blue)
+    
 
         self.text_option_surf, self.text_option_rect = self.center_text(self.white, 28, (self.options_menu_surf.get_width()//2, 40), "Options")
         text_difficulty = "Select the difficulty of the game:"
@@ -265,15 +262,12 @@ class Settings():
         
         button_difficulty_rect = [97, 210, self.select_difficulty_rect.w, 30]
         self.difficulty_button = Button(sc, button_difficulty_rect,
-                                        self.difficulty_level[self.current_difficulty], self.white, self.bg_color, 22)
+                                        self.difficulty_level[self.current_difficulty], self.white, self.dark_blue_options, 22)
 
         button_restart_game_rect = [97, 260, self.select_difficulty_rect.w, 30]
 
         self.restart_game_button = Button(sc, button_restart_game_rect,
-                                        "Restart game", self.white, self.bg_color, 22)
-
-
-
+                                          "Restart game", self.white, self.dark_blue_options, 22)
 
 
 

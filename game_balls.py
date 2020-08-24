@@ -16,31 +16,23 @@ def create_balls(): # создание трех шаров, определени
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
     list = []
-   
-    BALLS_SURF = game_render.random_balls_images(settings)
 
     for i in range(settings.number_balls):
-        # surf = settings.balls_surf[i]
-        # surf = pygame.image.load(BALLS[i]).convert_alpha()
-        # surf = pygame.transform.scale(surf, (surf.get_width()*4//5, surf.get_height()*4//5))
-        # BALLS_SURF.append(pygame.image.load(BALLS[i]).convert_alpha()) # добавление изображения
-        # BALLS_SURF.append(surf)  # добавление изображения
-        w = BALLS_SURF[i].get_rect()[2]  # ширина изображения
+        surf = settings.initial_balls_surf[i]
+        new_size = surf.get_width() * settings.balls_size_reduction[settings.current_difficulty] // 100, \
+                   surf.get_height() * settings.balls_size_reduction[settings.current_difficulty] // 100
+        w = surf.get_rect()[2]
+        surf = pygame.transform.scale(surf, (new_size))
        
-        balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, BALLS_SURF[i],i)) # добавляем в группу три шара
-        # balls.add(Ball(settings, settings.balls_center[i][0], BALLS_SURF[i], i))  # добавляем в группу три шара
-     
+        balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, surf, i))  # добавляем в группу три шара
         shift = shift + w 
-        # print(shift + settings.balls_offset*i + w//2)
         list.append((w, i)) 
             
-
-    list = sorted(list)  #сортируем по размеру изображения шара
+    list = sorted(list)  # сортируем по размеру изображения шара
     distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
     speed_dictionary = {}      # большое растояние
     additional_info = {}
 
-    
     for i in range(settings.number_balls):
         distance_dictionary[list[i][1]] = settings.balls_distance[i]
         speed_dictionary[list[i][1]] = settings.balls_speed[i]
@@ -50,9 +42,8 @@ def create_balls(): # создание трех шаров, определени
         balls.sprites()[i].distance = distance_dictionary.get(i)*settings.unit  # длина пути последующего движения шара 
         balls.sprites()[i].speed = speed_dictionary.get(i) 
         balls.sprites()[i].info = additional_info.get(i)
-        # print(balls.sprites()[i].distance)
+       
     # max_h = (max(ball.radius for ball in balls))
-    # balls_space = [0, h1 - max_h,  w1, max_h * 2]
     
     return balls
 
@@ -145,7 +136,6 @@ sc.fill(settings.black)
 
 pygame.display.update()
 func.set_caption(settings)
-# clock = pygame.time.Clock()
 init_images_buttons()
 
 things = create_things()
@@ -186,7 +176,7 @@ while not done:
                     start_next_level(balls, things, deleted_balls, settings)
                 
                 if info.check_click(): # Перегенерируются все объекты, если для них не было получено доп. информации
-                                          # Только если активна доп. панель информации 
+                                          # Только если активна доп. панель информации. Для тестирования и отладки
                     restart_level(balls, things, deleted_balls, settings)
 
                 func.check_options(settings, event.pos)
@@ -194,8 +184,9 @@ while not done:
                 if settings.is_show_options_menu:
                     if settings.difficulty_button.isOver(event.pos):
                         change_difficulty()
-                        
+
                     elif settings.restart_game_button.isOver(event.pos):
+                        settings.is_show_options_menu = False
                         restart_level(balls, things, deleted_balls, settings)
 
 
@@ -271,6 +262,11 @@ while not done:
                 if settings.is_draw_line:
                     settings.a, settings.b = func.get_cartesian_mouse_xy_coordinates(settings)
 
+    if settings.is_points_erasing and settings.selected_ball is None:  # После удалении мяча с поля след. мяч начинает вращаться
+                                                            #  если над ним находится мышка и траектория предыдущего мяча еще не удалена
+        settings.rotated_ball = func.get_ball(settings.mouse_xy, balls)
+        func.rotation_ball_on(balls, settings.rotated_ball)
+
     info.set_text_events()
     
     sc.blit(settings.background_image, (0, 0))
@@ -298,7 +294,6 @@ while not done:
     func.display_info(sc, settings, info, balls)
     
     settings.next_level_button.draw()
-    # settings.difficulty_button.draw()
     
     things.update(sc, settings, info, things)
     things.draw(sc)

@@ -540,9 +540,11 @@ def display_last_path_point(sc, settings):  # Отображение конца 
         pygame.draw.circle(sc, settings.yellow, settings.last_path_point, 2, 0)
 
 def display_game_borders(sc, settings):
-    pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
-    pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2)
-    # pygame.draw.rect(sc, settings.blue, settings.ticker_rect, 1)
+    # pygame.draw.rect(sc, settings.bg_color, settings.game_panel, 2)
+    # pygame.draw.rect(sc, settings.bg_color, settings.border_game_panel, 2)
+    pygame.draw.rect(sc, settings.dark_blue, settings.game_panel, 3)
+    pygame.draw.rect(sc, settings.dark_blue, settings.border_game_panel, 3)
+
 
 def set_balls_index(balls):
 
@@ -621,8 +623,8 @@ def game_options(sc, settings):
     if settings.is_show_options_menu:
         sc.blit(settings.options_menu_surf, settings.options_menu_left_top)
         settings.options_menu_surf.fill(settings.dark_blue)
-        pygame.draw.rect(settings.options_menu_surf, settings.bg_color, settings.options_menu_surf_rect, 3)
-        pygame.draw.rect(settings.options_menu_surf, settings.bg_color, settings.inner_border, 2)
+        pygame.draw.rect(settings.options_menu_surf, settings.dark_blue_options, settings.options_menu_surf_rect, 3)
+        pygame.draw.rect(settings.options_menu_surf, settings.dark_blue_options, settings.inner_border, 2)
         settings.options_menu_surf.blit(settings.text_option_surf, settings.text_option_rect)
         settings.options_menu_surf.blit(settings.select_difficulty_surf, settings.select_difficulty_rect)
         settings.difficulty_button.draw()
