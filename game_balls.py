@@ -16,13 +16,16 @@ def create_balls(): # создание трех шаров, определени
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
     list = []
-
+    ball_images = game_render.random_balls_images(settings)
     for i in range(settings.number_balls):
-        surf = settings.initial_balls_surf[i]
-        new_size = surf.get_width() * settings.balls_size_reduction[settings.current_difficulty] // 100, \
-                   surf.get_height() * settings.balls_size_reduction[settings.current_difficulty] // 100
+        surf = ball_images[i]
         w = surf.get_rect()[2]
-        surf = pygame.transform.scale(surf, (new_size))
+        if settings.balls_size_reduction[settings.current_difficulty] != 100:
+            if surf.get_width() >= settings.min_ball_size:
+                new_size = surf.get_width() * settings.balls_size_reduction[settings.current_difficulty] // 100, \
+                    surf.get_height() * settings.balls_size_reduction[settings.current_difficulty] // 100
+            
+                surf = pygame.transform.scale(surf, new_size)
        
         balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, surf, i))  # добавляем в группу три шара
         shift = shift + w 
@@ -50,7 +53,6 @@ def create_balls(): # создание трех шаров, определени
 def create_things(): # создание n предметов
     
     # генерация n непересекающихся предметов на поверхности
-  
     things = game_render.get_things(sc, settings, info)
     
     return things
@@ -65,7 +67,7 @@ def get_things_hit(): # Мяч сталкивается с предметами.
         if thing in things_set:
             settings.level_score *= 2
             settings.score += settings.level_score
-            deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image, 0, settings.level_score))
+            deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image, 0, settings.level_score, False))
             things.remove(thing)
             settings.set_text_score()  
 
@@ -74,6 +76,7 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
     things.empty()
     deleted_balls.empty()
     setting.reset()
+    settings.attempts = 3  # Три попытки, три мяча на уровень
 
     if not isRestart:
         if settings.current_level <= settings.last_level:
@@ -84,6 +87,7 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
     things = create_things()
     balls = create_balls()
     deleted_balls = pygame.sprite.Group()
+    settings.set_level_time()
     
     return balls, things, deleted_balls
 
@@ -101,6 +105,8 @@ def early_completion():
         get_things_hit()
 
     balls.remove(settings.ball_in_game)
+    settings.attempts -= 1   # Минус одна из трех попыток
+    print(settings.attempts)
     func.set_balls_index(balls)
     settings.reset()
 
@@ -118,7 +124,6 @@ def init_images_buttons():
     settings.options_icon = settings.game_settings_image.get_rect(center=(390, 22))
     settings.set_original_balls_surf()  # settings.balls_surf получаем изображения шаров
     settings.create_buttons(sc)
-    # settings.create_options_buttons(sc)
     settings.game_settings(sc)
 
 def check_info_restart_level(balls, things, deleted_balls, settings, info):
@@ -126,6 +131,34 @@ def check_info_restart_level(balls, things, deleted_balls, settings, info):
         restart_level(balls, things, deleted_balls, settings)
         info.is_restart_level = False
 
+def check_finish_level():
+    is_show_win = True
+
+    if len(balls) == 0:
+        is_show_win = True
+        # settings.show_text(sc, settings.white, 98, (100, 150), False, "Win!")
+        # print("gaad")
+        # (self, sc, color, size, point, isCenter=False, str1="", str2="")
+    # if len(balls) == 0 and len(deleted_balls) == 0 and settings.is_points_erasing == False:
+        # settings.center_text(settings.white, 38, (100, 100), "Win")
+        # settings.show_text(sc, settings.white, 58, (100, 100), False, "Win!")
+
+    # if  == 0 or len(things) == 0:  # Три мяча были выброшены, а затем удалены с игрового поля
+    #     if len(deleted_balls) == 0:
+            # sc.blit(settings.options_menu_surf, settings.options_menu_left_top)
+            # settings.options_menu_surf.fill(settings.dark_blue)
+            # pygame.draw.rect(settings.options_menu_surf, settings.dark_blue_options, settings.options_menu_surf_rect, 3)
+    #         pygame.draw.rect(settings.options_menu_surf, settings.dark_blue_options, settings.inner_border, 2)
+    #         print("len(deleted_balls) ", len(deleted_balls))
+    #         # print("finish!!!")
+    # if len(things) == 0 and len(deleted_balls) == 0 and len(balls) != 0:
+    #     print("Good!")
+
+    if is_show_win:
+        if settings.is_show_level:
+            settings.level_box()
+            sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
+    
 pygame.init()
 
 settings = Settings()
@@ -141,11 +174,13 @@ init_images_buttons()
 things = create_things()
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
+
+settings.set_level_time()
      
 done = False
 
 while not done:
-
+    func.check_level_timer(settings) # Вывод уровня игры
     for event in pygame.event.get():
         info.reset_event_info()
 
@@ -308,11 +343,11 @@ while not done:
     func.display_game_borders(sc, settings)
     func.game_options(sc, settings)
 
+    check_info_restart_level(balls, things, deleted_balls, settings, info)
+    check_finish_level()
+
     pygame.display.update()
     settings.clock.tick(25)
-
-    check_info_restart_level(balls, things, deleted_balls, settings, info)
-
 
 pygame.quit()
 

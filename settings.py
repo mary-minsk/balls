@@ -4,13 +4,14 @@ from button import Button
 
 class Settings():
     def __init__(self):
-        self.text_caption = '12' 
+        self.text_caption = 'Balls' 
         self.text_additional_panel_caption = "Flights control center"
         
         self.is_used_additional_panel = True  # Использовать панель с доп. иформацией об основных параметрах игры
         # self.is_used_additional_panel = False
 
         self.is_used_hints = True  # в ticker() подсказки отражаются бегущей строкой
+        # self.timer = pygame.time.get_ticks
 
         # self.
         
@@ -35,6 +36,8 @@ class Settings():
         # self.is_early_completion = False
         self.reset()  # Сброс основных параметров
         self.clock = pygame.time.Clock()
+        self.messages()
+        self.level_box()
         
     def reset(self):  
         self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
@@ -96,6 +99,8 @@ class Settings():
                                 self.screen_width, self.screen_height - self.height_bottom_panel)
         self.border_game_panel = pygame.Rect(border_game_panel_rect)
 
+        # self.level_box_surf = pygame.Surface((self.screen_width, self.screen_height))
+
     def levels_and_scores(self):
 
         self.number_balls = 3
@@ -110,6 +115,8 @@ class Settings():
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
         self.balls_size_reduction = [100, 80, 60, 50] 
         self.current_difficulty = 0
+        self.attempts = 3  # = number_balls
+        self.min_ball_size = 0 # Минимальный размер шара, после которого размер изображения не уменьшается (при повышении сложности игры)
 
         self.text_level = ["Level:", ""]
         self.set_text_level()
@@ -225,6 +232,7 @@ class Settings():
             surfaces.append(pygame.image.load(balls_images[i]).convert_alpha())
 
         self.initial_balls_surf = surfaces
+        self.min_ball_size = min(ball.get_width() for ball in surfaces)
 
     def create_buttons(self, sc):
         button_next_level = [310,  self.screen_height - self.height_bottom_panel + 10, 90, 30]
@@ -234,9 +242,7 @@ class Settings():
         self.next_level_button = Button(sc,button_next_level,
                                 self.button_next_level_text, self.white, self.dark_blue, 22, 3)
        
-    def game_settings(self, sc):
-
-        self.is_show_options_menu = False
+    def message_box(self):  # Общее окно для настроек и для сообщений игры
 
         options_surf_w, options_surf_h = 300, 300
         options_surf_margin_top = 100
@@ -254,8 +260,18 @@ class Settings():
         options_border = (left_margin, top_margin, self.options_menu_surf.get_width() - 2 * left_margin,
                           self.options_menu_surf.get_height() - 2 * top_margin)
         self.inner_border = pygame.Rect(options_border)
-    
 
+    def level_box(self):
+        point = self.screen_width // 2, 140
+        text = "Level " + str(self.current_level) 
+        self.text_level_box_surf, self.text_level_box_rect = self.center_text(self.white, 58, point, text)
+
+
+    def game_settings(self, sc):
+
+        self.is_show_options_menu = False
+        self.message_box()
+    
         self.text_option_surf, self.text_option_rect = self.center_text(self.white, 28, (self.options_menu_surf.get_width()//2, 40), "Options")
         text_difficulty = "Select the difficulty of the game:"
         self.select_difficulty_surf, self.select_difficulty_rect = self.center_text(self.white, 23, (self.options_menu_surf.get_width()//2, 80), text_difficulty)
@@ -269,7 +285,18 @@ class Settings():
         self.restart_game_button = Button(sc, button_restart_game_rect,
                                           "Restart game", self.white, self.dark_blue_options, 22)
 
+    def messages(self):
+        self.text_succes_level = "Win!"
+        self.text_unsucces_level = "Lives = 2"
+        self.early_succes_level = "Perfectly!"
+        self.center_text_messages = (self.screen_width//2, 100)
+       
 
+    def set_level_time(self):  #  Включение таймера
+        self.timer = pygame.time.get_ticks()
+        timeout = 1000
+        self.deadline = self.timer + timeout
+        self.is_show_level = True
 
 
     # def get_screen(settings, info):

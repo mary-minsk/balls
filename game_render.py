@@ -16,13 +16,13 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
                                     # непересекающихся спрайтов с изображениями предметов  на игровай панели
     THINGS = get_images(settings.max_things_images, settings.path_things) # 30 случайных изображений и максимум 20 предметов на игровом поле
     THINGS_SURF = []
-    # # scale = pygame.transform.scale(dog_surf, (dog_surf.get_width()//2,
-    # #                                           dog_surf.get_height()//2))
-    # serf = pygame.transform.scale(surf, (surf.get_width()//2, surf.get_height()//2))
-
+   
     for i in range(len(THINGS)):  # изображения вещей
         surf = pygame.image.load(THINGS[i]).convert_alpha()
-        # surf = pygame.transform.scale(surf, (surf.get_width()*4//5, surf.get_height()*4//5))
+        if settings.balls_size_reduction[settings.current_difficulty] != 100:
+            new_size = surf.get_width() * settings.balls_size_reduction[settings.current_difficulty] // 100, \
+                surf.get_height() * settings.balls_size_reduction[settings.current_difficulty] // 100
+            surf = pygame.transform.scale(surf, (new_size))
         THINGS_SURF.append(surf)
 
     main_things = pygame.sprite.Group()

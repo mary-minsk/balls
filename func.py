@@ -553,7 +553,7 @@ def set_balls_index(balls):
 
 def del_ball(settings, balls, deleted_balls):
     if settings.is_deleted_ball:
-        deleted_balls.add(Deleted_thing(settings.ball_in_game.center(), settings.ball_in_game.image, settings.ball_in_game.angle))  # Создание исчезающего вращающегося мяча
+        deleted_balls.add(Deleted_thing(settings.ball_in_game.center(), settings.ball_in_game.image, settings.ball_in_game.angle, 0, True))  # Создание исчезающего вращающегося мяча
         balls.remove(settings.ball_in_game)
         set_balls_index(balls)
         settings.is_deleted_ball = False
@@ -638,6 +638,12 @@ def check_options(settings, event_pos):
     else:
         if not settings.sc_options_menu_rect.collidepoint(event_pos):
             settings.is_show_options_menu = False
+
+
+def check_level_timer(settings):
+    now = pygame.time.get_ticks()
+    if now > settings.deadline:
+        settings.is_show_level = False
 
 
 
