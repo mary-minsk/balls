@@ -28,9 +28,10 @@ class Deleted_thing(pygame.sprite.Sprite):  # закручивающиеся n �
             self.image = pygame.transform.scale(self.original_surf, (new_w, new_h))
             self.image = pygame.transform.rotate(self.image, self.angle)
         else:
-            if self.is_ball:
-                settings.attempts -= 1  # Минус одна из трех попыток
-                print(settings.attempts)
+            # if self.is_ball:
+            #     settings.is_early_completion = True
+            #     settings.attempts -= 1  # Минус одна из трех попыток
+            #     print("settings.attempts = ", settings.attempts)
             self.kill()
         self.rect = self.image.get_rect(center=(round(self.x), round(self.y)))
 

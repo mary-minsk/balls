@@ -11,9 +11,6 @@ class Settings():
         # self.is_used_additional_panel = False
 
         self.is_used_hints = True  # в ticker() подсказки отражаются бегущей строкой
-        # self.timer = pygame.time.get_ticks
-
-        # self.
         
         self.game_sizes()    # Размеры окна игры, игровой панели, отступы
         self.levels_and_scores() # Уровни и количество предметов на экране
@@ -31,13 +28,16 @@ class Settings():
         self.attempts_place_thing = 3  #  Максимальное количество попыток разместить предмет в одну ячейку игрового поля
 
         self.ball_trajectory()  # Траектория движения
-        
 
-        # self.is_early_completion = False
+        self.is_early_completion = False
+        self.is_start_finish_timer = False
+
+        self.is_level_win = False
+        self.is_level_defeat = False
         self.reset()  # Сброс основных параметров
         self.clock = pygame.time.Clock()
         self.messages()
-        self.level_box()
+        self.level_box("Level " + str(self.current_level))
         
     def reset(self):  
         self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
@@ -50,7 +50,6 @@ class Settings():
         self.is_draw_line = False     # 2. курсор выходит за границы шара (радус шара) => рисуем линию на игровой поверхности
         self.disappearance = 10  # Ускорение для стирания ломаной прямой. Увеличивающееся на единицу с каждым шагом
         
-        # self.is_early_completion = False
         self.level_score = 5
     
     def set_color(self):
@@ -99,15 +98,13 @@ class Settings():
                                 self.screen_width, self.screen_height - self.height_bottom_panel)
         self.border_game_panel = pygame.Rect(border_game_panel_rect)
 
-        # self.level_box_surf = pygame.Surface((self.screen_width, self.screen_height))
-
     def levels_and_scores(self):
 
         self.number_balls = 3
 
         self.start_level = 1
         self.current_level = self.start_level
-        self.start_things = 5
+        self.start_things = 4
         self.current_number_things = self.start_things
         self.finish_things = 20
         self.last_level = self.finish_things - self.start_things
@@ -128,6 +125,12 @@ class Settings():
         self.set_text_score()
 
         self.level_score = 5
+        self.is_show_finish = False
+       
+        self.text_result_level = ""
+       
+        self.is_start_next_level = False
+        self.is_restart_level = False
 
         # self.max_score = 0
         # self.text_max_score = ["Level:", ""]
@@ -261,11 +264,10 @@ class Settings():
                           self.options_menu_surf.get_height() - 2 * top_margin)
         self.inner_border = pygame.Rect(options_border)
 
-    def level_box(self):
+    def level_box(self, text):
         point = self.screen_width // 2, 140
-        text = "Level " + str(self.current_level) 
-        self.text_level_box_surf, self.text_level_box_rect = self.center_text(self.white, 58, point, text)
-
+        # text = "Level " + str(self.current_level) 
+        self.text_level_box_surf, self.text_level_box_rect = self.center_text(self.white, 88, point, text)
 
     def game_settings(self, sc):
 
@@ -289,15 +291,27 @@ class Settings():
         self.text_succes_level = "Win!"
         self.text_unsucces_level = "Lives = 2"
         self.early_succes_level = "Perfectly!"
-        self.center_text_messages = (self.screen_width//2, 100)
-       
-
-    def set_level_time(self):  #  Включение таймера
+        self.center_text_messages = (self.screen_width // 2, 100)
+        
+    def set_timer(self, millisec):
         self.timer = pygame.time.get_ticks()
-        timeout = 1000
-        self.deadline = self.timer + timeout
+        self.deadline = self.timer + millisec
+        
+ 
+    def set_level_time(self):  #  Включение таймера
+        self.set_timer(1000)
         self.is_show_level = True
 
+    def set_finish_time(self):  # Включение таймера
+        self.set_timer(1700)
+        self.is_show_finish = True
+       
+
+    # def set_result_text(self, n):
+    #     if n == 0:
+    #         self.text_result_level = "Win!"
+    #     else:
+    #         self.text_result_level = "Defeat"
 
     # def get_screen(settings, info):
 

@@ -389,9 +389,9 @@ def build_speedway(settings, speed):  # Построение пути движе
             temp.append(i)
             if i == 0:
                 result.append(settings.all_path_points[len(temp)-1])
-    # print(temp)
-    if (len(temp) != n):
-        print("Error! len(temp)!=n")
+   
+    # if (len(temp) != n):
+    #     print("Error! len(temp)!=n")
     return result
 
 def launch_ball(settings):  # Пробел или двойное нажатие мыши запускает шар  (создает вихрь). Определение всех точек пути движения шаря
@@ -545,7 +545,6 @@ def display_game_borders(sc, settings):
     pygame.draw.rect(sc, settings.dark_blue, settings.game_panel, 3)
     pygame.draw.rect(sc, settings.dark_blue, settings.border_game_panel, 3)
 
-
 def set_balls_index(balls):
 
     for i, ball in enumerate(balls):
@@ -605,14 +604,6 @@ def check_tab(settings, balls):
 
         settings.prev_selected_ball = settings.next_ball
 
-
-# def change_difficulty(settings, difficulty_button):
-    
-#     settings.current_difficulty += 1
-#     if settings.current_difficulty >= len(settings.difficulty_level):
-#         settings.current_difficulty = 0
-#     difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
-
 def check_rotation(settings, balls):
     if settings.rotated_ball is None:        # курсор мыши не над мячиками
         rotation_balls_off(balls)
@@ -639,12 +630,28 @@ def check_options(settings, event_pos):
         if not settings.sc_options_menu_rect.collidepoint(event_pos):
             settings.is_show_options_menu = False
 
-
 def check_level_timer(settings):
-    now = pygame.time.get_ticks()
-    if now > settings.deadline:
-        settings.is_show_level = False
+    if settings.is_show_level:
+        now = pygame.time.get_ticks()
+        if now > settings.deadline:
+            settings.is_show_level = False
+        
 
+def finish_level(settings):
+    if settings.is_level_win:
+        settings.is_start_next_level = True
+    if settings.is_level_defeat:
+        settings.is_restart_level = True
+
+def check_finish_timer(settings):
+    if settings.is_show_finish:
+        now = pygame.time.get_ticks()
+        if now > settings.deadline:
+            settings.is_show_finish = False
+            finish_level(settings)
+           
+            
+            
 
 
 

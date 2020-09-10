@@ -69,14 +69,16 @@ def get_things_hit(): # Мяч сталкивается с предметами.
             settings.score += settings.level_score
             deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image, 0, settings.level_score, False))
             things.remove(thing)
-            settings.set_text_score()  
+            settings.set_text_score()
 
 def create_groups(balls, things, deleted_balls, setting, isRestart):  # Создание групп вещей и мячей вначале кажного нового уровня
     balls.empty()
     things.empty()
     deleted_balls.empty()
     setting.reset()
-    settings.attempts = 3  # Три попытки, три мяча на уровень
+    # settings.attempts = 3  # Три попытки, три мяча на уровень
+    settings.is_level_win = False
+    settings.is_level_defeat = False
 
     if not isRestart:
         if settings.current_level <= settings.last_level:
@@ -99,14 +101,13 @@ def change_difficulty():
     settings.difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
 
 def early_completion():
+    settings.is_early_completion = True #  Проверка, не завершен ли уровень
 
     for point in settings.all_path_points:
         settings.ball_in_game.set_xy(point)
         get_things_hit()
 
     balls.remove(settings.ball_in_game)
-    settings.attempts -= 1   # Минус одна из трех попыток
-    print(settings.attempts)
     func.set_balls_index(balls)
     settings.reset()
 
@@ -127,37 +128,50 @@ def init_images_buttons():
     settings.game_settings(sc)
 
 def check_info_restart_level(balls, things, deleted_balls, settings, info):
-    if info.is_restart_level:
-        restart_level(balls, things, deleted_balls, settings)
-        info.is_restart_level = False
+    if info.is_restart_level or settings.is_restart_level:
+        if not settings.is_show_finish:
+            restart_level(balls, things, deleted_balls, settings)
+            info.is_restart_level = False
+            settings.is_restart_level = False
+
+    if settings.is_start_next_level:
+        if not settings.is_show_finish:
+            start_next_level(balls, things, deleted_balls, settings)
+            settings.is_start_next_level = False
+        
+
+def get_level_result():
+
+    if settings.ball_in_game is None:
+        if not settings.is_level_defeat and not settings.is_level_win:
+            if len(things) == 0:
+                settings.is_level_win = True
+                # print("win")
+                settings.text_result_level = "Win!"
+                return True
+            else:
+                if len(balls) == 0:
+                    settings.is_level_defeat = True
+                    settings.text_result_level = "Defeat"
+                    # print("defeat")
+                    return True
+    return False
 
 def check_finish_level():
-    is_show_win = True
 
-    if len(balls) == 0:
-        is_show_win = True
-        # settings.show_text(sc, settings.white, 98, (100, 150), False, "Win!")
-        # print("gaad")
-        # (self, sc, color, size, point, isCenter=False, str1="", str2="")
-    # if len(balls) == 0 and len(deleted_balls) == 0 and settings.is_points_erasing == False:
-        # settings.center_text(settings.white, 38, (100, 100), "Win")
-        # settings.show_text(sc, settings.white, 58, (100, 100), False, "Win!")
+    is_level_result = get_level_result()
+    if is_level_result:
+        if settings.is_early_completion:  # Завершение уровня при нажатии пробел
+            settings.set_finish_time()  # Запуск таймера
+            settings.is_early_completion = False
 
-    # if  == 0 or len(things) == 0:  # Три мяча были выброшены, а затем удалены с игрового поля
-    #     if len(deleted_balls) == 0:
-            # sc.blit(settings.options_menu_surf, settings.options_menu_left_top)
-            # settings.options_menu_surf.fill(settings.dark_blue)
-            # pygame.draw.rect(settings.options_menu_surf, settings.dark_blue_options, settings.options_menu_surf_rect, 3)
-    #         pygame.draw.rect(settings.options_menu_surf, settings.dark_blue_options, settings.inner_border, 2)
-    #         print("len(deleted_balls) ", len(deleted_balls))
-    #         # print("finish!!!")
-    # if len(things) == 0 and len(deleted_balls) == 0 and len(balls) != 0:
-    #     print("Good!")
+    if settings.is_show_finish or (settings.is_points_erasing and is_level_result):
+        settings.level_box(settings.text_result_level)
+        sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
 
-    if is_show_win:
-        if settings.is_show_level:
-            settings.level_box()
-            sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
+    if settings.is_show_level:
+        settings.level_box("Level " + str(settings.current_level))
+        sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
     
 pygame.init()
 
@@ -180,7 +194,8 @@ settings.set_level_time()
 done = False
 
 while not done:
-    func.check_level_timer(settings) # Вывод уровня игры
+    func.check_level_timer(settings)  # Вывод уровня игры
+    func.check_finish_timer(settings)  # Вывод "Win!"
     for event in pygame.event.get():
         info.reset_event_info()
 
@@ -263,7 +278,8 @@ while not done:
                         func.check_tab(settings, balls)
 
                     elif event.key == pygame.K_SPACE:
-                        func.launch_ball(settings)
+                        if settings.is_draw_line:
+                            func.launch_ball(settings)
 
                     else:        
                         func.check_keydown(event, settings)  # Можно одновременно нажимать несколько клавиш
@@ -330,8 +346,9 @@ while not done:
     
     settings.next_level_button.draw()
     
-    things.update(sc, settings, info, things)
-    things.draw(sc)
+    if not settings.is_show_level:
+        things.update(sc, settings, info, things)
+        things.draw(sc)
 
     balls.update(settings, sc)
     balls.draw(sc)

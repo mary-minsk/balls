@@ -25,6 +25,11 @@ class Info():
             self.text_selected_ball = ["selected ball: ", "None"]
             self.text_ball_in_game = ["ball in the game:", "None"]
             self.text_is_draw_line = ["is draw line: ", ""]
+            # self.text_is_early_completion = ["is_early_completion: ", ""]
+            self.text_is_level_win = ["is_level_win: ", ""]
+            self.text_is_level_defeat = ["is_level_defeat: ", ""]
+            # self.is_level_win = False
+            # self.is_level_defeat = False
 
             self.text_mouse_xy = ["mouse: ", ""]
             # self.text_cartesian_mouse_xy = ["mouse (cartesian): ", ""]
@@ -82,7 +87,13 @@ class Info():
         self.show_add_text(self.text_rotated_ball, self.white, 20, 240)
 
         self.show_add_text(self.text_ball_in_game, self.white, 20, 260)
-        self.show_add_text(self.text_is_draw_line, self.white, 20, 280)
+        
+        # self.show_add_text(self.text_is_early_completion, self.white, 20, 300)
+        self.show_add_text(self.text_is_level_win, self.white, 20, 300)
+        self.show_add_text(self.text_is_level_defeat, self.white, 20, 320)
+
+        
+        
         
         # text_balls_surf = ["len(settings.balls_surf) = ", str(len(self.settings.balls_surf))]
         # settings.balls_surf
@@ -297,6 +308,10 @@ class Info():
                 self.text_prev_selected_ball[1] = self.settings.prev_selected_ball.info
             else:
                 self.text_prev_selected_ball[1] = "None"
+            
+            # self.text_is_early_completion[1] = str(self.settings.is_early_completion)
+            self.text_is_level_win[1] = str(self.settings.is_level_win)
+            self.text_is_level_defeat[1] = str(self.settings.is_level_defeat)
 
 
     def set_text_mousemotion(self, event_pos):
