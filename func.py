@@ -74,12 +74,13 @@ def display_info(sc, settings, info, balls):
         info.surf.fill(settings.black)
         info.display_additional_info()
 
-        
-    if info.is_displayed_lines:
+    if info.is_displayed_lines and not settings.is_show_level:
         info.draw_cells(sc)
 
     display_level(sc, settings)
     display_score(sc, settings)
+    display_number_things(sc, settings)
+    
 
     if settings.is_used_hints:
         text = get_hints(settings, balls) 
@@ -137,6 +138,9 @@ def display_level(sc, settings):
 
 def display_score(sc, settings):
     settings.show_text(sc, settings.white, 28, settings.score_point_xy, False, settings.text_score[0], settings.text_score[1])
+
+def display_number_things(sc, settings):
+    settings.show_text(sc, settings.white, 28, settings.number_things_point, False, settings.text_number_things[0], settings.text_number_things[1])
 
 def get_next_ball(current_ball, balls):
     
@@ -629,26 +633,38 @@ def check_options(settings, event_pos):
     else:
         if not settings.sc_options_menu_rect.collidepoint(event_pos):
             settings.is_show_options_menu = False
-
-def check_level_timer(settings):
-    if settings.is_show_level:
-        now = pygame.time.get_ticks()
-        if now > settings.deadline:
-            settings.is_show_level = False
         
-
 def finish_level(settings):
     if settings.is_level_win:
         settings.is_start_next_level = True
     if settings.is_level_defeat:
-        settings.is_restart_level = True
+        settings.set_try_level_again_timer() 
 
-def check_finish_timer(settings):
+def timer_off(settings, name):
+    now = pygame.time.get_ticks()
+    if now > settings.deadline:
+        setattr(settings, name, False)
+
+def get_timer_off(settings, name):
+    now = pygame.time.get_ticks()
+    if now > settings.deadline:
+        setattr(settings, name, False)
+        return True
+    return False
+
+def check_timers(settings):
     if settings.is_show_finish:
-        now = pygame.time.get_ticks()
-        if now > settings.deadline:
-            settings.is_show_finish = False
+        if get_timer_off(settings, "is_show_finish"):
             finish_level(settings)
+
+    if settings.is_show_level_try_again:
+        if end_timer2(settings, "is_show_level_try_again"):
+            settings.is_restart_level = True
+
+    if settings.is_show_level:
+        timer_off(settings, 'is_show_level')
+           
+        
            
             
             
