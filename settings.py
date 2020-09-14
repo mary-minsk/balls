@@ -29,14 +29,9 @@ class Settings():
 
         self.ball_trajectory()  # Траектория движения
 
-        self.is_early_completion = False
-        self.is_start_finish_timer = False
-
-        self.is_level_win = False
-        self.is_level_defeat = False
         self.reset()  # Сброс основных параметров
         self.clock = pygame.time.Clock()
-        self.messages()
+        # self.messages()
         self.level_box("Level " + str(self.current_level))
         
     def reset(self):  
@@ -69,7 +64,10 @@ class Settings():
         self.text_level[1] = str(self.current_level)
     
     def set_text_score(self):
-        self.text_score[1] = str(self.score)    
+        self.text_score[1] = str(self.score)
+
+    def set_number_things(self):
+        self.text_number_things[1] = str(self.current_number_things)
 
     def game_sizes(self):
 
@@ -104,7 +102,7 @@ class Settings():
 
         self.start_level = 1
         self.current_level = self.start_level
-        self.start_things = 4
+        self.start_things = 3
         self.current_number_things = self.start_things
         self.finish_things = 20
         self.last_level = self.finish_things - self.start_things
@@ -119,8 +117,12 @@ class Settings():
         self.set_text_level()
         self.level_point_xy = 20, 15
 
+        self.number_things_point = 120, 15
+        self.text_number_things = ["Things:", ""]
+        self.set_number_things()
+
         self.score = 0  # total score
-        self.score_point_xy = 120, 15
+        self.score_point_xy = 250, 15
         self.text_score = ["Score:", ""]
         self.set_text_score()
 
@@ -132,10 +134,17 @@ class Settings():
         self.is_start_next_level = False
         self.is_restart_level = False
 
-        # self.max_score = 0
-        # self.text_max_score = ["Level:", ""]
-        # self.set_text_level()
-        # self.level_point_xy = 20, 15
+        self.is_early_completion = False
+        self.is_start_finish_timer = False
+
+        self.is_level_win = False
+        self.is_level_defeat = False
+        self.win_message = "Win!"
+        self.defeat_message = "Defeat..."
+        self.is_start_level_again_timer = False
+        self.is_show_level_try_again = False
+
+        self.center_text_messages = (self.screen_width // 2, 140) 
         
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'
@@ -157,7 +166,7 @@ class Settings():
 
         # самый маленикий катится растояние - 3*H, средний - 2*H,  большой шар - H
         # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
-        self.balls_distance = [3, 2, 1]  # *settings.screen_height
+        self.balls_distance = [3, 2, 0.5]  # *settings.screen_height
         self.balls_info = ["small", "medium", "large"]
         self.unit = self.screen_height - self.up_margin - self.bottom_margin - self.height_bottom_panel
         self.balls_center = []  # центы шаров. При разных уровнях(размеров шаров) центры шаров не смещаются
@@ -262,12 +271,17 @@ class Settings():
     
         options_border = (left_margin, top_margin, self.options_menu_surf.get_width() - 2 * left_margin,
                           self.options_menu_surf.get_height() - 2 * top_margin)
-        self.inner_border = pygame.Rect(options_border)
+        self.inner_border = pygame.Rect(options_border)  
 
     def level_box(self, text):
-        point = self.screen_width // 2, 140
-        # text = "Level " + str(self.current_level) 
-        self.text_level_box_surf, self.text_level_box_rect = self.center_text(self.white, 88, point, text)
+        point = self.center_text_messages
+    
+        if self.is_level_defeat or self.is_show_level_try_again:
+            size = 60
+        else:
+            size = 80
+
+        self.text_level_box_surf, self.text_level_box_rect = self.center_text(self.white, size, point, text)
 
     def game_settings(self, sc):
 
@@ -287,17 +301,16 @@ class Settings():
         self.restart_game_button = Button(sc, button_restart_game_rect,
                                           "Restart game", self.white, self.dark_blue_options, 22)
 
-    def messages(self):
-        self.text_succes_level = "Win!"
-        self.text_unsucces_level = "Lives = 2"
-        self.early_succes_level = "Perfectly!"
-        self.center_text_messages = (self.screen_width // 2, 100)
+    # def messages(self):
+    #     # self.text_succes_level = "Win!"
+    #     # self.text_unsucces_level = "Lives = 2"
+    #     # self.early_succes_level = "Perfectly!"
+    #     self.center_text_messages = (self.screen_width // 2, 140)
         
     def set_timer(self, millisec):
         self.timer = pygame.time.get_ticks()
         self.deadline = self.timer + millisec
         
- 
     def set_level_time(self):  #  Включение таймера
         self.set_timer(1000)
         self.is_show_level = True
@@ -305,19 +318,8 @@ class Settings():
     def set_finish_time(self):  # Включение таймера
         self.set_timer(1700)
         self.is_show_finish = True
+
+    def set_try_level_again_timer(self):
+        self.set_timer(900)
+        self.is_show_level_try_again = True
        
-
-    # def set_result_text(self, n):
-    #     if n == 0:
-    #         self.text_result_level = "Win!"
-    #     else:
-    #         self.text_result_level = "Defeat"
-
-    # def get_screen(settings, info):
-
-    # if settings.is_used_additional_panel:
-    #     sc = pygame.display.set_mode((settings.screen_width + info.additional_panel_width, settings.screen_height))
-    #     info.surf.fill(settings.black)
-    # else:
-    #     sc = pygame.display.set_mode((settings.screen_width, settings.screen_height))
-    # return sc

@@ -48,11 +48,13 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
     # print(" len(additional_things_2_3) = %d elem" % (len(additional_things_2_3)))
     # print(" settings.current_number_things = %d elem" % settings.current_number_things)
     
-    if settings.current_number_things == 5: # 2*3 -1 = 5 elements
-    
-        if  len(additional_things_2_3) == 6: # Один предмет случайным образом удаляется
-            del_elements(info, additional_things_2_3, 5, settings.green)
-            info.set_text_del_things(1, "2 x 3", settings.green)
+    if settings.current_number_things <= 5:  # 2*3 -1 = 5 elements
+        number_del_elements = len(things) - settings.current_number_things
+        max_len = len(additional_things_2_3) - number_del_elements
+
+        if number_del_elements > 0:
+            del_elements(info, additional_things_2_3, max_len, settings.green)
+            info.set_text_del_things(number_del_elements, "2 x 3", settings.green)
         main_things = additional_things_2_3
 
     elif settings.current_number_things == 6: # 2*3 = 6 elements. Возможно, все 6 элементов уже сгенерированы

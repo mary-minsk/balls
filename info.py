@@ -28,11 +28,9 @@ class Info():
             # self.text_is_early_completion = ["is_early_completion: ", ""]
             self.text_is_level_win = ["is_level_win: ", ""]
             self.text_is_level_defeat = ["is_level_defeat: ", ""]
-            # self.is_level_win = False
-            # self.is_level_defeat = False
+        
 
             self.text_mouse_xy = ["mouse: ", ""]
-            # self.text_cartesian_mouse_xy = ["mouse (cartesian): ", ""]
            
             self.text_line = ["______________________________", ""]
             self.text_number_things = ["number of things: ",""]  
@@ -93,12 +91,6 @@ class Info():
         self.show_add_text(self.text_is_level_defeat, self.white, 20, 320)
 
         
-        
-        
-        # text_balls_surf = ["len(settings.balls_surf) = ", str(len(self.settings.balls_surf))]
-        # settings.balls_surf
-        # self.show_add_text(text_balls_surf, self.white, 20, 300)
-
         # Generated things:
         h = 370
         self.show_add_text(self.text_line, self.white, 20, h - 20)

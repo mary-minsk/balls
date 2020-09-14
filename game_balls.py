@@ -42,7 +42,7 @@ def create_balls(): # создание трех шаров, определени
         additional_info[list[i][1]] = settings.balls_info[i]
     
     for i in range(settings.number_balls):  # большой шар катится растояние - H, средний - 2*H, самый маленикий - 3*H                  
-        balls.sprites()[i].distance = distance_dictionary.get(i)*settings.unit  # длина пути последующего движения шара 
+        balls.sprites()[i].distance = round(distance_dictionary.get(i) * settings.unit) # длина пути последующего движения шара 
         balls.sprites()[i].speed = speed_dictionary.get(i) 
         balls.sprites()[i].info = additional_info.get(i)
        
@@ -54,7 +54,7 @@ def create_things(): # создание n предметов
     
     # генерация n непересекающихся предметов на поверхности
     things = game_render.get_things(sc, settings, info)
-    
+    settings.set_number_things()
     return things
 
 def get_things_hit(): # Мяч сталкивается с предметами. Создается группа удаленных с игровой поверхности предметов
@@ -70,6 +70,7 @@ def get_things_hit(): # Мяч сталкивается с предметами.
             deleted_balls.add(Deleted_thing((thing.x, thing.y), thing.image, 0, settings.level_score, False))
             things.remove(thing)
             settings.set_text_score()
+            
 
 def create_groups(balls, things, deleted_balls, setting, isRestart):  # Создание групп вещей и мячей вначале кажного нового уровня
     balls.empty()
@@ -89,7 +90,9 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
     things = create_things()
     balls = create_balls()
     deleted_balls = pygame.sprite.Group()
-    settings.set_level_time()
+
+    if not isRestart:
+        settings.set_level_time()
     
     return balls, things, deleted_balls
 
@@ -139,27 +142,25 @@ def check_info_restart_level(balls, things, deleted_balls, settings, info):
             start_next_level(balls, things, deleted_balls, settings)
             settings.is_start_next_level = False
         
-
 def get_level_result():
 
     if settings.ball_in_game is None:
         if not settings.is_level_defeat and not settings.is_level_win:
             if len(things) == 0:
                 settings.is_level_win = True
-                # print("win")
-                settings.text_result_level = "Win!"
+                settings.text_result_level = settings.win_message
                 return True
             else:
                 if len(balls) == 0:
                     settings.is_level_defeat = True
-                    settings.text_result_level = "Defeat"
-                    # print("defeat")
+                    settings.text_result_level = settings.defeat_message
                     return True
     return False
 
 def check_finish_level():
 
     is_level_result = get_level_result()
+    # print(is_level_result)
     if is_level_result:
         if settings.is_early_completion:  # Завершение уровня при нажатии пробел
             settings.set_finish_time()  # Запуск таймера
@@ -171,6 +172,10 @@ def check_finish_level():
 
     if settings.is_show_level:
         settings.level_box("Level " + str(settings.current_level))
+        sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
+
+    if settings.is_show_level_try_again:
+        settings.level_box("Try again!")
         sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
     
 pygame.init()
@@ -194,8 +199,7 @@ settings.set_level_time()
 done = False
 
 while not done:
-    func.check_level_timer(settings)  # Вывод уровня игры
-    func.check_finish_timer(settings)  # Вывод "Win!"
+    func.check_timers(settings)  # Вывод "Win!", "Defeat", уровня игры
     for event in pygame.event.get():
         info.reset_event_info()
 
@@ -315,6 +319,10 @@ while not done:
 
     if settings.is_points_erasing and settings.selected_ball is None:  # После удалении мяча с поля след. мяч начинает вращаться
                                                             #  если над ним находится мышка и траектория предыдущего мяча еще не удалена
+        # if not get_level_result():
+        #     print("not get_level_result()")
+        if not settings.is_level_defeat and not settings.is_level_win:
+            print("sdsdd")
         settings.rotated_ball = func.get_ball(settings.mouse_xy, balls)
         func.rotation_ball_on(balls, settings.rotated_ball)
 
