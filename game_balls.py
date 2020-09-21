@@ -17,6 +17,7 @@ def create_balls(): # создание трех шаров, определени
     shift = settings.left_offset
     list = []
     ball_images = game_render.random_balls_images(settings)
+    to_remove = None
     for i in range(settings.number_balls):
         surf = ball_images[i]
         w = surf.get_rect()[2]
@@ -26,10 +27,14 @@ def create_balls(): # создание трех шаров, определени
                     surf.get_height() * settings.balls_size_reduction[settings.current_difficulty] // 100
             
                 surf = pygame.transform.scale(surf, new_size)
-       
-        balls.add(Ball(settings, shift + settings.balls_offset*i + w//2, surf, i))  # добавляем в группу три шара
+        ball = Ball(settings, shift + settings.balls_offset*i + w//2, surf, i)
+        balls.add(ball)  # добавляем в группу три шара
         shift = shift + w 
-        list.append((w, i)) 
+        list.append((w, i))
+
+        if settings.current_level < 5:
+            if i == settings.number_balls - 1:
+                to_remove = ball
             
     list = sorted(list)  # сортируем по размеру изображения шара
     distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
@@ -47,7 +52,10 @@ def create_balls(): # создание трех шаров, определени
         balls.sprites()[i].info = additional_info.get(i)
        
     # max_h = (max(ball.radius for ball in balls))
-    
+   
+    if settings.current_level < 5:
+        balls.remove(to_remove)
+
     return balls
 
 def create_things(): # создание n предметов
@@ -80,6 +88,7 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
     # settings.attempts = 3  # Три попытки, три мяча на уровень
     settings.is_level_win = False
     settings.is_level_defeat = False
+    settings.is_got_level_result = False
 
     if not isRestart:
         if settings.current_level <= settings.last_level:
@@ -148,25 +157,31 @@ def get_level_result():
         if not settings.is_level_defeat and not settings.is_level_win:
             if len(things) == 0:
                 settings.is_level_win = True
+                # print("win")
                 settings.text_result_level = settings.win_message
-                return True
+                settings.is_got_level_result = True
+                # return True
             else:
                 if len(balls) == 0:
                     settings.is_level_defeat = True
                     settings.text_result_level = settings.defeat_message
-                    return True
-    return False
+                    settings.is_got_level_result = True
+                    # print("defeat")
+                    # return True
+    # return False
 
 def check_finish_level():
 
-    is_level_result = get_level_result()
+
+    if not settings.is_got_level_result:
+        get_level_result()
     # print(is_level_result)
-    if is_level_result:
+    if settings.is_got_level_result:
         if settings.is_early_completion:  # Завершение уровня при нажатии пробел
             settings.set_finish_time()  # Запуск таймера
             settings.is_early_completion = False
 
-    if settings.is_show_finish or (settings.is_points_erasing and is_level_result):
+    if settings.is_show_finish or (settings.is_points_erasing and settings.is_got_level_result):
         settings.level_box(settings.text_result_level)
         sc.blit(settings.text_level_box_surf, settings.text_level_box_rect)
 
@@ -190,11 +205,14 @@ pygame.display.update()
 func.set_caption(settings)
 init_images_buttons()
 
+# settings.easy_game()
+
 things = create_things()
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
 
 settings.set_level_time()
+
      
 done = False
 
@@ -210,7 +228,7 @@ while not done:
             if event.button == 1:
                 
                 if not func.is_ball_rolling(settings):
-                    settings.selected_ball = func.get_ball(event.pos, balls)
+                    settings.selected_ball = func.get_ball(settings, event.pos, balls)
                     func.rotation_balls_off(balls)
                     
                     if settings.selected_ball is not None:
@@ -240,7 +258,13 @@ while not done:
                         change_difficulty()
 
                     elif settings.restart_game_button.isOver(event.pos):
+                        print(settings.difficulty_level[settings.current_difficulty])
                         settings.is_show_options_menu = False
+                        
+                        if settings.difficulty_level[settings.current_difficulty] == "Easy":
+                            settings.easy_game()
+                        elif settings.difficulty_level[settings.current_difficulty] == "Normal":
+                            settings.normal_game()
                         restart_level(balls, things, deleted_balls, settings)
 
 
@@ -309,7 +333,7 @@ while not done:
                 settings.rotated_ball = None
                 
                 if not pygame.Rect(settings.game_panel_add_3_margins).collidepoint(settings.mouse_xy):
-                    settings.rotated_ball = func.get_ball(settings.mouse_xy, balls)
+                    settings.rotated_ball = func.get_ball(settings, settings.mouse_xy, balls)
                     
                 func.check_rotation(settings, balls)
             
@@ -321,9 +345,9 @@ while not done:
                                                             #  если над ним находится мышка и траектория предыдущего мяча еще не удалена
         # if not get_level_result():
         #     print("not get_level_result()")
-        if not settings.is_level_defeat and not settings.is_level_win:
-            print("sdsdd")
-        settings.rotated_ball = func.get_ball(settings.mouse_xy, balls)
+        # if settings.is_level_defeat  settings.is_level_win:
+        #     print("sdsdd")
+        settings.rotated_ball = func.get_ball(settings, settings.mouse_xy, balls)
         func.rotation_ball_on(balls, settings.rotated_ball)
 
     info.set_text_events()

@@ -4,17 +4,19 @@ import game_render
 from deleted_things import Deleted_thing
 from button import Button
 
-def get_ball(mouse_pos, balls): # индекс выбранного шара с панели шаров
+
+def get_ball(settings, mouse_pos, balls):  # индекс выбранного шара с панели шаров
     
     active_ball = None
+    if not settings.is_got_level_result:
 
-    for i, ball in enumerate(balls):
-        dx = ball.x - mouse_pos[0] 
-        dy = ball.y - mouse_pos[1] 
-        distance_square = dx**2 + dy**2 
+        for i, ball in enumerate(balls):
+            dx = ball.x - mouse_pos[0] 
+            dy = ball.y - mouse_pos[1] 
+            distance_square = dx**2 + dy**2 
 
-        if distance_square <= ball.radius**2:
-            active_ball = ball
+            if distance_square <= ball.radius**2:
+                active_ball = ball
 
     return active_ball
 
@@ -527,6 +529,7 @@ def draw_disappearing_path(sc,settings):  # Отображение исчеза�
         draw_tips_disappearing(sc, settings, settings.dxy[0], settings.dxy[1], settings.disappearing_edges[0])
     else:
         settings.is_points_erasing = False
+        finish_level(settings)
 
 def is_ball_rolling(settings):
     if settings.ball_in_game is not None:
@@ -658,7 +661,7 @@ def check_timers(settings):
             finish_level(settings)
 
     if settings.is_show_level_try_again:
-        if end_timer2(settings, "is_show_level_try_again"):
+        if get_timer_off(settings, "is_show_level_try_again"):
             settings.is_restart_level = True
 
     if settings.is_show_level:

@@ -66,6 +66,13 @@ class Settings():
     def set_text_score(self):
         self.text_score[1] = str(self.score)
 
+    # def easy_normal_action(self):
+    #     self.score = 0
+    #     self.set_text_score()
+    #     self.current_level = 1
+    #     self.last_level = self.finish_things - self.current_number_things - 1
+
+
     def set_number_things(self):
         self.text_number_things[1] = str(self.current_number_things)
 
@@ -100,31 +107,22 @@ class Settings():
 
         self.number_balls = 3
 
-        self.start_level = 1
-        self.current_level = self.start_level
-        self.start_things = 3
-        self.current_number_things = self.start_things
-        self.finish_things = 20
-        self.last_level = self.finish_things - self.start_things
-
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
         self.balls_size_reduction = [100, 80, 60, 50] 
         self.current_difficulty = 0
         self.attempts = 3  # = number_balls
         self.min_ball_size = 0 # Минимальный размер шара, после которого размер изображения не уменьшается (при повышении сложности игры)
 
+        self.score_point_xy = 250, 15
+        self.text_score = ["Score:", ""]
         self.text_level = ["Level:", ""]
-        self.set_text_level()
+        self.easy_game()
+
         self.level_point_xy = 20, 15
 
         self.number_things_point = 120, 15
         self.text_number_things = ["Things:", ""]
         self.set_number_things()
-
-        self.score = 0  # total score
-        self.score_point_xy = 250, 15
-        self.text_score = ["Score:", ""]
-        self.set_text_score()
 
         self.level_score = 5
         self.is_show_finish = False
@@ -144,7 +142,27 @@ class Settings():
         self.is_start_level_again_timer = False
         self.is_show_level_try_again = False
 
-        self.center_text_messages = (self.screen_width // 2, 140) 
+        self.is_got_level_result = False
+
+        self.center_text_messages = (self.screen_width // 2, 140)
+        
+    def easy_game(self):
+        self.current_number_things = 3
+        self.finish_things = 5
+        self.easy_normal_action()
+       
+    def normal_game(self):
+        self.current_number_things = 4
+        self.finish_things = 6
+        self.easy_normal_action()
+
+    def easy_normal_action(self):
+        self.score = 0
+        self.set_text_score()
+        self.current_level = 1
+        self.last_level = self.finish_things - self.current_number_things
+        self.text_level = ["Level:", ""]
+        self.set_text_level()
         
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'
