@@ -66,13 +66,6 @@ class Settings():
     def set_text_score(self):
         self.text_score[1] = str(self.score)
 
-    # def easy_normal_action(self):
-    #     self.score = 0
-    #     self.set_text_score()
-    #     self.current_level = 1
-    #     self.last_level = self.finish_things - self.current_number_things - 1
-
-
     def set_number_things(self):
         self.text_number_things[1] = str(self.current_number_things)
 
@@ -116,7 +109,10 @@ class Settings():
         self.score_point_xy = 250, 15
         self.text_score = ["Score:", ""]
         self.text_level = ["Level:", ""]
-        self.easy_game()
+       
+        self.set_easy_params()  # Установка параметров уровней, количество вещей нв первом уровне и на последнем
+        self.easy_normal_action()
+        self.is_easy_normal = True
 
         self.level_point_xy = 20, 15
 
@@ -143,26 +139,46 @@ class Settings():
         self.is_show_level_try_again = False
 
         self.is_got_level_result = False
-
         self.center_text_messages = (self.screen_width // 2, 140)
-        
-    def easy_game(self):
-        self.current_number_things = 3
-        self.finish_things = 5
-        self.easy_normal_action()
-       
-    def normal_game(self):
-        self.current_number_things = 4
-        self.finish_things = 6
-        self.easy_normal_action()
 
+    def set_easy_params(self):
+        self.start_number_things = 3
+        self.finish_things = 5
+
+    def set_normal_params(self):
+        self.start_number_things = 4
+        self.finish_things = 6
+
+    def set_difficulty_params(self):
+        if self.difficulty_level[self.current_difficulty] == "Easy":
+            self.set_easy_params()
+            self.easy_normal_action()
+
+        elif self.difficulty_level[self.current_difficulty] == "Normal":
+            self.set_normal_params()
+            self.easy_normal_action()
+
+    def set_text_level_params(self):
+        self.text_level_params = "(things: " + str(self.start_number_things) + ".." + str(self.finish_things) + ")"
+
+    def show_difficulty_params(self):
+        if self.difficulty_level[self.current_difficulty] == "Easy":
+            # self.set_easy_params()
+            self.set_text_level_params()
+            
+        elif self.difficulty_level[self.current_difficulty] == "Normal":
+            # self.set_normal_params()
+            self.set_text_level_params()       
+   
     def easy_normal_action(self):
+        self.current_number_things = self.start_number_things
         self.score = 0
         self.set_text_score()
         self.current_level = 1
         self.last_level = self.finish_things - self.current_number_things
         self.text_level = ["Level:", ""]
         self.set_text_level()
+        self.text_level_params = "(things: " + str(self.start_number_things) + ".." + str(self.finish_things) + ")"
         
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'
@@ -314,17 +330,13 @@ class Settings():
         self.difficulty_button = Button(sc, button_difficulty_rect,
                                         self.difficulty_level[self.current_difficulty], self.white, self.dark_blue_options, 22)
 
-        button_restart_game_rect = [97, 260, self.select_difficulty_rect.w, 30]
-
+        button_restart_game_rect = [97, 290, self.select_difficulty_rect.w, 30]
         self.restart_game_button = Button(sc, button_restart_game_rect,
                                           "Restart game", self.white, self.dark_blue_options, 22)
-
-    # def messages(self):
-    #     # self.text_succes_level = "Win!"
-    #     # self.text_unsucces_level = "Lives = 2"
-    #     # self.early_succes_level = "Perfectly!"
-    #     self.center_text_messages = (self.screen_width // 2, 140)
         
+        # text_game_info = "dsdfsfs sdfsdf fsff"
+        # self.game_info_surf, self.game_info_rect = self.center_text(self.white, 20, (self.options_menu_surf.get_width()//2, 165), self.game_info())
+
     def set_timer(self, millisec):
         self.timer = pygame.time.get_ticks()
         self.deadline = self.timer + millisec

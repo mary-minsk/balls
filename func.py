@@ -628,6 +628,15 @@ def game_options(sc, settings):
         settings.difficulty_button.draw()
         settings.restart_game_button.draw()
 
+        if settings.is_easy_normal:
+            settings.game_info_surf, settings.game_info_rect = settings.center_text(settings.white, 20,
+                                                                                    (settings.options_menu_surf.get_width()//2, 165),  str(settings.text_level_params))
+
+    # "settings.text_level_params"
+        
+            settings.options_menu_surf.blit(settings.game_info_surf, settings.game_info_rect)
+     
+
 def check_options(settings, event_pos):
     if not settings.is_show_options_menu:
         if settings.options_icon.collidepoint(event_pos):

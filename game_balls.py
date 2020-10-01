@@ -111,7 +111,7 @@ def change_difficulty():
     if settings.current_difficulty >= len(settings.difficulty_level):
         settings.current_difficulty = 0
     settings.difficulty_button.text = settings.difficulty_level[settings.current_difficulty]
-
+  
 def early_completion():
     settings.is_early_completion = True #  Проверка, не завершен ли уровень
 
@@ -205,8 +205,6 @@ pygame.display.update()
 func.set_caption(settings)
 init_images_buttons()
 
-# settings.easy_game()
-
 things = create_things()
 balls = create_balls()
 deleted_balls = pygame.sprite.Group()
@@ -254,19 +252,19 @@ while not done:
                 func.check_options(settings, event.pos)
 
                 if settings.is_show_options_menu:
-                    if settings.difficulty_button.isOver(event.pos):
+                    if settings.difficulty_button.isOver(event.pos):  # выбор уровней сложности игры
                         change_difficulty()
+                        if settings.current_difficulty == 0 or settings.current_difficulty == 1:
+                            settings.is_easy_normal = True
+                            settings.show_difficulty_params()
+                        else:
+                            settings.is_easy_normal = False
 
-                    elif settings.restart_game_button.isOver(event.pos):
-                        print(settings.difficulty_level[settings.current_difficulty])
+                    elif settings.restart_game_button.isOver(event.pos):  # запуск выбранного уровня сложности
                         settings.is_show_options_menu = False
-                        
-                        if settings.difficulty_level[settings.current_difficulty] == "Easy":
-                            settings.easy_game()
-                        elif settings.difficulty_level[settings.current_difficulty] == "Normal":
-                            settings.normal_game()
+                        if settings.is_easy_normal:
+                            settings.set_difficulty_params()
                         restart_level(balls, things, deleted_balls, settings)
-
 
                 info.set_text_mousebuttondown(event.pos)
 
