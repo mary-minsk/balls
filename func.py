@@ -3,6 +3,8 @@ from math import sqrt, hypot, sin, cos, atan2
 import game_render
 from deleted_things import Deleted_thing
 from button import Button
+from thing import Thing
+from ball import Ball
 
 
 def get_ball(settings, mouse_pos, balls):  # индекс выбранного шара с панели шаров
@@ -344,6 +346,7 @@ def build_path(settings):  # определение траектории дви�
 
     settings.edges.append((round(x), round(y)))
     settings.last_path_point = (round(x), round(y))
+    # print("len(settings.bouncing_ball_points) = ", len(settings.bouncing_ball_points))
 
 def draw_tips(sc, settings, pos_center_ball):  # На месте пересечения окружности шара с последующей траекторией движения
                              # будет находиться наконечник. Но только в момент прицеливания и движения
@@ -675,11 +678,37 @@ def check_timers(settings):
 
     if settings.is_show_level:
         timer_off(settings, 'is_show_level')
-           
+
+
+def copy_obj(settings, group, isThings):
+    new_group = pygame.sprite.Group()
+    for obj in group:
+        if isThings:
+            new = Thing(*obj.toList())
+        else:
+            new = Ball(*obj.toList(settings))
+            new.distance = obj.distance
+            new.speed = obj.speed
+            new.info = obj.info
         
-           
-            
-            
+        new_group.add(new)
+    return new_group
+
+def create_copy(settings, group, isThings):
+    if isThings:
+        settings.copy_things = copy_obj(settings, group, isThings)
+    else:
+        settings.copy_balls = copy_obj(settings, group, isThings)
+
+def restore_copy(settings, isThings):
+    group = None
+    if isThings:
+        group = settings.copy_things
+    else:
+        group = settings.copy_balls
+    return copy_obj(settings, group, isThings)
+
+         
 
 
 

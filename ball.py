@@ -136,7 +136,7 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
     @staticmethod
     def check_jump(self, settings):
         if self.isJump:
-            pass
+            # pass
             self.delay += 1
             if self.delay==2: # мяч  подпрыгивает с небольшой задержкой
                 if self.step <= 0 or self.step >= 3:
@@ -146,8 +146,19 @@ class Ball(pygame.sprite.Sprite):  # Всего 3 шара: маленький, 
 
             if settings.is_draw_line:   # мяч подпрыгивает в направлении движения мыши
                 self.rect.center = settings.bouncing_ball_points[self.step]
+                # print("len(settings.bouncing_ball_points) = ", len(settings.bouncing_ball_points))
+                # print("self.step = ", self.step)
             else:                       #вертикальное подпрыгивание 
                 self.rect.center = (self.x, self.y + self.step)
+
+    def toList(self, settings):
+        return [settings, self.x, self.image, self.index]
+
+
+#  max_h = (max(ball.radius for ball in balls))
+# next((ball for ball in balls if ball.info == info), None)
+# icons = [f for f in os.listdir(path) if f.endswith('.png') and f.find(remove_icon) == -1]
+
 
 
 

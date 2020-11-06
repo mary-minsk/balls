@@ -15,3 +15,6 @@ class Thing(pygame.sprite.Sprite):  # класс вещей/предметов. 
         if info.is_displayed_lines and self.rect_color is not None:
             pygame.draw.rect(sc, self.rect_color, self.rect, 1)
             pygame.draw.circle(sc, settings.red, self.rect.center, self.radius, 1)
+
+    def toList(self):
+        return [self.x, self.y, self.image]

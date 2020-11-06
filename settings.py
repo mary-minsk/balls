@@ -31,8 +31,11 @@ class Settings():
 
         self.reset()  # Сброс основных параметров
         self.clock = pygame.time.Clock()
-        # self.messages()
+      
         self.level_box("Level " + str(self.current_level))
+
+        self.copy_things = None
+        self.copy_balls = None
         
     def reset(self):  
         self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
@@ -143,11 +146,11 @@ class Settings():
 
     def set_easy_params(self):
         self.start_number_things = 3
-        self.finish_things = 5
+        self.finish_things = 8
 
     def set_normal_params(self):
         self.start_number_things = 4
-        self.finish_things = 6
+        self.finish_things = 9
 
     def set_difficulty_params(self):
         if self.difficulty_level[self.current_difficulty] == "Easy":
@@ -163,11 +166,9 @@ class Settings():
 
     def show_difficulty_params(self):
         if self.difficulty_level[self.current_difficulty] == "Easy":
-            # self.set_easy_params()
             self.set_text_level_params()
             
         elif self.difficulty_level[self.current_difficulty] == "Normal":
-            # self.set_normal_params()
             self.set_text_level_params()       
    
     def easy_normal_action(self):
@@ -175,11 +176,16 @@ class Settings():
         self.score = 0
         self.set_text_score()
         self.current_level = 1
+        self.is_two_balls = self.two_balls()
         self.last_level = self.finish_things - self.current_number_things
         self.text_level = ["Level:", ""]
         self.set_text_level()
         self.text_level_params = "(things: " + str(self.start_number_things) + ".." + str(self.finish_things) + ")"
         
+    def two_balls(self):
+        return True if self.current_level < 4 else False
+        
+
     def path_images(self):
         self.background_image_path = '/pict/background/sky_425_675.png'
         self.background_image = ""
@@ -190,6 +196,21 @@ class Settings():
         self.game_settings_image = ""
         self.options_icon = None
         
+    def level123_balls(self):
+
+        self.level_123_exclude_ball = ["small", "medium", "large"]
+
+        self.level_123_balls = [["medium.png", "large.png"], ["small.png", "large.png"],  ["medium.png", "small.png"]]
+        
+        self.level123_distance = [[1, 0.4],     # medium, large balls / level 1
+                                  [2, 0.4],   # small, large balls  / level 2
+                                  [1, 2]]  # small, medium balls / level 3
+                                  
+        self.level123_speed = [[7, 5],   # medium, large balls / level 1
+                               [6, 5],   # small, large balls  / level 2
+                               [7, 6]]   # small, medium balls / level 3
+                                
+    
     def balls(self):
 
         self.jump_height_ball = 5  # на 5 точек мяч будет подпрыгивать
@@ -200,12 +221,16 @@ class Settings():
 
         # самый маленикий катится растояние - 3*H, средний - 2*H,  большой шар - H
         # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
-        self.balls_distance = [3, 2, 0.5]  # *settings.screen_height
+        self.balls_distance = [3, 2, 1]  # *settings.screen_height
         self.balls_info = ["small", "medium", "large"]
+
+        self.level123_balls()
+       
         self.unit = self.screen_height - self.up_margin - self.bottom_margin - self.height_bottom_panel
         self.balls_center = []  # центы шаров. При разных уровнях(размеров шаров) центры шаров не смещаются
         
         self.initial_balls_surf = [] # изображения мячей. При повышении уровня сложности игры, их размеры уменьшаются 
+
 
     def ticker(self):
         
@@ -274,8 +299,11 @@ class Settings():
     def set_original_balls_surf(self):
         surfaces = []
         balls_images = get_images(self.number_balls, self.path_spirals)
+        # icons = game_render.find_ball_icons(ball_images, "small")
+        
         for i in range(self.number_balls):
             surfaces.append(pygame.image.load(balls_images[i]).convert_alpha())
+           
 
         self.initial_balls_surf = surfaces
         self.min_ball_size = min(ball.get_width() for ball in surfaces)
@@ -334,9 +362,6 @@ class Settings():
         self.restart_game_button = Button(sc, button_restart_game_rect,
                                           "Restart game", self.white, self.dark_blue_options, 22)
         
-        # text_game_info = "dsdfsfs sdfsdf fsff"
-        # self.game_info_surf, self.game_info_rect = self.center_text(self.white, 20, (self.options_menu_surf.get_width()//2, 165), self.game_info())
-
     def set_timer(self, millisec):
         self.timer = pygame.time.get_ticks()
         self.deadline = self.timer + millisec
@@ -352,4 +377,5 @@ class Settings():
     def set_try_level_again_timer(self):
         self.set_timer(900)
         self.is_show_level_try_again = True
-       
+
+ 

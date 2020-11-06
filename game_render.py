@@ -9,7 +9,6 @@ def del_elements(info, things, max_len, color):
         ind = random.randint(0, len(things)-1)
         elem = things.sprites()[ind]
         info.random_deleted_things_rect.append((elem.rect, color)) 
-        # print("%d elem killed" % (ind))
         elem.kill()
    
 def get_things(sc, settings, info): # генерация n = settings.current_number_things
@@ -27,6 +26,7 @@ def get_things(sc, settings, info): # генерация n = settings.current_nu
 
     main_things = pygame.sprite.Group()
     things = pygame.sprite.Group()
+    
    
     info.reset_things_text()
 
@@ -231,19 +231,8 @@ def render_m(m, THINGS_SURF, settings, things, color, shift, info):# игров�
     # print("unsuitable_things 1 5 = %d" % (unsuitable_things))
     return things, additional_things, lines, unsuitable_things
 
-def get_images(n, path):
-    path_f = []
-    path = os.path.dirname(os.path.abspath(__file__)) + path
-    icons = [f for f in os.listdir(path) if f.endswith('.png')]
-    index = 0
-    if n<=len(icons):
-        while len(path_f)<n:
-            index = random.randint(0, len(icons)-1)
-            full_path = os.path.join(path,icons[index]) # формирование адреса
-            icons.pop(index)
-            path_f.append(full_path) # добавление адреса в список
-    return path_f   
 
+  
 
 
 def get_acceleration(n, speed):     # равномерное замедление/ускорение шара на финише или старте для
@@ -261,14 +250,54 @@ def get_acceleration(n, speed):     # равномерное замедлени�
 def get_image(path):
    return os.path.dirname(os.path.abspath(__file__)) + path
 
+def get_images(n, path):  # список расположений трех изображений шаров или n предметов
+    path_f = []
+    path = os.path.dirname(os.path.abspath(__file__)) + path
 
-def random_balls_images(settings):
-    balls_images = settings.initial_balls_surf.copy()
-    random_balls_images = []
-    while len(balls_images) > 0:
-        ind = random.randint(0, len(balls_images)-1)
-        random_balls_images.append(balls_images.pop(ind))
-    return random_balls_images
+    icons = [f for f in os.listdir(path) if f.endswith('.png')]
+    index = 0
+
+    if n <= len(icons):
+        while len(path_f) < n:
+            index = random.randint(0, len(icons)-1)
+            full_path = os.path.join(path, icons[index])  # формирование адреса
+            icons.pop(index)
+            path_f.append(full_path)
+
+    return path_f
+
+def two_balls_images_path(settings, path):  # список расположения изображений двух шаров
+
+    path_f = []
+    path = os.path.dirname(os.path.abspath(__file__)) + path
+
+    icons = settings.level_123_balls[settings.current_level - 1]
+    for i, pic in enumerate(icons):
+        full_path = os.path.join(path, icons[i])  # формирование адреса
+        path_f.append(full_path)
+        
+    return path_f
+
+def random_balls_images(settings):  
+   
+    if not settings.two_balls():  # 3 мяч на панели / 4 уровень и выше
+
+        balls_images = settings.initial_balls_surf.copy()
+        random_balls_images = []
+        while len(balls_images) > 0:  # случайным образом расставляем мячи на панели мячей
+            ind = random.randint(0, len(balls_images)-1)
+            random_balls_images.append(balls_images.pop(ind))
+        return random_balls_images
+
+    else:    #три первые уровня игры по два мяча
+        
+        surfaces = []
+        balls_images = two_balls_images_path(settings, settings.path_spirals)
+
+        for i in range(2):   # порядок расположения двух мячей указан в settings.level_123_balls
+            surfaces.append(pygame.image.load(balls_images[i]).convert_alpha())
+           
+        return surfaces
 
 
 
