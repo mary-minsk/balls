@@ -105,7 +105,7 @@ class Settings():
 
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
         self.balls_size_reduction = [100, 80, 60, 50] 
-        self.current_difficulty = 0
+        self.current_difficulty = 1
         self.attempts = 3  # = number_balls
         self.min_ball_size = 0 # Минимальный размер шара, после которого размер изображения не уменьшается (при повышении сложности игры)
 
@@ -143,14 +143,15 @@ class Settings():
 
         self.is_got_level_result = False
         self.center_text_messages = (self.screen_width // 2, 140)
+        self.is_change_level = False
 
     def set_easy_params(self):
         self.start_number_things = 3
-        self.finish_things = 8
+        self.finish_things = 10
 
     def set_normal_params(self):
         self.start_number_things = 4
-        self.finish_things = 9
+        self.finish_things = 12
 
     def set_difficulty_params(self):
         if self.difficulty_level[self.current_difficulty] == "Easy":
@@ -221,7 +222,7 @@ class Settings():
 
         # самый маленикий катится растояние - 3*H, средний - 2*H,  большой шар - H
         # self.balls_distance = [self.screen_height*3, self.screen_height*3, self.screen_height]   # растояния для маленького, среднего и большого шаров
-        self.balls_distance = [3, 2, 1]  # *settings.screen_height
+        self.balls_distance = [2.5, 1.5, 0.5]  # *settings.screen_height
         self.balls_info = ["small", "medium", "large"]
 
         self.level123_balls()

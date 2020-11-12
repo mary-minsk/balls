@@ -708,6 +708,40 @@ def restore_copy(settings, isThings):
         group = settings.copy_balls
     return copy_obj(settings, group, isThings)
 
+
+# def create_copies(settings, things, balls):
+#     things = create_things()
+#     create_copy(settings, things, True)
+#     balls = create_balls()
+#     create_copy(settings, balls, False)
+#     return things, balls
+
+
+def ball_set_values(settings, ball, i):         # 2 мяча, уровни 1, 2, 3
+    ball_name = settings.level_123_balls[settings.current_level - 1][i]
+    pos = ball_name.find(".")
+    ball.info = ball_name[:pos]
+    ball.distance = settings.level123_distance[settings.current_level - 1][i] * settings.unit
+    ball.speed = settings.level123_speed[settings.current_level - 1][i]
+
+def three_balls_set_values(settings, balls, lst, i):  # 3 мяча, уровни 4, 5, 6...
+
+    lst = sorted(lst)  # сортируем по размеру изображения шара
+    distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
+    speed_dictionary = {}      # большое растояние
+    additional_info = {}
+
+    for i in range(3):
+        distance_dictionary[lst[i][1]] = settings.balls_distance[i]
+        speed_dictionary[lst[i][1]] = settings.balls_speed[i]
+        additional_info[lst[i][1]] = settings.balls_info[i]
+    
+    for i in range(3):  # растояние, которое будет катиться шар              
+        balls.sprites()[i].distance = round(distance_dictionary.get(i) * settings.unit) # длина пути последующего движения шара 
+        balls.sprites()[i].speed = speed_dictionary.get(i) 
+        balls.sprites()[i].info = additional_info.get(i)
+       
+
          
 
 

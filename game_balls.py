@@ -14,7 +14,7 @@ from deleted_things import Deleted_thing
 def create_balls(): # создание трех шаров, определени6 их скорости движения (settings.balls_speed[i]) и растояния (settings.balls_distance[i])
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
-    list = []
+    lst = []
     
     ball_images = game_render.random_balls_images(settings)
     n = len(ball_images)
@@ -28,36 +28,19 @@ def create_balls(): # создание трех шаров, определени
             
                 surf = pygame.transform.scale(surf, new_size)
         
-        x = shift + settings.balls_offset * i + w // 2    
+        x = shift + settings.balls_offset * i + w // 2    # отступ слева
         ball = Ball(settings, x, surf, i)
         shift = shift + w
 
         if settings.two_balls():
-            ball.info = settings.level_123_balls[settings.current_level - 1][i]
-            ball.distance = settings.level123_distance[settings.current_level - 1][i] * settings.unit
-            ball.speed = settings.level123_speed[settings.current_level - 1][i]
+            func.ball_set_values(settings, ball, i)   # скорость шара и растояние, уровни 1, 2 и 3
         else:
-            list.append((w, i))
+            lst.append((w, i))  # чем больше шар, тем меньше растояние и меньше скорость
            
         balls.add(ball)  # добавляем в группу три шара
         
     if not settings.two_balls():
-
-        list = sorted(list)  # сортируем по размеру изображения шара
-        distance_dictionary = {}   # маленький шар имеет самую большую скорость и прокатится на самое 
-        speed_dictionary = {}      # большое растояние
-        additional_info = {}
-
-        for i in range(n):
-            # print(settings.balls_distance[i])
-            distance_dictionary[list[i][1]] = settings.balls_distance[i]
-            speed_dictionary[list[i][1]] = settings.balls_speed[i]
-            additional_info[list[i][1]] = settings.balls_info[i]
-        
-        for i in range(n):  # большой шар катится растояние - H, средний - 2*H, самый маленикий - 3*H                  
-            balls.sprites()[i].distance = round(distance_dictionary.get(i) * settings.unit) # длина пути последующего движения шара 
-            balls.sprites()[i].speed = speed_dictionary.get(i) 
-            balls.sprites()[i].info = additional_info.get(i)
+        func.three_balls_set_values(settings, balls, lst, i)  # три шара, уровни 4 и выше, скорость и растояние
         
     return balls
 
@@ -83,37 +66,41 @@ def get_things_hit(): # Мяч сталкивается с предметами.
             things.remove(thing)
             settings.set_text_score()      
 
+def create_copies(settings, things, balls):
+    things = create_things()
+    func.create_copy(settings, things, True)
+    balls = create_balls()
+    func.create_copy(settings, balls, False)
+    return things, balls
+
 def create_groups(balls, things, deleted_balls, setting, isRestart):  # Создание групп вещей и мячей вначале кажного нового уровня
     balls.empty()
     deleted_balls.empty()
     setting.reset()
     
-
     if not isRestart:
         if settings.current_level <= settings.last_level:
+            
             settings.current_number_things += 1
             setting.current_level += 1
             setting.set_text_level()
 
-            things = create_things()
-            func.create_copy(settings, things, True)
-            balls = create_balls()
-            func.create_copy(settings, balls, False)
+            things, balls = create_copies(settings, things, balls)
+        settings.set_level_time()
+   
+    if settings.is_change_level:
+        things, balls = create_copies(settings, things, balls)
             
-    if settings.is_level_defeat or isRestart:
+    if settings.is_level_defeat or isRestart and not settings.is_change_level:
         things = func.restore_copy(settings, True)
         balls = func.restore_copy(settings, False)
 
     deleted_balls = pygame.sprite.Group()
-    # balls = create_balls()
 
     settings.is_level_win = False
     settings.is_level_defeat = False
     settings.is_got_level_result = False
-   
-
-    if not isRestart:
-        settings.set_level_time()
+    settings.is_change_level = False
     
     return balls, things, deleted_balls
 
@@ -277,6 +264,8 @@ while not done:
                         settings.is_show_options_menu = False
                         if settings.is_easy_normal:
                             settings.set_difficulty_params()
+                            settings.is_change_level = True
+                           
                         restart_level(balls, things, deleted_balls, settings)
 
                 info.set_text_mousebuttondown(event.pos)
