@@ -86,12 +86,15 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
             setting.set_text_level()
 
             things, balls = create_copies(settings, things, balls)
-        settings.set_level_time()
+            settings.set_level_time()
+        else:
+            # print("last level")
+        
    
     if settings.is_change_level:
         things, balls = create_copies(settings, things, balls)
             
-    if settings.is_level_defeat or isRestart and not settings.is_change_level:
+    if settings.is_level_defeat or isRestart and not settings.is_change_level or settings.current_level > settings.last_level:
         things = func.restore_copy(settings, True)
         balls = func.restore_copy(settings, False)
 

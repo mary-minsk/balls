@@ -147,7 +147,7 @@ class Settings():
 
     def set_easy_params(self):
         self.start_number_things = 3
-        self.finish_things = 10
+        self.finish_things = 7
 
     def set_normal_params(self):
         self.start_number_things = 4
