@@ -275,10 +275,16 @@ def two_balls_images_path(settings, path):  # список расположен�
     for i, pic in enumerate(icons):
         full_path = os.path.join(path, icons[i])  # формирование адреса
         path_f.append(full_path)
-        
+
     return path_f
 
-def random_balls_images(settings):  
+def random_balls_images(settings):
+    print(settings.difficulty_level[settings.current_difficulty])
+    if settings.difficulty_level[settings.current_difficulty] == "High":  # Игра 3. Всего один мяч
+        surfaces = []
+        full_path = ball_image_path(settings)
+        surfaces.append(pygame.image.load(full_path).convert_alpha())
+        return surfaces
    
     if not settings.two_balls():  # 3 мяч на панели / 4 уровень и выше
 
@@ -298,6 +304,28 @@ def random_balls_images(settings):
             surfaces.append(pygame.image.load(balls_images[i]).convert_alpha())
            
         return surfaces
+
+
+# Game 3:
+
+def get_a_b():
+    a = random.randint(-100, 100)
+    b = random.randint(-100, 100)
+    return a, b
+
+def get_x_y(settings):
+    radius = 20
+    x = random.randint(settings.left_margin + radius, settings.screen_width - radius - settings.right_margin)
+    y = random.randint(settings.up_margin + radius, settings.screen_height - settings.height_bottom_panel - settings.bottom_margin - radius)
+    return (x, y)
+
+def ball_image_path(settings):  # список расположения изображений двух шаров
+    path = os.path.dirname(os.path.abspath(__file__)) + settings.path_spirals
+    full_path = os.path.join(path, settings.large_ball_png)  # формирование адреса
+  
+    return full_path
+   
+   
 
 
 

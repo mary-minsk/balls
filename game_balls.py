@@ -6,7 +6,8 @@ from math import sqrt, hypot, sin, cos, atan2
 
 from settings import Settings
 from info import Info
-import game_render, func
+import game_render, func, game_3
+# from game_3 import build_path
 from ball import Ball
 from thing import Thing
 from deleted_things import Deleted_thing
@@ -15,7 +16,7 @@ def create_balls(): # создание трех шаров, определени
     balls = pygame.sprite.Group()  # создание группы шаров
     shift = settings.left_offset
     lst = []
-    
+
     ball_images = game_render.random_balls_images(settings)
     n = len(ball_images)
     for i in range(n):
@@ -31,15 +32,19 @@ def create_balls(): # создание трех шаров, определени
         x = shift + settings.balls_offset * i + w // 2    # отступ слева
         ball = Ball(settings, x, surf, i)
         shift = shift + w
+        print(settings.two_balls())
 
-        if settings.two_balls():
-            func.ball_set_values(settings, ball, i)   # скорость шара и растояние, уровни 1, 2 и 3
+        if settings.current_difficulty < 2:
+            if settings.two_balls():
+                func.ball_set_values(settings, ball, i)   # скорость шара и растояние, уровни 1, 2 и 3
+            else:
+                lst.append((w, i))  # чем больше шар, тем меньше растояние и меньше скорость
         else:
-            lst.append((w, i))  # чем больше шар, тем меньше растояние и меньше скорость
-           
+            game_3.ball_set_values(settings, ball)
+
         balls.add(ball)  # добавляем в группу три шара
-        
-    if not settings.two_balls():
+    
+    if not settings.two_balls() and settings.current_difficulty < 2:  # 3 balls
         func.three_balls_set_values(settings, balls, lst, i)  # три шара, уровни 4 и выше, скорость и растояние
         
     return balls
@@ -49,7 +54,12 @@ def create_things(): # создание n предметов
     # генерация n непересекающихся предметов на поверхности
     things = game_render.get_things(sc, settings, info)
     settings.set_number_things()
-   
+    # if settings.current_difficulty == 3:
+    #     print("xx")
+    #     things = pygame.sprite.Group()
+    # else:
+    #     things = game_render.get_things(sc, settings, info)
+    # settings.set_number_things()
     return things
 
 def get_things_hit(): # Мяч сталкивается с предметами. Создается группа удаленных с игровой поверхности предметов
@@ -87,7 +97,7 @@ def create_groups(balls, things, deleted_balls, setting, isRestart):  # Созд
 
             things, balls = create_copies(settings, things, balls)
             settings.set_level_time()
-        else:
+        # else:
             # print("last level")
         
    
@@ -170,7 +180,6 @@ def get_level_result():
                     settings.is_got_level_result = True
                     # print("defeat")
                    
-
 def check_finish_level():
 
     if not settings.is_got_level_result:
@@ -210,6 +219,7 @@ balls = create_balls()
 deleted_balls = pygame.sprite.Group()
 func.create_copy(settings, things, True)
 func.create_copy(settings, balls, False)
+path = []
 
 
 settings.set_level_time()
@@ -311,7 +321,6 @@ while not done:
                     elif event.key == pygame.K_SPACE:
                         if settings.is_draw_line:
                             func.launch_ball(settings)
-
                     else:        
                         func.check_keydown(event, settings)  # Можно одновременно нажимать несколько клавиш
 
@@ -321,12 +330,17 @@ while not done:
             elif settings.is_points_erasing and event.key == pygame.K_SPACE: # Мяч проделал весь путь. Происходит стирание траектории
                 early_completion()
                 settings.is_points_erasing = False # Траектория, начальная и конечные точки пути не будут отображаться
-
+            if event.key == pygame.K_z:
+                # print("!!!")
+                point = (100, 100)
+                path = game_3.build_path(settings, point)
+                
         elif event.type == pygame.KEYUP:  # Отключение движения при отпускании клавиши
             func.check_keyup(event, settings)
         
         else:
             info.set_text_other_events()
+          
 
         settings.is_draw_line = False
         settings.mouse_xy = pygame.mouse.get_pos()
@@ -355,7 +369,14 @@ while not done:
     sc.blit(settings.game_settings_image, settings.options_icon)
     
     func.check_holding_arrow_keys(settings) # При нажатии/удерживании клавиш стрелок, вычисляем направление движения мяча
-   
+    
+    if len(path) != 0:
+        pygame.draw.aalines(sc, settings.bg_color, False, path)
+
+    # point = game_render.get_x_y(settings)
+    # pygame.draw.circle(sc, settings.white, point, 2, 0)
+    # pygame.draw.circle(sc, settings.white, point, 20, 0)
+        
     if settings.is_draw_line:  # Мяч на игровой поверхности. Момент прицеливания. Cтроим путь (ломаная кривая)
         func.build_path(settings)
         pygame.draw.aalines(sc, settings.bg_color, False, settings.edges)

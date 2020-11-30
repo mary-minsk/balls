@@ -19,7 +19,7 @@ def get_ball(settings, mouse_pos, balls):  # индекс выбранного �
 
             if distance_square <= ball.radius**2:
                 active_ball = ball
-
+    
     return active_ball
 
 def mouse_inside_ball_in_game(settings):
@@ -257,8 +257,11 @@ def get_pygame_point(settings, pos_center_ball, point):
 
     return x, y
 
-def get_dx_dy(settings):  # Смещение по осям x и y за один шаг. Одна ось = 1.
-    a, b = settings.a, settings.b
+def get_dx_dy(settings, point = None):  # Смещение по осям x и y за один шаг. Одна ось = 1.
+    if point is not None:
+        a, b = point
+    else:
+        a, b = settings.a, settings.b
 
     if a >= 0 and b >= 0:
         da = - 1
@@ -282,17 +285,18 @@ def get_dx_dy(settings):  # Смещение по осям x и y за один 
     else:
         dx = da
         dy = db * abs(b / a)
-        
+    # print(a, b)
     return dx, dy
 
+
 def build_path(settings):  # определение траектории движения мяча
-   
+
     radius, max_distance = settings.ball_in_game.radius, settings.ball_in_game.distance
 
     #  accumulated_distance + current_distance = max_distance. Траектория нужной длины построена: is_path_passed = True
     accumulated_distance = 0
     current_distance = 0
-    is_path_passed = False  
+    is_path_passed = False
 
     center_ball_xy = settings.ball_in_game.x, settings.ball_in_game.y
     x, y = center_ball_xy    # Начало траектории от центра шара
@@ -304,7 +308,7 @@ def build_path(settings):  # определение траектории дви�
     # список крайних точек ломаной кривой (вершин) для рисования линии
     settings.edges = []
     # settings.edges.append((mouse_x, mouse_y))
-    
+
     settings.edges.append(settings.mouse_xy)
 
     # список 5 точек подпрыгивания на месте мяча при прицеливании
@@ -312,9 +316,9 @@ def build_path(settings):  # определение траектории дви�
     settings.bouncing_ball_points.append(center_ball_xy)
     balls_x, balls_y = center_ball_xy
     settings.center_ball_xy = center_ball_xy
-   
+
     while not is_path_passed:   # Создание списков     1. для рисования ломанной кривой settings.edges
-                                    # 2. подпрыгивания на одном месте во время прицеливания settings.bouncing_ball_points
+        # 2. подпрыгивания на одном месте во время прицеливания settings.bouncing_ball_points
         if accumulated_distance + current_distance <= max_distance:
             is_new_point = False
             if x + dx + settings.right_margin > settings.screen_width - radius or x + dx - settings.left_margin < radius:
@@ -737,7 +741,7 @@ def three_balls_set_values(settings, balls, lst, i):  # 3 мяча, уровни
         additional_info[lst[i][1]] = settings.balls_info[i]
     
     for i in range(3):  # растояние, которое будет катиться шар              
-        balls.sprites()[i].distance = round(distance_dictionary.get(i) * settings.unit) # длина пути последующего движения шара 
+        balls.sprites()[i].distance = round(distance_dictionary.get(i) * settings.unit)  # длина пути последующего движения шара 
         balls.sprites()[i].speed = speed_dictionary.get(i) 
         balls.sprites()[i].info = additional_info.get(i)
        

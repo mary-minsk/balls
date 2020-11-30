@@ -36,6 +36,8 @@ class Settings():
 
         self.copy_things = None
         self.copy_balls = None
+
+        self.game_3()
         
     def reset(self):  
         self.selected_ball = None # Нажатие мышки для мяча. При перетаскивании мяча или его смене
@@ -104,8 +106,8 @@ class Settings():
         self.number_balls = 3
 
         self.difficulty_level = ["Easy", "Normal", "High", "Crazy"]
-        self.balls_size_reduction = [100, 80, 60, 50] 
-        self.current_difficulty = 1
+        self.balls_size_reduction = [100, 80, 100, 70] 
+        self.current_difficulty = 2
         self.attempts = 3  # = number_balls
         self.min_ball_size = 0 # Минимальный размер шара, после которого размер изображения не уменьшается (при повышении сложности игры)
 
@@ -185,6 +187,8 @@ class Settings():
         
     def two_balls(self):
         return True if self.current_level < 4 else False
+        # return True if self.current_level < 4 and self.current_difficulty < 2 else False
+
         
 
     def path_images(self):
@@ -199,7 +203,7 @@ class Settings():
         
     def level123_balls(self):
 
-        self.level_123_exclude_ball = ["small", "medium", "large"]
+        # self.level_123_exclude_ball = ["small", "medium", "large"]
 
         self.level_123_balls = [["medium.png", "large.png"], ["small.png", "large.png"],  ["medium.png", "small.png"]]
         
@@ -378,5 +382,11 @@ class Settings():
     def set_try_level_again_timer(self):
         self.set_timer(900)
         self.is_show_level_try_again = True
+
+    def game_3(self):
+        self.large_ball_png = "large.png"
+        self.ball_speed = [8, 8, 7, 8, 9]  # скорость мяча в зависимости от уровня
+        self.ball_distance = [1000, 1100, 1200, 1300, 1400]  # points расстояния
+
 
  
